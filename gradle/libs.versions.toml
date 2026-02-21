@@ -1,0 +1,29 @@
+[versions]
+#noinspection UnusedVersionCatalogEntry
+androidMinSdk = "21"
+#noinspection UnusedVersionCatalogEntry
+androidCompileSdk = "36"
+#noinspection UnusedVersionCatalogEntry
+jvmToolchain = "17"
+#noinspection UnusedVersionCatalogEntry
+jvmTarget = "11"
+
+agp = "9.0.1"
+kotest = "6.1.3"
+kotlin = "2.3.10"
+ksp = "2.3.6"
+kotlinxCoroutinesTest = "1.10.2"
+vanniktechMavenPublish = "0.36.0"
+
+[libraries]
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+
+[plugins]
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktechMavenPublish" }
+kotest = { id = "io.kotest", version.ref = "kotest" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
