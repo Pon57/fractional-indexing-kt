@@ -2,3 +2,4 @@
 	vPrefix = true
 	releaseBranch = main
     versionFile = VERSION
+    postVersionCommand = ./gradlew kotlinUpgradePackageLock kotlinWasmUpgradePackageLock --no-configuration-cache
