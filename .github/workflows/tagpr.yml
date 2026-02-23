@@ -11,8 +11,18 @@ jobs:
     runs-on: ubuntu-24.04
     if: >
       github.event_name == 'push'
-      || (contains(fromJSON('["major","minor"]'), github.event.label.name) && github.event.pull_request.merged == true)
-      || (contains(fromJSON('["tagpr:major","tagpr:minor"]'), github.event.label.name) && startsWith(github.event.pull_request.head.ref, 'tagpr-from-'))
+      || (
+        github.event_name == 'pull_request'
+        && github.event.sender.type != 'Bot'
+        && contains(fromJSON('["major","minor"]'), github.event.label.name)
+        && github.event.pull_request.merged == true
+      )
+      || (
+        github.event_name == 'pull_request'
+        && github.event.sender.type != 'Bot'
+        && contains(fromJSON('["tagpr:major","tagpr:minor"]'), github.event.label.name)
+        && startsWith(github.event.pull_request.head.ref, 'tagpr-from-')
+      )
     concurrency:
       group: ${{ github.workflow }}
       cancel-in-progress: true
