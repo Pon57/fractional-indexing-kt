@@ -73,7 +73,7 @@ mavenPublishing {
 
     pom {
         name = "Fractional Indexing"
-        description = "Fractional indexing library for Kotlin Multiplatform."
+        description = "A Kotlin Multiplatform library for generating sortable keys for user-defined ordering with minimal reindexing."
         inceptionYear = "2026"
         url = "https://github.com/Pon57/fractional-indexing-kt"
         licenses {
