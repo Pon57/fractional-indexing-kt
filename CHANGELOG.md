@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.0.3](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.2...v0.0.3) - 2026-02-23
+- ci: add Gradle cache to tagpr workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/12
+- Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/14
+- Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/15
+- Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/16
+- ci: switch publish workflow to publishAndReleaseToMavenCentral by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/17
+
 ## [v0.0.2](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.1...v0.0.2) - 2026-02-22
 - Add test workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/3
 - Configure tagpr to auto-update JS/Wasm lockfiles after version bumps by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/5
