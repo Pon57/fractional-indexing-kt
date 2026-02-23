@@ -1,6 +1,12 @@
+> [!WARNING]
+> This library is currently in `0.x`.
+> Until `1.0.0`, public APIs and behavior may change, including breaking changes.
+> Please pin versions and review release notes before upgrading.
+
 # Fractional Indexing for Kotlin
 
-Kotlin Multiplatform library for generating sortable fractional index keys.
+A Kotlin Multiplatform library for generating sortable keys for user-defined ordering (e.g., drag-and-drop lists) while minimizing full reindexing.  
+Keys are represented as variable-length byte sequences terminated by `0x80` and compared lexicographically. By generating new keys relative to nearby items (`before` / `after` / `between`), it allows inserting elements without rewriting existing keys in most cases.
 
 ## Coordinates
 
