@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.4](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.3...v0.0.4) - 2026-02-23
+- ci: rename MavenCentral labels to Maven Central in publish workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/18
+
 ## [v0.0.3](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.2...v0.0.3) - 2026-02-23
 - ci: add Gradle cache to tagpr workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/12
 - Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/14
