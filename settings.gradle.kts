@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "fractional-indexing"
 include(":library")
+include(":example")
