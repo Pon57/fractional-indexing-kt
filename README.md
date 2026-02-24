@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/dev.pon/fractional-indexing?label=Maven%20Central)](https://central.sonatype.com/artifact/dev.pon/fractional-indexing)
+
 > [!WARNING]
 > This library is currently in `0.x`.
 > Until `1.0.0`, public APIs and behavior may change, including breaking changes.
