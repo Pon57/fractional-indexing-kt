@@ -94,6 +94,11 @@ Use `SPREAD` for general-purpose usage. Choose `MINIMAL` when you need behavior 
 - `FractionalIndex.after()`
 - `FractionalIndex.between(other, strategy)`
 
+## API Compatibility Check
+
+- CI runs `./gradlew :library:checkLegacyAbi --no-configuration-cache` to detect binary-incompatible public API changes.
+- When intentionally changing public API, regenerate the baseline with `./gradlew :library:updateLegacyAbi --no-configuration-cache` and commit the updated ABI dump files under `library/api/`.
+
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
