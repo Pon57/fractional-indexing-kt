@@ -38,6 +38,13 @@ val mid = FractionalIndexGenerator
 check(left < mid && mid < right)
 ```
 
+## Example App
+
+- A Kotlin Multiplatform example module is available at `example/`.
+- Run the drag-and-drop list demo with `./gradlew :example:jvmRun`.
+
+https://github.com/user-attachments/assets/dab1c510-ce2c-4c63-9a29-3f67b79e461c
+
 ## Extension API
 
 ```kotlin
