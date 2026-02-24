@@ -1,0 +1,47 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, macosArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <dev.pon:library>
+final class dev.pon.fractionalindexing/FractionalIndex : kotlin/Comparable<dev.pon.fractionalindexing/FractionalIndex> { // dev.pon.fractionalindexing/FractionalIndex|null[0]
+    final val bytes // dev.pon.fractionalindexing/FractionalIndex.bytes|{}bytes[0]
+        final fun <get-bytes>(): kotlin/UByteArray // dev.pon.fractionalindexing/FractionalIndex.bytes.<get-bytes>|<get-bytes>(){}[0]
+
+    final fun compareTo(dev.pon.fractionalindexing/FractionalIndex): kotlin/Int // dev.pon.fractionalindexing/FractionalIndex.compareTo|compareTo(dev.pon.fractionalindexing.FractionalIndex){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.pon.fractionalindexing/FractionalIndex.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.pon.fractionalindexing/FractionalIndex.hashCode|hashCode(){}[0]
+    final fun toBase64String(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toBase64String|toBase64String(){}[0]
+    final fun toHexString(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toHexString|toHexString(){}[0]
+    final fun toString(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toString|toString(){}[0]
+
+    final object Companion { // dev.pon.fractionalindexing/FractionalIndex.Companion|null[0]
+        final fun default(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.default|default(){}[0]
+        final fun fromBase64String(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBase64String|fromBase64String(kotlin.String){}[0]
+        final fun fromBytes(kotlin/UByteArray): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBytes|fromBytes(kotlin.UByteArray){}[0]
+        final fun fromHexString(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromHexString|fromHexString(kotlin.String){}[0]
+    }
+}
+
+final object dev.pon.fractionalindexing/FractionalIndexGenerator { // dev.pon.fractionalindexing/FractionalIndexGenerator|null[0]
+    final fun after(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.after|after(dev.pon.fractionalindexing.FractionalIndex){}[0]
+    final fun before(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.before|before(dev.pon.fractionalindexing.FractionalIndex){}[0]
+    final fun between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndexGenerator.between|between(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndexGenerator.BetweenStrategy){}[0]
+
+    final enum class BetweenStrategy : kotlin/Enum<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> { // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy|null[0]
+        enum entry MINIMAL // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.MINIMAL|null[0]
+        enum entry SPREAD // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.SPREAD|null[0]
+
+        final val entries // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.entries|#static{}entries[0]
+            final fun <get-entries>(): kotlin.enums/EnumEntries<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.entries.<get-entries>|<get-entries>#static(){}[0]
+
+        final fun valueOf(kotlin/String): dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.valueOf|valueOf#static(kotlin.String){}[0]
+        final fun values(): kotlin/Array<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.values|values#static(){}[0]
+    }
+}
+
+final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/after(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/after|after@dev.pon.fractionalindexing.FractionalIndex(){}[0]
+final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/before(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/before|before@dev.pon.fractionalindexing.FractionalIndex(){}[0]
+final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/between|between@dev.pon.fractionalindexing.FractionalIndex(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndexGenerator.BetweenStrategy){}[0]

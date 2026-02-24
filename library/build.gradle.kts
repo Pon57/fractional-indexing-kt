@@ -1,6 +1,7 @@
 import org.gradle.kotlin.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -14,6 +15,10 @@ group = "dev.pon"
 version = rootProject.file("VERSION").readText().trim()
 
 kotlin {
+    @OptIn(ExperimentalAbiValidation::class)
+    abiValidation {
+        enabled.set(true)
+    }
     explicitApi()
     jvmToolchain(libs.versions.jvmToolchain.get().toInt())
 
