@@ -14,7 +14,7 @@ class FractionalIndexExtensionsTest {
     }
 
     @Test
-    fun between_extensionSupportsUnorderedBounds() {
+    fun between_acceptsUnorderedBounds() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default()
 

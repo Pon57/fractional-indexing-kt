@@ -1,5 +1,6 @@
 public final class dev/pon/fractionalindexing/FractionalIndex : java/lang/Comparable {
 	public static final field Companion Ldev/pon/fractionalindexing/FractionalIndex$Companion;
+	public synthetic fun <init> ([BJ[BLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun compareTo (Ldev/pon/fractionalindexing/FractionalIndex;)I
 	public synthetic fun compareTo (Ljava/lang/Object;)I
 	public fun equals (Ljava/lang/Object;)Z
@@ -20,23 +21,13 @@ public final class dev/pon/fractionalindexing/FractionalIndex$Companion {
 public final class dev/pon/fractionalindexing/FractionalIndexExtensionsKt {
 	public static final fun after (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public static final fun before (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
-	public static final fun between (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;)Ljava/lang/Object;
-	public static synthetic fun between$default (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun between (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
 }
 
 public final class dev/pon/fractionalindexing/FractionalIndexGenerator {
 	public static final field INSTANCE Ldev/pon/fractionalindexing/FractionalIndexGenerator;
 	public final fun after (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun before (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
-	public final fun between-0E7RQCE (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;)Ljava/lang/Object;
-	public static synthetic fun between-0E7RQCE$default (Ldev/pon/fractionalindexing/FractionalIndexGenerator;Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;ILjava/lang/Object;)Ljava/lang/Object;
-}
-
-public final class dev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy : java/lang/Enum {
-	public static final field MINIMAL Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;
-	public static final field SPREAD Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;
-	public static fun values ()[Ldev/pon/fractionalindexing/FractionalIndexGenerator$BetweenStrategy;
+	public final fun between-gIAlu-s (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
 }
 

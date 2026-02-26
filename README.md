@@ -7,8 +7,8 @@
 
 # Fractional Indexing for Kotlin
 
-A Kotlin Multiplatform library for generating sortable keys for user-defined ordering (e.g., drag-and-drop lists) while minimizing full reindexing.  
-Keys are represented as variable-length byte sequences terminated by `0x80` and compared lexicographically. By generating new keys relative to nearby items (`before` / `after` / `between`), it allows inserting elements without rewriting existing keys in most cases.
+A Kotlin Multiplatform library that generates lexicographically sortable keys for application-defined ordering (e.g., drag-and-drop lists).  
+Each key is a canonical variable-length byte sequence ending in `0x80`. By generating new keys from neighboring items (`before` / `after` / `between`), most inserts can be handled without rewriting the entire list.
 
 ## Coordinates
 
@@ -29,13 +29,13 @@ dependencies {
 import dev.pon.fractionalindexing.FractionalIndex
 import dev.pon.fractionalindexing.FractionalIndexGenerator
 
-val center = FractionalIndex.default()      // 80
+val center = FractionalIndex.default()
 val left = FractionalIndexGenerator.before(center)
 val right = FractionalIndexGenerator.after(center)
 
 val mid = FractionalIndexGenerator
-    .between(left, right)                   // default strategy: SPREAD
-    .getOrThrow()                           // between returns Result<FractionalIndex>
+    .between(left, right)
+    .getOrThrow()
 
 check(left < mid && mid < right)
 ```
@@ -70,22 +70,16 @@ val hex = indexFromHex.toHexString()          // "7f80"
 val base64 = indexFromBase64.toBase64String() // "f4A="
 ```
 
+`fromBytes` / `fromHexString` / `fromBase64String` accept canonical library format only.
+Ending with `0x80` is necessary but not sufficient: the first byte is also a format tag.
+Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return failure.
+
 ## Notes
 
 - `FractionalIndex` values are lexicographically comparable (`Comparable<FractionalIndex>`).
 - All valid indexes end with the terminator byte `0x80`.
 - `FractionalIndexGenerator.between(...)` accepts bounds in either order.
-- `BetweenStrategy.SPREAD` is the default for `between`.
 - `toString()` is a debug representation. Use `toHexString()` or `toBase64String()` for serialization.
-
-## Between Strategies
-
-`between(left, right, strategy)` supports two strategies:
-
-- `SPREAD` (default): tends to distribute generated keys across available space to reduce key-length growth in common repeated-insert patterns.
-- `MINIMAL`: generates the shortest locally valid next key (compatible with classic minimal midpoint behavior).
-
-Use `SPREAD` for general-purpose usage. Choose `MINIMAL` when you need behavior closest to minimal midpoint generation.
 
 ## Public API Overview
 
@@ -98,10 +92,10 @@ Use `SPREAD` for general-purpose usage. Choose `MINIMAL` when you need behavior 
 - `FractionalIndex.toBase64String()`
 - `FractionalIndexGenerator.before(index)`
 - `FractionalIndexGenerator.after(index)`
-- `FractionalIndexGenerator.between(left, right, strategy)`
+- `FractionalIndexGenerator.between(left, right)`
 - `FractionalIndex.before()`
 - `FractionalIndex.after()`
-- `FractionalIndex.between(other, strategy)`
+- `FractionalIndex.between(other)`
 
 ## API Compatibility Check
 
