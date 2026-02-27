@@ -15,6 +15,7 @@ final class dev.pon.fractionalindexing/FractionalIndex : kotlin/Comparable<dev.p
     final fun hashCode(): kotlin/Int // dev.pon.fractionalindexing/FractionalIndex.hashCode|hashCode(){}[0]
     final fun toBase64String(kotlin.io.encoding/Base64 = ...): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toBase64String|toBase64String(kotlin.io.encoding.Base64){}[0]
     final fun toHexString(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toHexString|toHexString(){}[0]
+    final fun toSortableBase64String(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toSortableBase64String|toSortableBase64String(){}[0]
     final fun toString(): kotlin/String // dev.pon.fractionalindexing/FractionalIndex.toString|toString(){}[0]
 
     final object Companion { // dev.pon.fractionalindexing/FractionalIndex.Companion|null[0]
@@ -22,6 +23,7 @@ final class dev.pon.fractionalindexing/FractionalIndex : kotlin/Comparable<dev.p
         final fun fromBase64String(kotlin/String, kotlin.io.encoding/Base64 = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBase64String|fromBase64String(kotlin.String;kotlin.io.encoding.Base64){}[0]
         final fun fromBytes(kotlin/UByteArray): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBytes|fromBytes(kotlin.UByteArray){}[0]
         final fun fromHexString(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromHexString|fromHexString(kotlin.String){}[0]
+        final fun fromSortableBase64String(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromSortableBase64String|fromSortableBase64String(kotlin.String){}[0]
     }
 }
 
