@@ -7,7 +7,7 @@
 
 # Fractional Indexing for Kotlin
 
-A Kotlin Multiplatform library that generates lexicographically sortable keys for application-defined ordering (e.g., drag-and-drop lists).  
+A Kotlin Multiplatform library that generates lexicographically sortable keys for application-defined ordering (e.g., drag-and-drop lists).
 Each key is a canonical variable-length byte sequence ending in `0x80`. By generating new keys from neighboring items (`before` / `after` / `between`), most inserts can be handled without rewriting the entire list.
 
 ## Coordinates
@@ -45,7 +45,7 @@ check(left < mid && mid < right)
 - A Kotlin Multiplatform example module is available at `example/`.
 - Run the drag-and-drop list demo with `./gradlew :example:jvmRun`.
 
-https://github.com/user-attachments/assets/dab1c510-ce2c-4c63-9a29-3f67b79e461c
+https://github.com/user-attachments/assets/6060a329-eb4c-44a3-8625-1ab7e67779db
 
 ## Extension API
 
