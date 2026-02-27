@@ -24,22 +24,6 @@ internal object FractionalIndexGeneratorCore {
     private val TERMINATOR_INT = TERMINATOR.toInt()
     private val UBYTE_MAX_INT = UByte.MAX_VALUE.toInt()
 
-    private data class CandidateScore(
-        val projectedNextLength: Int,
-        val currentLength: Int,
-        val majorDistancePenalty: Int,
-        val boundaryPressure: Int,
-    ) : Comparable<CandidateScore> {
-        override fun compareTo(other: CandidateScore): Int =
-            compareValuesBy(
-                this, other,
-                { it.projectedNextLength },
-                { it.currentLength },
-                { it.majorDistancePenalty },
-                { it.boundaryPressure },
-            )
-    }
-
     fun before(index: FractionalIndex): FractionalIndex =
         edgeInsert(index, ::beforeMinor, boundaryMajor = MIN_MAJOR, fallbackDelta = -1L, overflowMessage = "major underflow")
 
@@ -89,11 +73,9 @@ internal object FractionalIndexGeneratorCore {
             val comparison = first.compareTo(second)
             require(comparison != 0) { DISTINCT_BOUNDS_MESSAGE }
 
-            val (left, right) = if (comparison < 0) {
-                first to second
-            } else {
-                second to first
-            }
+            val left: FractionalIndex
+            val right: FractionalIndex
+            if (comparison < 0) { left = first; right = second } else { left = second; right = first }
 
             when {
                 hasNonAdjacentMajorGap(left.major, right.major) -> {
@@ -229,18 +211,12 @@ internal object FractionalIndexGeneratorCore {
             return leftPressure < rightPressure
         }
 
-        val leftScore = scoreBetweenCandidate(
+        return compareCandidateScores(
             leftMajor = left.major, leftMinor = left.minor,
             rightMajor = right.major, rightMinor = right.minor,
-            candidateMajor = left.major, candidateMinor = leftMinorCandidate,
-        )
-        val rightScore = scoreBetweenCandidate(
-            leftMajor = left.major, leftMinor = left.minor,
-            rightMajor = right.major, rightMinor = right.minor,
-            candidateMajor = right.major, candidateMinor = rightMinorCandidate,
-        )
-
-        return leftScore <= rightScore
+            candidateAMajor = left.major, candidateAMinor = leftMinorCandidate,
+            candidateBMajor = right.major, candidateBMinor = rightMinorCandidate,
+        ) <= 0
     }
 
     private fun adjacentCandidate(
@@ -278,27 +254,30 @@ internal object FractionalIndexGeneratorCore {
         minimal: UByteArray,
         spread: UByteArray,
     ): UByteArray {
-        val minimalScore = scoreBetweenCandidate(
+        val minimalProjected = candidateProjectedNextLength(
             leftMajor = left.major, leftMinor = left.minor,
             rightMajor = right.major, rightMinor = right.minor,
             candidateMajor = candidateMajor, candidateMinor = minimal,
         )
-        val spreadScore = scoreBetweenCandidate(
+        val spreadProjected = candidateProjectedNextLength(
             leftMajor = left.major, leftMinor = left.minor,
             rightMajor = right.major, rightMinor = right.minor,
             candidateMajor = candidateMajor, candidateMinor = spread,
         )
 
-        if (spreadScore.projectedNextLength < minimalScore.projectedNextLength) {
+        if (spreadProjected < minimalProjected) {
             return spread
         }
-        if (spreadScore.projectedNextLength > minimalScore.projectedNextLength) {
+        if (spreadProjected > minimalProjected) {
             return minimal
         }
-        if (spreadScore.currentLength < minimalScore.currentLength) {
+
+        val minimalCurrentLength = FractionalIndex.encodedLength(candidateMajor, minimal.size)
+        val spreadCurrentLength = FractionalIndex.encodedLength(candidateMajor, spread.size)
+        if (spreadCurrentLength < minimalCurrentLength) {
             return spread
         }
-        if (spreadScore.currentLength > minimalScore.currentLength) {
+        if (spreadCurrentLength > minimalCurrentLength) {
             return minimal
         }
 
@@ -471,18 +450,13 @@ internal object FractionalIndexGeneratorCore {
             return if (leftTailLength < rightTailLength) leftCandidate else rightCandidate
         }
 
-        val leftScore = scoreBetweenCandidate(
+        val cmp = compareCandidateScores(
             leftMajor = major, leftMinor = left,
             rightMajor = major, rightMinor = right,
-            candidateMajor = major, candidateMinor = leftCandidate,
+            candidateAMajor = major, candidateAMinor = leftCandidate,
+            candidateBMajor = major, candidateBMinor = rightCandidate,
         )
-        val rightScore = scoreBetweenCandidate(
-            leftMajor = major, leftMinor = left,
-            rightMajor = major, rightMinor = right,
-            candidateMajor = major, candidateMinor = rightCandidate,
-        )
-
-        return if (leftScore <= rightScore) leftCandidate else rightCandidate
+        return if (cmp <= 0) leftCandidate else rightCandidate
     }
 
     private fun candidatePressure(
@@ -494,15 +468,11 @@ internal object FractionalIndexGeneratorCore {
         return abs(candidate[index].toInt() - TERMINATOR_INT)
     }
 
-    private fun scoreBetweenCandidate(
-        leftMajor: Long,
-        leftMinor: UByteArray,
-        rightMajor: Long,
-        rightMinor: UByteArray,
-        candidateMajor: Long,
-        candidateMinor: UByteArray,
-    ): CandidateScore {
-        val currentLength = FractionalIndex.encodedLength(candidateMajor, candidateMinor.size)
+    private fun candidateProjectedNextLength(
+        leftMajor: Long, leftMinor: UByteArray,
+        rightMajor: Long, rightMinor: UByteArray,
+        candidateMajor: Long, candidateMinor: UByteArray,
+    ): Int {
         val nextLeftLength = estimateMinimalBetweenLength(
             leftMajor = leftMajor,
             leftMinor = leftMinor,
@@ -515,14 +485,24 @@ internal object FractionalIndexGeneratorCore {
             rightMajor = rightMajor,
             rightMinor = rightMinor,
         )
-        val projectedNextLength = maxOf(nextLeftLength, nextRightLength)
+        return maxOf(nextLeftLength, nextRightLength)
+    }
 
-        return CandidateScore(
-            projectedNextLength = projectedNextLength,
-            currentLength = currentLength,
-            majorDistancePenalty = majorDistancePenalty(candidateMajor),
-            boundaryPressure = boundaryPressure(candidateMinor),
-        )
+    private fun compareCandidateScores(
+        leftMajor: Long, leftMinor: UByteArray,
+        rightMajor: Long, rightMinor: UByteArray,
+        candidateAMajor: Long, candidateAMinor: UByteArray,
+        candidateBMajor: Long, candidateBMinor: UByteArray,
+    ): Int {
+        var cmp = candidateProjectedNextLength(leftMajor, leftMinor, rightMajor, rightMinor, candidateAMajor, candidateAMinor)
+            .compareTo(candidateProjectedNextLength(leftMajor, leftMinor, rightMajor, rightMinor, candidateBMajor, candidateBMinor))
+        if (cmp != 0) return cmp
+        cmp = FractionalIndex.encodedLength(candidateAMajor, candidateAMinor.size)
+            .compareTo(FractionalIndex.encodedLength(candidateBMajor, candidateBMinor.size))
+        if (cmp != 0) return cmp
+        cmp = majorDistancePenalty(candidateAMajor).compareTo(majorDistancePenalty(candidateBMajor))
+        if (cmp != 0) return cmp
+        return boundaryPressure(candidateAMinor).compareTo(boundaryPressure(candidateBMinor))
     }
 
     private fun estimateMinimalBetweenLength(
@@ -572,13 +552,13 @@ internal object FractionalIndexGeneratorCore {
             }
 
             else -> {
-                val minor = minimalBetweenMinor(
+                val minorSize = minimalBetweenMinorSize(
                     left = leftMinor,
                     right = rightMinor,
                 )
                 FractionalIndex.encodedLength(
                     major = leftMajor,
-                    minorSize = minor.size,
+                    minorSize = minorSize,
                 )
             }
         }
@@ -649,6 +629,32 @@ internal object FractionalIndexGeneratorCore {
         )
     }
 
+    private fun minimalBetweenMinorSize(
+        left: UByteArray,
+        right: UByteArray,
+    ): Int {
+        val shorterLength = minOf(left.size, right.size) - 1
+
+        for (i in 0 until shorterLength) {
+            val leftByte = left[i].toInt()
+            val rightByte = right[i].toInt()
+
+            if (leftByte < rightByte - 1) {
+                return i + 2
+            }
+
+            if (leftByte == rightByte - 1) {
+                return spliceAfterMinimalSize(left, i + 1)
+            }
+
+            if (leftByte > rightByte) {
+                throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
+            }
+        }
+
+        return resolveLengthBoundarySizeOnly(left, right, shorterLength + 1)
+    }
+
     private fun resolveLengthBoundary(
         left: UByteArray,
         right: UByteArray,
@@ -669,6 +675,30 @@ internal object FractionalIndexGeneratorCore {
                     throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
                 }
                 spliceAfter(left, split, split)
+            }
+
+            else -> throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
+        }
+    }
+
+    private fun resolveLengthBoundarySizeOnly(
+        left: UByteArray,
+        right: UByteArray,
+        split: Int,
+    ): Int {
+        return when {
+            left.size < right.size -> {
+                if (right[split - 1] < TERMINATOR) {
+                    throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
+                }
+                spliceBeforeMinimalSize(right, split)
+            }
+
+            left.size > right.size -> {
+                if (left[split - 1] >= TERMINATOR) {
+                    throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
+                }
+                spliceAfterMinimalSize(left, split)
             }
 
             else -> throw IllegalArgumentException(INVALID_BOUNDS_MESSAGE)
@@ -722,6 +752,18 @@ internal object FractionalIndexGeneratorCore {
         error("Invalid fractional index: missing valid decrement point")
     }
 
+    private fun spliceBeforeMinimalSize(
+        source: UByteArray,
+        tailStart: Int,
+    ): Int {
+        for (index in tailStart until source.size) {
+            val current = source[index].toInt()
+            if (current > TERMINATOR_INT) return index + 1
+            if (current > 0) return index + 2
+        }
+        error("Invalid fractional index: missing valid decrement point")
+    }
+
     private fun spliceAfterMinimal(
         source: UByteArray,
         prefixEndExclusive: Int,
@@ -751,6 +793,18 @@ internal object FractionalIndexGeneratorCore {
             }
         }
 
+        error("Invalid fractional index: missing valid increment point")
+    }
+
+    private fun spliceAfterMinimalSize(
+        source: UByteArray,
+        tailStart: Int,
+    ): Int {
+        for (index in tailStart until source.size) {
+            val current = source[index].toInt()
+            if (current < TERMINATOR_INT) return index + 1
+            if (current < UBYTE_MAX_INT) return index + 2
+        }
         error("Invalid fractional index: missing valid increment point")
     }
 
