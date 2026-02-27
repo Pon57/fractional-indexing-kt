@@ -327,4 +327,54 @@ class FractionalIndexTest {
         assertEquals(index, unpadded)
     }
 
+    @Test
+    fun toSortableBase64String_roundTripsWithFromSortableBase64String() {
+        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val encoded = original.toSortableBase64String()
+        val decoded = FractionalIndex.fromSortableBase64String(encoded).getOrThrow()
+
+        assertEquals(original, decoded)
+        assertEquals("VMy-", encoded)
+    }
+
+    @Test
+    fun fromSortableBase64String_rejectsNonCanonicalFormats() {
+        // Non-canonical raw bytes encoded via sortable base64:
+        // "-7-" = 0x00, 0x80 → non-canonical (first byte 0x00 is outside compact range)
+        // "zs-" = 0xFF, 0x80 → non-canonical (first byte 0xFF is outside compact range for major=0)
+        // "-N-" = 0x01, 0x80 → non-canonical
+        val nonCanonical = listOf("-7-", "zs-", "-N-")
+
+        for (str in nonCanonical) {
+            assertTrue(
+                FractionalIndex.fromSortableBase64String(str).isFailure,
+                "Expected non-canonical sortable base64 to fail: $str",
+            )
+        }
+    }
+
+    @Test
+    fun fromSortableBase64String_rejectsMissingTerminator() {
+        // "VMw" = 0x81, 0x7F → no terminator byte (0x80)
+        assertTrue(FractionalIndex.fromSortableBase64String("VMw").isFailure)
+    }
+
+    @Test
+    fun sortableBase64String_preservesSortOrder() {
+        val indices = listOf(
+            FractionalIndex.fromBytes(ubyteArrayOf(0x40u, 0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0x60u, 0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u, 0x80u)).getOrThrow(),
+            FractionalIndex.fromBytes(ubyteArrayOf(0xBFu, 0x80u)).getOrThrow(),
+        )
+
+        val sortedByIndex = indices.sorted()
+        val sortedByString = indices.sortedBy { it.toSortableBase64String() }
+
+        assertEquals(sortedByIndex, sortedByString)
+    }
+
 }

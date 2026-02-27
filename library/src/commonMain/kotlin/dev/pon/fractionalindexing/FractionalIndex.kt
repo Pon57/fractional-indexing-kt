@@ -6,7 +6,7 @@ import kotlin.io.encoding.Base64
  * An opaque key that supports arbitrary insertions between any two existing keys
  * while preserving a total sort order via unsigned-lexicographic byte comparison.
  *
- * Create instances with [default], [fromBytes], [fromHexString], or [fromBase64String].
+ * Create instances with [default], [fromBytes], [fromHexString], [fromBase64String], or [fromSortableBase64String].
  * Generate new keys with [FractionalIndexGenerator] (or the [before] / [after] / [between] extensions).
  */
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -28,16 +28,27 @@ public class FractionalIndex private constructor(
     public fun toHexString(): String = unsafeRawBytes.toHexString()
 
     /**
+     * Encodes this index as a sortable Base64 string.
+     *
+     * The sortable Base64 representation preserves the sort order of [FractionalIndex]:
+     * if `a < b`, then `a.toSortableBase64String() < b.toSortableBase64String()` lexicographically.
+     *
+     * This is a library-specific encoding, not a widely-adopted standard.
+     * For the encoding specification, see [SortableBase64].
+     */
+    public fun toSortableBase64String(): String = SortableBase64.encode(unsafeRawBytes)
+
+    /**
      * Encodes this index as a Base64 string.
      *
      * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
-     * Use [toHexString] or [bytes] when lexicographic ordering must be maintained.
+     * Use [toHexString], [toSortableBase64String], or [bytes] when lexicographic ordering must be maintained.
      *
      * @param codec the [Base64] instance to use (e.g. `Base64.UrlSafe`).
      */
     public fun toBase64String(codec: Base64 = Base64): String = codec.encode(unsafeRawBytes.asByteArray())
 
-    /** Debug-friendly representation. Use [toHexString] or [toBase64String] for wire format. */
+    /** Debug-friendly representation. Use [toHexString], [toSortableBase64String], or [toBase64String] for wire format. */
     override fun toString(): String = "FractionalIndex(${unsafeRawBytes.contentToString()})"
 
     override fun compareTo(other: FractionalIndex): Int {
@@ -120,10 +131,23 @@ public class FractionalIndex private constructor(
         }
 
         /**
+         * Decodes a [FractionalIndex] from a sortable Base64 string.
+         *
+         * The sortable Base64 representation preserves sort order, so it is safe to use
+         * as a sortable wire format.
+         *
+         * This is a library-specific encoding, not a widely-adopted standard.
+         * For the encoding specification, see [SortableBase64].
+         */
+        public fun fromSortableBase64String(str: String): Result<FractionalIndex> = runCatching {
+            fromRawBytes(SortableBase64.decode(str))
+        }
+
+        /**
          * Decodes a [FractionalIndex] from a Base64 string.
          *
          * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
-         * Use [fromHexString] or [fromBytes] when lexicographic ordering must be maintained.
+         * Use [fromHexString], [fromSortableBase64String], or [fromBytes] when lexicographic ordering must be maintained.
          *
          * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
