@@ -57,6 +57,26 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromBase64String_rejectsNonCanonicalFormats() {
+        // Base64 for non-canonical raw bytes:
+        // AIA=  -> 00 80
+        // /4A=  -> ff 80
+        // AYA=  -> 01 80
+        val nonCanonical = listOf(
+            "AIA=",
+            "/4A=",
+            "AYA=",
+        )
+
+        for (base64 in nonCanonical) {
+            assertTrue(
+                FractionalIndex.fromBase64String(base64).isFailure,
+                "Expected non-canonical base64 to fail: $base64",
+            )
+        }
+    }
+
+    @Test
     fun fromHexString_parsesValidHex_caseInsensitive() {
         val result = FractionalIndex.fromHexString("817F80")
 
@@ -93,6 +113,22 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromHexString_rejectsNonCanonicalFormats() {
+        val nonCanonical = listOf(
+            "0080",
+            "ff80",
+            "0180",
+        )
+
+        for (hex in nonCanonical) {
+            assertTrue(
+                FractionalIndex.fromHexString(hex).isFailure,
+                "Expected non-canonical hex to fail: $hex",
+            )
+        }
+    }
+
+    @Test
     fun fromBytes_parsesValidBytes() {
         val result = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u))
 
@@ -112,6 +148,22 @@ class FractionalIndexTest {
         val result = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu))
 
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun fromBytes_rejectsNonCanonicalFormats() {
+        val nonCanonical = listOf(
+            ubyteArrayOf(0x00u, 0x80u),
+            ubyteArrayOf(0xffu, 0x80u),
+            ubyteArrayOf(0x01u, 0x80u),
+        )
+
+        for (bytes in nonCanonical) {
+            assertTrue(
+                FractionalIndex.fromBytes(bytes).isFailure,
+                "Expected non-canonical bytes to fail: ${bytes.toHexString()}",
+            )
+        }
     }
 
     @Test
@@ -155,8 +207,8 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_comparesUnsignedByteValues() {
-        val low = FractionalIndex.fromBytes(ubyteArrayOf(0x00u, 0x80u)).getOrThrow()
-        val high = FractionalIndex.fromBytes(ubyteArrayOf(0xffu, 0x80u)).getOrThrow()
+        val low = FractionalIndex.fromBytes(ubyteArrayOf(0x40u, 0x80u)).getOrThrow()
+        val high = FractionalIndex.fromBytes(ubyteArrayOf(0xbfu, 0x80u)).getOrThrow()
 
         assertTrue(low < high)
         assertTrue(high > low)

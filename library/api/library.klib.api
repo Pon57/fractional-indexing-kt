@@ -28,20 +28,9 @@ final class dev.pon.fractionalindexing/FractionalIndex : kotlin/Comparable<dev.p
 final object dev.pon.fractionalindexing/FractionalIndexGenerator { // dev.pon.fractionalindexing/FractionalIndexGenerator|null[0]
     final fun after(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.after|after(dev.pon.fractionalindexing.FractionalIndex){}[0]
     final fun before(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.before|before(dev.pon.fractionalindexing.FractionalIndex){}[0]
-    final fun between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndexGenerator.between|between(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndexGenerator.BetweenStrategy){}[0]
-
-    final enum class BetweenStrategy : kotlin/Enum<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> { // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy|null[0]
-        enum entry MINIMAL // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.MINIMAL|null[0]
-        enum entry SPREAD // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.SPREAD|null[0]
-
-        final val entries // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.entries|#static{}entries[0]
-            final fun <get-entries>(): kotlin.enums/EnumEntries<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.entries.<get-entries>|<get-entries>#static(){}[0]
-
-        final fun valueOf(kotlin/String): dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.valueOf|valueOf#static(kotlin.String){}[0]
-        final fun values(): kotlin/Array<dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy> // dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy.values|values#static(){}[0]
-    }
+    final fun between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndex): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndexGenerator.between|between(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndex){}[0]
 }
 
 final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/after(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/after|after@dev.pon.fractionalindexing.FractionalIndex(){}[0]
 final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/before(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/before|before@dev.pon.fractionalindexing.FractionalIndex(){}[0]
-final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndexGenerator.BetweenStrategy = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/between|between@dev.pon.fractionalindexing.FractionalIndex(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndexGenerator.BetweenStrategy){}[0]
+final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/between(dev.pon.fractionalindexing/FractionalIndex): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/between|between@dev.pon.fractionalindexing.FractionalIndex(dev.pon.fractionalindexing.FractionalIndex){}[0]
