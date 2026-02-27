@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing
 
+import kotlin.io.encoding.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -262,4 +263,68 @@ class FractionalIndexTest {
 
         assertEquals("gYA=", index.toBase64String())
     }
+
+    @Test
+    fun toBase64String_withUrlSafe_usesUrlSafeAlphabet() {
+        // 0x81, 0x7f, 0x80 encodes to "gX+A" in standard, "gX-A" in URL-safe
+        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+
+        assertEquals("gX+A", index.toBase64String())
+        assertEquals("gX-A", index.toBase64String(Base64.UrlSafe))
+    }
+
+    @Test
+    fun toBase64String_withUrlSafe_roundTrips() {
+        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val encoded = original.toBase64String(Base64.UrlSafe)
+        val decoded = FractionalIndex.fromBase64String(encoded, Base64.UrlSafe).getOrThrow()
+
+        assertEquals(original, decoded)
+    }
+
+    @Test
+    fun toBase64String_withPaddingAbsent_roundTrips() {
+        val noPad = Base64.Default.withPadding(Base64.PaddingOption.ABSENT)
+        val index = FractionalIndex.default()
+
+        val encoded = index.toBase64String(noPad)
+        assertEquals("gA", encoded) // "gA==" without padding
+
+        val decoded = FractionalIndex.fromBase64String(encoded, noPad).getOrThrow()
+        assertEquals(index, decoded)
+    }
+
+    @Test
+    fun toBase64String_withUrlSafeAndPaddingAbsent_roundTrips() {
+        val codec = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
+        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+
+        val encoded = index.toBase64String(codec)
+        assertEquals("gX-A", encoded)
+
+        val decoded = FractionalIndex.fromBase64String(encoded, codec).getOrThrow()
+        assertEquals(index, decoded)
+    }
+
+    @Test
+    fun fromBase64String_rejectsCrossCodecMismatch() {
+        // Standard encodes as "gX+A"; decoding with UrlSafe should fail because '+' is invalid in URL-safe
+        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val standardEncoded = index.toBase64String()
+
+        assertTrue(FractionalIndex.fromBase64String(standardEncoded, Base64.UrlSafe).isFailure)
+    }
+
+    @Test
+    fun fromBase64String_withPresentOptional_acceptsPaddedAndUnpadded() {
+        val codec = Base64.Default.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+        val index = FractionalIndex.default()
+
+        val padded = FractionalIndex.fromBase64String("gA==", codec).getOrThrow()
+        val unpadded = FractionalIndex.fromBase64String("gA", codec).getOrThrow()
+
+        assertEquals(index, padded)
+        assertEquals(index, unpadded)
+    }
+
 }

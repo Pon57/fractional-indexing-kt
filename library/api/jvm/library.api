@@ -6,14 +6,16 @@ public final class dev/pon/fractionalindexing/FractionalIndex : java/lang/Compar
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBytes-TcUX1vc ()[B
 	public fun hashCode ()I
-	public final fun toBase64String ()Ljava/lang/String;
+	public final fun toBase64String (Lkotlin/io/encoding/Base64;)Ljava/lang/String;
+	public static synthetic fun toBase64String$default (Ldev/pon/fractionalindexing/FractionalIndex;Lkotlin/io/encoding/Base64;ILjava/lang/Object;)Ljava/lang/String;
 	public final fun toHexString ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/pon/fractionalindexing/FractionalIndex$Companion {
 	public final fun default ()Ldev/pon/fractionalindexing/FractionalIndex;
-	public final fun fromBase64String-IoAF18A (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun fromBase64String-gIAlu-s (Ljava/lang/String;Lkotlin/io/encoding/Base64;)Ljava/lang/Object;
+	public static synthetic fun fromBase64String-gIAlu-s$default (Ldev/pon/fractionalindexing/FractionalIndex$Companion;Ljava/lang/String;Lkotlin/io/encoding/Base64;ILjava/lang/Object;)Ljava/lang/Object;
 	public final fun fromBytes-fvdVUkk ([B)Ljava/lang/Object;
 	public final fun fromHexString-IoAF18A (Ljava/lang/String;)Ljava/lang/Object;
 }

@@ -32,8 +32,10 @@ public class FractionalIndex private constructor(
      *
      * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
      * Use [toHexString] or [bytes] when lexicographic ordering must be maintained.
+     *
+     * @param codec the [Base64] instance to use (e.g. `Base64.UrlSafe`).
      */
-    public fun toBase64String(): String = Base64.encode(unsafeRawBytes.asByteArray())
+    public fun toBase64String(codec: Base64 = Base64): String = codec.encode(unsafeRawBytes.asByteArray())
 
     /** Debug-friendly representation. Use [toHexString] or [toBase64String] for wire format. */
     override fun toString(): String = "FractionalIndex(${unsafeRawBytes.contentToString()})"
@@ -122,9 +124,11 @@ public class FractionalIndex private constructor(
          *
          * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
          * Use [fromHexString] or [fromBytes] when lexicographic ordering must be maintained.
+         *
+         * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
-        public fun fromBase64String(base64: String): Result<FractionalIndex> = runCatching {
-            fromRawBytes(Base64.decode(base64).asUByteArray())
+        public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> = runCatching {
+            fromRawBytes(codec.decode(base64).asUByteArray())
         }
 
         internal fun fromMajorMinor(major: Long, minor: UByteArray): FractionalIndex {
