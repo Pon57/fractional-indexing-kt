@@ -53,6 +53,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
-      - uses: Songmu/tagpr@da82ed6743aec90049892070edd5561335904a9e # v1.17.0
+      - uses: Songmu/tagpr@b3fb89424646b06c8aa460f50307c60b6a541425 # v1.17.1
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
