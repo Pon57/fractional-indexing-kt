@@ -10,20 +10,22 @@ jobs:
   tagpr:
     runs-on: ubuntu-24.04
     if: >
-      github.event_name == 'push'
-      || (
-        github.event_name == 'pull_request'
-        && github.event.sender.type != 'Bot'
-        && github.event.action == 'labeled'
-        && contains(fromJSON('["major","minor"]'), github.event.label.name)
-        && github.event.pull_request.merged == true
-      )
-      || (
-        github.event_name == 'pull_request'
-        && github.event.sender.type != 'Bot'
-        && contains(fromJSON('["tagpr:major","tagpr:minor"]'), github.event.label.name)
-        && startsWith(github.event.pull_request.head.ref, 'tagpr-from-')
-      )
+      ${{
+        github.event_name == 'push'
+        || (
+          github.event_name == 'pull_request'
+          && github.event.sender.type != 'Bot'
+          && github.event.action == 'labeled'
+          && contains(fromJSON('["major","minor"]'), github.event.label.name)
+          && github.event.pull_request.merged == true
+        )
+        || (
+          github.event_name == 'pull_request'
+          && github.event.sender.type != 'Bot'
+          && contains(fromJSON('["tagpr:major","tagpr:minor"]'), github.event.label.name)
+          && startsWith(github.event.pull_request.head.ref, 'tagpr-from-')
+        )
+      }}
     concurrency:
       group: ${{ github.workflow }}
       cancel-in-progress: true
