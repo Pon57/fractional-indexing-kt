@@ -1,10 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/dev.pon/fractional-indexing?label=Maven%20Central)](https://central.sonatype.com/artifact/dev.pon/fractional-indexing)
 
-> [!WARNING]
-> This library is currently in `0.x`.
-> Until `1.0.0`, public APIs and behavior may change, including breaking changes.
-> Please pin versions and review release notes before upgrading.
-
 # Fractional Indexing for Kotlin
 
 A Kotlin Multiplatform library that generates lexicographically sortable keys for application-defined ordering (e.g., drag-and-drop lists).
@@ -102,6 +97,13 @@ Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return fail
 - `FractionalIndex.before()`
 - `FractionalIndex.after()`
 - `FractionalIndex.between(other)`
+
+## Versioning
+
+This library follows [Semantic Versioning](https://semver.org/).  
+Changes to the key format or generation algorithm that **break compatibility with previously generated keys** are treated as breaking changes (major version bump).
+
+**Note:** Upgrading to a new major version may require migrating your existing database records to maintain the correct sort order.
 
 ## API Compatibility Check
 
