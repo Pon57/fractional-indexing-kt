@@ -110,6 +110,14 @@ Changes to the key format or generation algorithm that **break compatibility wit
 - CI runs `./gradlew :library:checkLegacyAbi --no-configuration-cache` to detect binary-incompatible public API changes.
 - When intentionally changing public API, regenerate the baseline with `./gradlew :library:updateLegacyAbi --no-configuration-cache` and commit the updated ABI dump files under `library/api/`.
 
+## Performance Regression Check
+
+- Relative performance regression checks run in regular JVM tests.
+- Strict absolute-budget checks can be run locally with:
+  - `./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest -DfractionalIndexing.perf.strict=true --rerun-tasks --no-configuration-cache`
+- CI also provides a dedicated strict workflow (`.github/workflows/perf-strict.yml`) for scheduled/manual verification.
+- The strict workflow additionally publishes non-gating memory observations (peak/retained used heap) for trend tracking.
+
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).

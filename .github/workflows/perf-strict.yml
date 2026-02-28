@@ -1,0 +1,123 @@
+name: Strict Performance Regression
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance-strict:
+    name: "jvm strict performance regression"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: zulu
+          java-version: 21
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+
+      - name: Run strict performance regression test
+        id: run_perf
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest -DfractionalIndexing.perf.strict=true --rerun-tasks --no-configuration-cache | tee perf-strict.log
+
+      - name: Publish perf summary
+        if: always()
+        run: |
+          status="${{ steps.run_perf.outcome }}"
+          profile_line="$(
+            grep -Rho -m1 'PERF_PROFILE [^<]*' perf-strict.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          memory_line="$(
+            grep -Rho -m1 'PERF_MEMORY [^<]*' perf-strict.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          
+          {
+            echo "## Strict Performance Regression"
+            if [ "$status" = "success" ]; then
+              echo "- Result: ✅ Passed"
+            else
+              echo "- Result: ❌ Failed"
+            fi
+            echo ""
+            if [ -n "$profile_line" ]; then
+              echo "### Profile"
+              echo '```text'
+              echo "$profile_line"
+              echo '```'
+              append="$(echo "$profile_line" | sed -E 's/.*append_ns_per_op=([0-9.]+).*/\1/')"
+              adjacent="$(echo "$profile_line" | sed -E 's/.*adjacent_ns_per_op=([0-9.]+).*/\1/')"
+              random_insert="$(echo "$profile_line" | sed -E 's/.*random_insert_ns_per_op=([0-9.]+).*/\1/')"
+              edge_move="$(echo "$profile_line" | sed -E 's/.*edge_move_ns_per_op=([0-9.]+).*/\1/')"
+              echo ""
+              echo "### Absolute Metrics (ns/op)"
+              echo "| Metric | Measured | Budget |"
+              echo "|---|---:|---:|"
+              echo "| append | $append | 130.0 |"
+              echo "| adjacent-between | $adjacent | 4200.0 |"
+              echo "| random-insert | $random_insert | 760.0 |"
+              echo "| edge-to-inner-move | $edge_move | 1000.0 |"
+            else
+              echo "- PERF_PROFILE line not found in log."
+            fi
+            echo ""
+            if [ -n "$memory_line" ]; then
+              echo "### Memory Observation (non-gating)"
+              echo '```text'
+              echo "$memory_line"
+              echo '```'
+              baseline="$(echo "$memory_line" | sed -E 's/.*baseline_used_bytes=([0-9]+).*/\1/')"
+              ri_peak="$(echo "$memory_line" | sed -E 's/.*random_insert_peak_bytes=([0-9]+).*/\1/')"
+              ri_retained="$(echo "$memory_line" | sed -E 's/.*random_insert_retained_bytes=([0-9]+).*/\1/')"
+              move_peak="$(echo "$memory_line" | sed -E 's/.*edge_move_peak_bytes=([0-9]+).*/\1/')"
+              move_retained="$(echo "$memory_line" | sed -E 's/.*edge_move_retained_bytes=([0-9]+).*/\1/')"
+              echo ""
+              echo "| Metric | Used bytes | Delta from baseline |"
+              echo "|---|---:|---:|"
+              echo "| baseline | $baseline | 0 |"
+              echo "| random-insert peak | $ri_peak | $((ri_peak - baseline)) |"
+              echo "| random-insert retained | $ri_retained | $((ri_retained - baseline)) |"
+              echo "| edge-move peak | $move_peak | $((move_peak - baseline)) |"
+              echo "| edge-move retained | $move_retained | $((move_retained - baseline)) |"
+            else
+              echo "### Memory Observation (non-gating)"
+              echo "- PERF_MEMORY line not found in log."
+            fi
+            echo ""
+            echo "<details><summary>Log tail</summary>"
+            echo ""
+            echo '```text'
+            tail -n 80 perf-strict.log || true
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload strict perf artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-strict-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            perf-strict.log
+            library/build/test-results/jvmTest/*.xml
+            library/build/reports/tests/jvmTest/**
+          if-no-files-found: warn
+
+      - name: Fail on strict perf regression
+        if: steps.run_perf.outcome != 'success'
+        run: exit 1
