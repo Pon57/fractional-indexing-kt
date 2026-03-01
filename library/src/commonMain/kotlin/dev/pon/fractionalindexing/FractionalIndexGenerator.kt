@@ -1,5 +1,7 @@
 package dev.pon.fractionalindexing
 
+import dev.pon.fractionalindexing.internal.FractionalIndexGeneratorCore
+
 /**
  * Generates new [FractionalIndex] keys relative to existing ones.
  *
