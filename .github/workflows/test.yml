@@ -70,4 +70,35 @@ jobs:
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: Run test target
-        run: ./gradlew ${{ matrix.target }} --no-configuration-cache
+        id: run_tests
+        run: |
+          set -o pipefail
+          if [ "${{ matrix.target }}" = "jvmTest" ]; then
+            ./gradlew ${{ matrix.target }} --no-configuration-cache | tee jvm-test.log
+          else
+            ./gradlew ${{ matrix.target }} --no-configuration-cache
+          fi
+
+      - name: Publish jvm perf profile summary
+        if: ${{ always() && matrix.target == 'jvmTest' }}
+        run: |
+          profile_line="$(
+            grep -Rho -m1 'PERF_PROFILE [^<]*' jvm-test.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+
+          {
+            echo "## JVM Performance Profile (relative)"
+            if [ "${{ steps.run_tests.outcome }}" = "success" ]; then
+              echo "- Test step result: ✅ Passed"
+            else
+              echo "- Test step result: ❌ Failed"
+            fi
+            echo ""
+            if [ -n "$profile_line" ]; then
+              echo '```text'
+              echo "$profile_line"
+              echo '```'
+            else
+              echo "- PERF_PROFILE line not found."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -26,9 +26,13 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(libs.versions.jvmTarget.get()))
         }
+        val perfStrict = providers.systemProperty("fractionalIndexing.perf.strict")
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
+                perfStrict.orNull?.let { strict ->
+                    systemProperty("fractionalIndexing.perf.strict", strict)
+                }
             }
         }
     }
@@ -67,6 +71,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotest.framework.engine)
             implementation(libs.kotest.property)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }
