@@ -3,6 +3,7 @@ package dev.pon.fractionalindexing
 import kotlin.io.encoding.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -107,6 +108,19 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromHexStringOrThrow_parsesValidHex() {
+        val index = FractionalIndex.fromHexStringOrThrow("817f80")
+        assertEquals("817f80", index.toHexString())
+    }
+
+    @Test
+    fun fromHexStringOrThrow_throwsOnInvalidHex() {
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndex.fromHexStringOrThrow("ff80")
+        }
+    }
+
+    @Test
     fun fromHexString_rejectsMissingTerminator() {
         val result = FractionalIndex.fromHexString("817f")
 
@@ -164,6 +178,13 @@ class FractionalIndexTest {
                 FractionalIndex.fromBytes(bytes).isFailure,
                 "Expected non-canonical bytes to fail: ${bytes.toHexString()}",
             )
+        }
+    }
+
+    @Test
+    fun fromBytesOrThrow_throwsOnInvalidBytes() {
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndex.fromBytesOrThrow(ubyteArrayOf(0xffu, 0x80u))
         }
     }
 
@@ -316,6 +337,13 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromBase64StringOrThrow_throwsOnInvalidInput() {
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndex.fromBase64StringOrThrow("%%%=")
+        }
+    }
+
+    @Test
     fun fromBase64String_withPresentOptional_acceptsPaddedAndUnpadded() {
         val codec = Base64.Default.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
         val index = FractionalIndex.default()
@@ -357,6 +385,13 @@ class FractionalIndexTest {
     fun fromSortableBase64String_rejectsMissingTerminator() {
         // "VMw" = 0x81, 0x7F → no terminator byte (0x80)
         assertTrue(FractionalIndex.fromSortableBase64String("VMw").isFailure)
+    }
+
+    @Test
+    fun fromSortableBase64StringOrThrow_throwsOnInvalidInput() {
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndex.fromSortableBase64StringOrThrow("zs-")
+        }
     }
 
     @Test

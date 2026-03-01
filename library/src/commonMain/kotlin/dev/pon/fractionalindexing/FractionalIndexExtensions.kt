@@ -18,3 +18,15 @@ public fun FractionalIndex.after(): FractionalIndex = FractionalIndexGenerator.a
 public fun FractionalIndex.between(
     other: FractionalIndex,
 ): Result<FractionalIndex> = FractionalIndexGenerator.between(this, other)
+
+/**
+ * Returns a new index that sorts strictly between this and [other], throwing on invalid bounds.
+ *
+ * The two bounds may be passed in either order; they just must be distinct.
+ * Shorthand for [FractionalIndexGenerator.betweenOrThrow].
+ */
+@OptIn(ExperimentalUnsignedTypes::class)
+@Throws(IllegalArgumentException::class)
+public fun FractionalIndex.betweenOrThrow(
+    other: FractionalIndex,
+): FractionalIndex = FractionalIndexGenerator.betweenOrThrow(this, other)

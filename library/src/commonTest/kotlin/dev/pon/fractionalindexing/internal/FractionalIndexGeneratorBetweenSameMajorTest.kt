@@ -6,6 +6,7 @@ import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -38,6 +39,15 @@ class FractionalIndexGeneratorBetweenSameMajorTest {
             "bounds must be distinct",
             result.exceptionOrNull()?.message,
         )
+    }
+
+    @Test
+    fun betweenOrThrow_withIdenticalBounds_throws() {
+        val index = FractionalIndex.default()
+
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndexGenerator.betweenOrThrow(index, index)
+        }
     }
 
     @Test

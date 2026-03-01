@@ -117,18 +117,30 @@ public class FractionalIndex private constructor(
          *
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
-        public fun fromBytes(bytes: UByteArray): Result<FractionalIndex> = runCatching {
-            fromRawBytes(bytes.copyOf())
-        }
+        public fun fromBytes(bytes: UByteArray): Result<FractionalIndex> = runCatching { fromBytesOrThrow(bytes) }
+
+        /**
+         * Decodes a [FractionalIndex] from raw bytes and throws on invalid input.
+         *
+         * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
+         */
+        @Throws(IllegalArgumentException::class)
+        public fun fromBytesOrThrow(bytes: UByteArray): FractionalIndex = fromRawBytes(bytes.copyOf())
 
         /**
          * Decodes a [FractionalIndex] from a hex string (case-insensitive).
          *
          * The hex representation preserves sort order, so it is safe to use as a sortable wire format.
          */
-        public fun fromHexString(hex: String): Result<FractionalIndex> = runCatching {
-            fromRawBytes(hex.hexToUByteArray())
-        }
+        public fun fromHexString(hex: String): Result<FractionalIndex> = runCatching { fromHexStringOrThrow(hex) }
+
+        /**
+         * Decodes a [FractionalIndex] from a hex string (case-insensitive) and throws on invalid input.
+         *
+         * The hex representation preserves sort order, so it is safe to use as a sortable wire format.
+         */
+        @Throws(IllegalArgumentException::class)
+        public fun fromHexStringOrThrow(hex: String): FractionalIndex = fromRawBytes(hex.hexToUByteArray())
 
         /**
          * Decodes a [FractionalIndex] from a sortable Base64 string.
@@ -140,8 +152,21 @@ public class FractionalIndex private constructor(
          * For the encoding specification, see [SortableBase64].
          */
         public fun fromSortableBase64String(str: String): Result<FractionalIndex> = runCatching {
-            fromRawBytes(SortableBase64.decode(str))
+            fromSortableBase64StringOrThrow(str)
         }
+
+        /**
+         * Decodes a [FractionalIndex] from a sortable Base64 string and throws on invalid input.
+         *
+         * The sortable Base64 representation preserves sort order, so it is safe to use
+         * as a sortable wire format.
+         *
+         * This is a library-specific encoding, not a widely-adopted standard.
+         * For the encoding specification, see [SortableBase64].
+         */
+        @Throws(IllegalArgumentException::class)
+        public fun fromSortableBase64StringOrThrow(str: String): FractionalIndex =
+            fromRawBytes(SortableBase64.decode(str))
 
         /**
          * Decodes a [FractionalIndex] from a Base64 string.
@@ -152,8 +177,21 @@ public class FractionalIndex private constructor(
          * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
         public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> = runCatching {
-            fromRawBytes(codec.decode(base64).asUByteArray())
+            fromBase64StringOrThrow(base64, codec)
         }
+
+        /**
+         * Decodes a [FractionalIndex] from a Base64 string and throws on invalid input.
+         *
+         * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
+         * Use [fromHexStringOrThrow], [fromSortableBase64StringOrThrow], or [fromBytesOrThrow]
+         * when lexicographic ordering must be maintained.
+         *
+         * @param codec the [Base64] instance to use — must match the one used for encoding.
+         */
+        @Throws(IllegalArgumentException::class)
+        public fun fromBase64StringOrThrow(base64: String, codec: Base64 = Base64): FractionalIndex =
+            fromRawBytes(codec.decode(base64).asUByteArray())
 
         internal fun fromMajorMinor(major: Long, minor: UByteArray): FractionalIndex {
             require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }

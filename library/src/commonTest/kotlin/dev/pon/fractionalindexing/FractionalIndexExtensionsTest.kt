@@ -2,6 +2,7 @@ package dev.pon.fractionalindexing
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexExtensionsTest {
@@ -22,5 +23,25 @@ class FractionalIndexExtensionsTest {
         val reversed = upper.between(lower).getOrThrow()
 
         assertEquals(forward, reversed)
+    }
+
+    @Test
+    fun betweenOrThrow_acceptsUnorderedBounds() {
+        val lower = FractionalIndex.default().before()
+        val upper = FractionalIndex.default()
+
+        val forward = lower.betweenOrThrow(upper)
+        val reversed = upper.betweenOrThrow(lower)
+
+        assertEquals(forward, reversed)
+    }
+
+    @Test
+    fun betweenOrThrow_withIdenticalBounds_throws() {
+        val index = FractionalIndex.default()
+
+        assertFailsWith<IllegalArgumentException> {
+            index.betweenOrThrow(index)
+        }
     }
 }

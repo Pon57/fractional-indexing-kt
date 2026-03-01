@@ -84,9 +84,13 @@ Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return fail
 
 - `FractionalIndex.default()`
 - `FractionalIndex.fromBytes(bytes)`
+- `FractionalIndex.fromBytesOrThrow(bytes)`
 - `FractionalIndex.fromHexString(hex)`
+- `FractionalIndex.fromHexStringOrThrow(hex)`
 - `FractionalIndex.fromSortableBase64String(str)`
+- `FractionalIndex.fromSortableBase64StringOrThrow(str)`
 - `FractionalIndex.fromBase64String(base64)`
+- `FractionalIndex.fromBase64StringOrThrow(base64)`
 - `FractionalIndex.bytes`
 - `FractionalIndex.toHexString()`
 - `FractionalIndex.toSortableBase64String()`
@@ -94,9 +98,11 @@ Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return fail
 - `FractionalIndexGenerator.before(index)`
 - `FractionalIndexGenerator.after(index)`
 - `FractionalIndexGenerator.between(left, right)`
+- `FractionalIndexGenerator.betweenOrThrow(left, right)`
 - `FractionalIndex.before()`
 - `FractionalIndex.after()`
 - `FractionalIndex.between(other)`
+- `FractionalIndex.betweenOrThrow(other)`
 
 ## Versioning
 

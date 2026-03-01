@@ -17,15 +17,21 @@ public final class dev/pon/fractionalindexing/FractionalIndex$Companion {
 	public final fun default ()Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun fromBase64String-gIAlu-s (Ljava/lang/String;Lkotlin/io/encoding/Base64;)Ljava/lang/Object;
 	public static synthetic fun fromBase64String-gIAlu-s$default (Ldev/pon/fractionalindexing/FractionalIndex$Companion;Ljava/lang/String;Lkotlin/io/encoding/Base64;ILjava/lang/Object;)Ljava/lang/Object;
+	public final fun fromBase64StringOrThrow (Ljava/lang/String;Lkotlin/io/encoding/Base64;)Ldev/pon/fractionalindexing/FractionalIndex;
+	public static synthetic fun fromBase64StringOrThrow$default (Ldev/pon/fractionalindexing/FractionalIndex$Companion;Ljava/lang/String;Lkotlin/io/encoding/Base64;ILjava/lang/Object;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun fromBytes-fvdVUkk ([B)Ljava/lang/Object;
+	public final fun fromBytesOrThrow-GBYM_sE ([B)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun fromHexString-IoAF18A (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun fromHexStringOrThrow (Ljava/lang/String;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun fromSortableBase64String-IoAF18A (Ljava/lang/String;)Ljava/lang/Object;
+	public final fun fromSortableBase64StringOrThrow (Ljava/lang/String;)Ldev/pon/fractionalindexing/FractionalIndex;
 }
 
 public final class dev/pon/fractionalindexing/FractionalIndexExtensionsKt {
 	public static final fun after (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public static final fun before (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public static final fun between (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
+	public static final fun betweenOrThrow (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 }
 
 public final class dev/pon/fractionalindexing/FractionalIndexGenerator {
@@ -33,5 +39,6 @@ public final class dev/pon/fractionalindexing/FractionalIndexGenerator {
 	public final fun after (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun before (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun between-gIAlu-s (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
+	public final fun betweenOrThrow (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 }
 
