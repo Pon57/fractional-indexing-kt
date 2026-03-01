@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload strict perf artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: perf-strict-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
