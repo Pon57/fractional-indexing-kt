@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.1...v1.1.0) - 2026-03-01
+### Other Changes
+- feat: add OrThrow APIs by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/42
+
 ## [v1.0.1](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.0...v1.0.1) - 2026-03-01
 ### Other Changes
 - test: add benchmark quality regression tests by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/36
