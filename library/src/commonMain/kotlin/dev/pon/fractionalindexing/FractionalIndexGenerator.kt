@@ -24,4 +24,15 @@ public object FractionalIndexGenerator {
         first: FractionalIndex,
         second: FractionalIndex,
     ): Result<FractionalIndex> = FractionalIndexGeneratorCore.between(first, second)
+
+    /**
+     * Returns a new index that sorts strictly between [first] and [second], throwing on invalid bounds.
+     *
+     * The two bounds may be passed in either order; they just must be distinct.
+     */
+    @Throws(IllegalArgumentException::class)
+    public fun betweenOrThrow(
+        first: FractionalIndex,
+        second: FractionalIndex,
+    ): FractionalIndex = FractionalIndexGeneratorCore.betweenOrThrow(first, second)
 }

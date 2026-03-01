@@ -21,9 +21,13 @@ final class dev.pon.fractionalindexing/FractionalIndex : kotlin/Comparable<dev.p
     final object Companion { // dev.pon.fractionalindexing/FractionalIndex.Companion|null[0]
         final fun default(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.default|default(){}[0]
         final fun fromBase64String(kotlin/String, kotlin.io.encoding/Base64 = ...): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBase64String|fromBase64String(kotlin.String;kotlin.io.encoding.Base64){}[0]
+        final fun fromBase64StringOrThrow(kotlin/String, kotlin.io.encoding/Base64 = ...): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBase64StringOrThrow|fromBase64StringOrThrow(kotlin.String;kotlin.io.encoding.Base64){}[0]
         final fun fromBytes(kotlin/UByteArray): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBytes|fromBytes(kotlin.UByteArray){}[0]
+        final fun fromBytesOrThrow(kotlin/UByteArray): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.fromBytesOrThrow|fromBytesOrThrow(kotlin.UByteArray){}[0]
         final fun fromHexString(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromHexString|fromHexString(kotlin.String){}[0]
+        final fun fromHexStringOrThrow(kotlin/String): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.fromHexStringOrThrow|fromHexStringOrThrow(kotlin.String){}[0]
         final fun fromSortableBase64String(kotlin/String): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndex.Companion.fromSortableBase64String|fromSortableBase64String(kotlin.String){}[0]
+        final fun fromSortableBase64StringOrThrow(kotlin/String): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndex.Companion.fromSortableBase64StringOrThrow|fromSortableBase64StringOrThrow(kotlin.String){}[0]
     }
 }
 
@@ -31,8 +35,10 @@ final object dev.pon.fractionalindexing/FractionalIndexGenerator { // dev.pon.fr
     final fun after(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.after|after(dev.pon.fractionalindexing.FractionalIndex){}[0]
     final fun before(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.before|before(dev.pon.fractionalindexing.FractionalIndex){}[0]
     final fun between(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndex): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/FractionalIndexGenerator.between|between(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndex){}[0]
+    final fun betweenOrThrow(dev.pon.fractionalindexing/FractionalIndex, dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/FractionalIndexGenerator.betweenOrThrow|betweenOrThrow(dev.pon.fractionalindexing.FractionalIndex;dev.pon.fractionalindexing.FractionalIndex){}[0]
 }
 
 final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/after(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/after|after@dev.pon.fractionalindexing.FractionalIndex(){}[0]
 final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/before(): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/before|before@dev.pon.fractionalindexing.FractionalIndex(){}[0]
 final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/between(dev.pon.fractionalindexing/FractionalIndex): kotlin/Result<dev.pon.fractionalindexing/FractionalIndex> // dev.pon.fractionalindexing/between|between@dev.pon.fractionalindexing.FractionalIndex(dev.pon.fractionalindexing.FractionalIndex){}[0]
+final fun (dev.pon.fractionalindexing/FractionalIndex).dev.pon.fractionalindexing/betweenOrThrow(dev.pon.fractionalindexing/FractionalIndex): dev.pon.fractionalindexing/FractionalIndex // dev.pon.fractionalindexing/betweenOrThrow|betweenOrThrow@dev.pon.fractionalindexing.FractionalIndex(dev.pon.fractionalindexing.FractionalIndex){}[0]
