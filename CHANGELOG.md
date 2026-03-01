@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.0.1](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.0...v1.0.1) - 2026-03-01
+### Other Changes
+- test: add benchmark quality regression tests by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/36
+- test: add relative and strict performance regression checks by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/38
+- ci: pin upload-artifact action in perf-strict workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/40
+- refactor: split generator core and tests into internal modules by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/41
+
 ## [v1.0.0](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.4...v1.0.0) - 2026-02-27
 ### Breaking Changes
 - feat!: redesign key generation with tiered encoding by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/28
