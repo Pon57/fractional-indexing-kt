@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.2.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.1.0...v1.2.0) - 2026-03-02
+### Other Changes
+- feat: add rebalance API with deterministic in-range key redistribution by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/44
+
 ## [v1.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.1...v1.1.0) - 2026-03-01
 ### Other Changes
 - feat: add OrThrow APIs by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/42
