@@ -40,5 +40,7 @@ public final class dev/pon/fractionalindexing/FractionalIndexGenerator {
 	public final fun before (Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
 	public final fun between-gIAlu-s (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
 	public final fun betweenOrThrow (Ldev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ldev/pon/fractionalindexing/FractionalIndex;
+	public final fun rebalance-0E7RQCE (ILdev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/lang/Object;
+	public final fun rebalanceOrThrow (ILdev/pon/fractionalindexing/FractionalIndex;Ldev/pon/fractionalindexing/FractionalIndex;)Ljava/util/List;
 }
 
