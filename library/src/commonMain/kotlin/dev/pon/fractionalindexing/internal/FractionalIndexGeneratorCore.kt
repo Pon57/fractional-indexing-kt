@@ -5,6 +5,7 @@ import dev.pon.fractionalindexing.FractionalIndex
 @OptIn(ExperimentalUnsignedTypes::class)
 internal object FractionalIndexGeneratorCore {
     internal const val DISTINCT_BOUNDS_MESSAGE = "bounds must be distinct"
+    internal const val NON_NEGATIVE_COUNT_MESSAGE = "count must be non-negative"
     internal const val INVALID_FORMAT_MESSAGE = "invalid fractional index format"
     internal const val INVALID_BOUNDS_MESSAGE = "lower bound must be smaller than upper bound"
 
@@ -91,4 +92,26 @@ internal object FractionalIndexGeneratorCore {
             }
         }
     }
+
+    fun rebalance(
+        count: Int,
+        lowerExclusive: FractionalIndex?,
+        upperExclusive: FractionalIndex?,
+    ): Result<List<FractionalIndex>> = runCatching {
+        rebalanceOrThrow(
+            count = count,
+            lowerExclusive = lowerExclusive,
+            upperExclusive = upperExclusive,
+        )
+    }
+
+    fun rebalanceOrThrow(
+        count: Int,
+        lowerExclusive: FractionalIndex?,
+        upperExclusive: FractionalIndex?,
+    ): List<FractionalIndex> = rebalanceKeysOrThrow(
+        count = count,
+        lowerExclusive = lowerExclusive,
+        upperExclusive = upperExclusive,
+    )
 }
