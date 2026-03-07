@@ -5,7 +5,7 @@ import dev.pon.fractionalindexing.FractionalIndex.Companion.TERMINATOR
 @OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.shouldFallbackToMinimal(left: UByteArray, right: UByteArray): Boolean {
     if (left.size == 1 && left[0] == TERMINATOR) {
-        return right.isNotEmpty() && right[0].toInt() == TERMINATOR_INT + 1
+        return right.isNotEmpty() && right[0].toInt() <= TERMINATOR_INT + 1
     }
 
     if (right.size == 1 && right[0] == TERMINATOR) {

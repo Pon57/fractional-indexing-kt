@@ -10,7 +10,7 @@ class FractionalIndexExtensionsTest {
     fun beforeAndAfter_delegateToGenerator() {
         val default = FractionalIndex.default()
 
-        assertEquals("8180", default.after().toHexString())
+        assertEquals("8080", default.after().toHexString())
         assertEquals("7f80", default.before().toHexString())
     }
 

@@ -5,6 +5,7 @@ import dev.pon.fractionalindexing.FractionalIndexGenerator
 import io.kotest.property.checkAll
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -35,6 +36,50 @@ class FractionalIndexGeneratorEdgeOpsTest {
                 )
             }
         }
+    }
+
+    @Test
+    fun after_fromDefault_usesCompactSuccessorBeforeRegularEdgeGrowth() {
+        val first = FractionalIndexGenerator.after(FractionalIndex.default())
+        val second = FractionalIndexGenerator.after(first)
+        val backToDefault = FractionalIndexGenerator.before(first)
+
+        assertEquals("8080", first.toHexString())
+        assertEquals("8180", second.toHexString())
+        assertEquals("80", backToDefault.toHexString())
+    }
+
+    @Test
+    fun between_defaultAndCompactSuccessor_usesMinimalFallback() {
+        val default = FractionalIndex.default()
+        val compactSuccessor = FractionalIndexGenerator.after(default)
+
+        val mid = FractionalIndexGenerator.between(default, compactSuccessor).getOrThrow()
+
+        assertTrue(mid > default && mid < compactSuccessor)
+        assertEquals("807f80", mid.toHexString())
+    }
+
+    @Test
+    fun between_beforeDefaultAndAfterDefault_producesDefault() {
+        val default = FractionalIndex.default()
+        val before = FractionalIndexGenerator.before(default)
+        val after = FractionalIndexGenerator.after(default)
+
+        val mid = FractionalIndexGenerator.between(before, after).getOrThrow()
+
+        assertEquals("80", mid.toHexString())
+    }
+
+    @Test
+    fun rebalance_betweenBeforeDefaultAndAfterDefault_producesDefault() {
+        val default = FractionalIndex.default()
+        val before = FractionalIndexGenerator.before(default)
+        val after = FractionalIndexGenerator.after(default)
+
+        val rebalanced = FractionalIndexGenerator.rebalance(1, before, after).getOrThrow()
+
+        assertEquals("80", rebalanced.single().toHexString())
     }
 
     @Test

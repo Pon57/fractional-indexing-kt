@@ -19,7 +19,7 @@ internal fun FractionalIndexGeneratorCore.edgeInsert(
     }
 
     val fallbackMajor = index.major + fallbackDelta
-    val fallbackMinor = defaultMinor()
+    val fallbackMinor = DEFAULT_MINOR
     if (!FractionalIndex.isCompactMinor(sameMajorCandidate)) {
         return FractionalIndex.fromMajorMinor(major = fallbackMajor, minor = fallbackMinor)
     }
@@ -96,6 +96,3 @@ internal fun FractionalIndexGeneratorCore.afterMinorSize(bytes: UByteArray): Int
     }
     error("Invalid fractional index: missing valid increment point")
 }
-
-@OptIn(ExperimentalUnsignedTypes::class)
-internal fun FractionalIndexGeneratorCore.defaultMinor(): UByteArray = ubyteArrayOf(TERMINATOR)
