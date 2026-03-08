@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.0.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.2.0...v2.0.0) - 2026-03-08
+### Breaking Changes
+- fix!: use compact successor after FractionalIndex.default() by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/49
+- Redesign rebalance with multi-strategy optimization by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/50
+### Dependencies
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.1.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/46
+- chore(deps): update gradle to v9.4.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/48
+
 ## [v1.2.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.1.0...v1.2.0) - 2026-03-02
 ### Other Changes
 - feat: add rebalance API with deterministic in-range key redistribution by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/44
