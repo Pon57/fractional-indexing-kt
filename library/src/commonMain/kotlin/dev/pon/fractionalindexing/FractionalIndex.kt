@@ -209,6 +209,12 @@ public class FractionalIndex private constructor(
             return encodeNegative(major = major, minor = minor)
         }
 
+        // Caller transfers ownership of [minor]; this path intentionally skips a defensive copy.
+        internal fun fromCompactMinorUnsafe(minor: UByteArray): FractionalIndex {
+            require(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
+            return FractionalIndex(minor, 0L, minor)
+        }
+
         internal fun encodedLength(major: Long, minorSize: Int): Int {
             require(major != Long.MIN_VALUE) { INVALID_FORMAT_MESSAGE }
             if (major == 0L) {

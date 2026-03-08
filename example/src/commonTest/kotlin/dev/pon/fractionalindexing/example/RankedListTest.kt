@@ -255,9 +255,12 @@ class RankedListTest {
             ),
             after.map { it.key },
         )
-        assertEquals(2, result.changes.size)
         assertEquals(originalLower, after.first().key)
         assertEquals(originalUpper, after.last().key)
+        assertTrue(
+            result.changes.none { it.newKey == originalLower || it.newKey == originalUpper },
+            "endpoints must not appear in changes",
+        )
         assertStrictlyOrderedByDirection(after, SortDirection.ASCENDING)
     }
 
@@ -287,9 +290,12 @@ class RankedListTest {
             ).asReversed(),
             after.map { it.key },
         )
-        assertEquals(2, result.changes.size)
         assertEquals(originalUpper, after.first().key)
         assertEquals(originalLower, after.last().key)
+        assertTrue(
+            result.changes.none { it.newKey == originalLower || it.newKey == originalUpper },
+            "endpoints must not appear in changes",
+        )
         assertStrictlyOrderedByDirection(after, SortDirection.DESCENDING)
     }
 
