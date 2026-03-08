@@ -39,7 +39,6 @@ check(left < mid && mid < right)
 
 - A Kotlin Multiplatform example module is available at `example/`.
 - Run the drag-and-drop list demo with `./gradlew :example:jvmRun`.
-- The example includes `Rebalance all` and `Rebalance in-range` actions to compare open-ended rewriting vs endpoint-based rewriting that reuses the current first/last keys.
 
 https://github.com/user-attachments/assets/37b3f98f-a8ec-45a9-ac35-c822c50be74f
 
