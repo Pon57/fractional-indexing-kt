@@ -6,6 +6,10 @@ import dev.pon.fractionalindexing.FractionalIndex
 internal object FractionalIndexGeneratorCore {
     internal const val DISTINCT_BOUNDS_MESSAGE = "bounds must be distinct"
     internal const val NON_NEGATIVE_COUNT_MESSAGE = "count must be non-negative"
+    internal const val INVALID_ENDPOINT_ORDER_MESSAGE =
+        "lowerEndpoint must be before upperEndpoint"
+    internal const val INVALID_ENDPOINT_COUNT_RANGE_MESSAGE =
+        "lowerEndpoint and upperEndpoint must define a valid range for count"
     internal const val INVALID_FORMAT_MESSAGE = "invalid fractional index format"
     internal const val INVALID_BOUNDS_MESSAGE = "lower bound must be smaller than upper bound"
 
@@ -119,24 +123,24 @@ internal object FractionalIndexGeneratorCore {
 
     fun rebalance(
         count: Int,
-        lowerExclusive: FractionalIndex?,
-        upperExclusive: FractionalIndex?,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
     ): Result<List<FractionalIndex>> = runCatching {
         rebalanceOrThrow(
             count = count,
-            lowerExclusive = lowerExclusive,
-            upperExclusive = upperExclusive,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
         )
     }
 
     fun rebalanceOrThrow(
         count: Int,
-        lowerExclusive: FractionalIndex?,
-        upperExclusive: FractionalIndex?,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
     ): List<FractionalIndex> = rebalanceKeysOrThrow(
         count = count,
-        lowerExclusive = lowerExclusive,
-        upperExclusive = upperExclusive,
+        lowerEndpoint = lowerEndpoint,
+        upperEndpoint = upperEndpoint,
     )
 
     private val BEFORE_DEFAULT_MINOR = ubyteArrayOf(

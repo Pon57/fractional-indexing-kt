@@ -72,14 +72,14 @@ class FractionalIndexGeneratorEdgeOpsTest {
     }
 
     @Test
-    fun rebalance_betweenBeforeDefaultAndAfterDefault_producesDefault() {
+    fun rebalance_betweenBeforeDefaultAndAfterDefault_preservesAnchorsAndProducesDefault() {
         val default = FractionalIndex.default()
         val before = FractionalIndexGenerator.before(default)
         val after = FractionalIndexGenerator.after(default)
 
-        val rebalanced = FractionalIndexGenerator.rebalance(1, before, after).getOrThrow()
+        val rebalanced = FractionalIndexGenerator.rebalance(3, before, after).getOrThrow()
 
-        assertEquals("80", rebalanced.single().toHexString())
+        assertEquals(listOf(before, default, after).map { it.toHexString() }, rebalanced.map { it.toHexString() })
     }
 
     @Test

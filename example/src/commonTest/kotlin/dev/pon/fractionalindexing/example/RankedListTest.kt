@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing.example
 
+import dev.pon.fractionalindexing.FractionalIndexGenerator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -175,6 +176,169 @@ class RankedListTest {
         assertNull(ranked.moveByDropIndex(fromIndex = -1, dropIndex = 0))
         assertNull(ranked.moveByDropIndex(fromIndex = 4, dropIndex = 0))
         assertEquals(before, ranked.items())
+    }
+
+    @Test
+    fun rebalanceAll_preservesDisplayedOrderAndUsesOpenEndedSequence() {
+        val ranked = RankedList(
+            labels = listOf("A", "B", "C", "D"),
+        )
+        ranked.moveByDropIndex(fromIndex = 0, dropIndex = 3)
+        val labelsBefore = ranked.items().map { it.label }
+
+        val result = ranked.rebalanceAll()
+        val after = ranked.items()
+
+        assertEquals(RebalanceMode.ALL, result.mode)
+        assertNull(result.lowerEndpoint)
+        assertNull(result.upperEndpoint)
+        assertEquals(labelsBefore, after.map { it.label })
+        assertEquals(
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = after.size,
+                lowerEndpoint = null,
+                upperEndpoint = null,
+            ),
+            after.map { it.key },
+        )
+        assertStrictlyOrderedByDirection(after, SortDirection.ASCENDING)
+    }
+
+    @Test
+    fun rebalanceAll_inDescendingOrderAssignsReversedOpenEndedSequence() {
+        val ranked = RankedList(
+            labels = listOf("A", "B", "C", "D"),
+        )
+        ranked.sortByKey(SortDirection.DESCENDING)
+        val labelsBefore = ranked.items().map { it.label }
+
+        val result = ranked.rebalanceAll()
+        val after = ranked.items()
+
+        assertEquals(RebalanceMode.ALL, result.mode)
+        assertEquals(labelsBefore, after.map { it.label })
+        assertEquals(
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = after.size,
+                lowerEndpoint = null,
+                upperEndpoint = null,
+            ).asReversed(),
+            after.map { it.key },
+        )
+        assertStrictlyOrderedByDirection(after, SortDirection.DESCENDING)
+    }
+
+    @Test
+    fun rebalanceWithinCurrentRange_rewritesKeysInsideOriginalBounds() {
+        val ranked = RankedList(
+            labels = listOf("A", "B", "C", "D"),
+        )
+        ranked.moveByDropIndex(fromIndex = 0, dropIndex = 3)
+        val before = ranked.items()
+        val labelsBefore = before.map { it.label }
+        val originalLower = before.minByOrNull { it.key }!!.key
+        val originalUpper = before.maxByOrNull { it.key }!!.key
+
+        val result = ranked.rebalanceWithinCurrentRange()
+        requireNotNull(result)
+        val after = ranked.items()
+
+        assertEquals(RebalanceMode.WITHIN_CURRENT_RANGE, result.mode)
+        assertEquals(originalLower, result.lowerEndpoint)
+        assertEquals(originalUpper, result.upperEndpoint)
+        assertEquals(labelsBefore, after.map { it.label })
+        assertEquals(
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = after.size,
+                lowerEndpoint = originalLower,
+                upperEndpoint = originalUpper,
+            ),
+            after.map { it.key },
+        )
+        assertEquals(originalLower, after.first().key)
+        assertEquals(originalUpper, after.last().key)
+        assertTrue(
+            result.changes.none { it.newKey == originalLower || it.newKey == originalUpper },
+            "endpoints must not appear in changes",
+        )
+        assertStrictlyOrderedByDirection(after, SortDirection.ASCENDING)
+    }
+
+    @Test
+    fun rebalanceWithinCurrentRange_inDescendingOrderAssignsReversedBoundedSequence() {
+        val ranked = RankedList(
+            labels = listOf("A", "B", "C", "D"),
+        )
+        ranked.moveByDropIndex(fromIndex = 0, dropIndex = 3)
+        ranked.sortByKey(SortDirection.DESCENDING)
+        val before = ranked.items()
+        val labelsBefore = before.map { it.label }
+        val originalLower = before.minByOrNull { it.key }!!.key
+        val originalUpper = before.maxByOrNull { it.key }!!.key
+
+        val result = ranked.rebalanceWithinCurrentRange()
+        requireNotNull(result)
+        val after = ranked.items()
+
+        assertEquals(RebalanceMode.WITHIN_CURRENT_RANGE, result.mode)
+        assertEquals(labelsBefore, after.map { it.label })
+        assertEquals(
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = after.size,
+                lowerEndpoint = originalLower,
+                upperEndpoint = originalUpper,
+            ).asReversed(),
+            after.map { it.key },
+        )
+        assertEquals(originalUpper, after.first().key)
+        assertEquals(originalLower, after.last().key)
+        assertTrue(
+            result.changes.none { it.newKey == originalLower || it.newKey == originalUpper },
+            "endpoints must not appear in changes",
+        )
+        assertStrictlyOrderedByDirection(after, SortDirection.DESCENDING)
+    }
+
+    @Test
+    fun rebalanceWithinCurrentRange_isStableWhenRepeated() {
+        val ranked = RankedList(
+            labels = listOf("A", "B", "C", "D"),
+        )
+        ranked.moveByDropIndex(fromIndex = 0, dropIndex = 3)
+
+        val first = ranked.rebalanceWithinCurrentRange()
+        requireNotNull(first)
+        val afterFirst = ranked.items().map { it.key }
+
+        val second = ranked.rebalanceWithinCurrentRange()
+        requireNotNull(second)
+
+        assertEquals(afterFirst, ranked.items().map { it.key })
+        assertTrue(second.changes.isEmpty())
+    }
+
+    @Test
+    fun rebalanceWithinCurrentRange_withSingleItemReturnsSingleAnchor() {
+        val ranked = RankedList(
+            labels = listOf("A"),
+        )
+
+        val result = ranked.rebalanceWithinCurrentRange()
+        requireNotNull(result)
+
+        assertEquals(1, ranked.items().size)
+        assertEquals(ranked.items().single().key, result.lowerEndpoint)
+        assertEquals(ranked.items().single().key, result.upperEndpoint)
+        assertTrue(result.changes.isEmpty())
+    }
+
+    @Test
+    fun rebalanceWithinCurrentRange_withEmptyListReturnsNull() {
+        val single = RankedList(
+            labels = emptyList(),
+        )
+
+        assertNull(single.rebalanceWithinCurrentRange())
     }
 
     private fun assertStrictlyOrderedByDirection(items: List<RankedItem>, direction: SortDirection) {
