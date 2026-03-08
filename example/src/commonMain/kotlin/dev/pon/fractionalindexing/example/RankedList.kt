@@ -1,6 +1,7 @@
 package dev.pon.fractionalindexing.example
 
 import dev.pon.fractionalindexing.FractionalIndex
+import dev.pon.fractionalindexing.FractionalIndexGenerator
 import dev.pon.fractionalindexing.after
 import dev.pon.fractionalindexing.before
 import dev.pon.fractionalindexing.between
@@ -17,6 +18,25 @@ data class MoveResult(
     val oldKey: FractionalIndex,
     val newKey: FractionalIndex,
     val newIndex: Int,
+)
+
+data class RebalanceChange(
+    val id: String,
+    val label: String,
+    val oldKey: FractionalIndex,
+    val newKey: FractionalIndex,
+)
+
+enum class RebalanceMode {
+    ALL,
+    WITHIN_CURRENT_RANGE,
+}
+
+data class RebalanceResult(
+    val mode: RebalanceMode,
+    val lowerEndpoint: FractionalIndex?,
+    val upperEndpoint: FractionalIndex?,
+    val changes: List<RebalanceChange>,
 )
 
 enum class SortDirection {
@@ -54,6 +74,27 @@ class RankedList(
         nextItemNumber += 1
         rankedItems.add(newItem)
         return newItem
+    }
+
+    fun rebalanceAll(): RebalanceResult = rebalance(
+        mode = RebalanceMode.ALL,
+        lowerEndpoint = null,
+        upperEndpoint = null,
+    )
+
+    fun rebalanceWithinCurrentRange(): RebalanceResult? {
+        if (rankedItems.isEmpty()) {
+            return null
+        }
+
+        val orderedByKey = rankedItems.sortedBy { it.key }
+        val lowerEndpoint = orderedByKey.first().key
+        val upperEndpoint = orderedByKey.last().key
+        return rebalance(
+            mode = RebalanceMode.WITHIN_CURRENT_RANGE,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
+        )
     }
 
     fun reset() {
@@ -99,6 +140,71 @@ class RankedList(
             oldKey = moved.key,
             newKey = updatedMovedItem.key,
             newIndex = toIndex,
+        )
+    }
+
+    private fun rebalance(
+        mode: RebalanceMode,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
+    ): RebalanceResult {
+        if (rankedItems.isEmpty()) {
+            return RebalanceResult(
+                mode = mode,
+                lowerEndpoint = lowerEndpoint,
+                upperEndpoint = upperEndpoint,
+                changes = emptyList(),
+            )
+        }
+
+        val generatedKeys = FractionalIndexGenerator.rebalanceOrThrow(
+            count = rankedItems.size,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
+        )
+        val orderedKeys = when (currentSortDirection) {
+            SortDirection.ASCENDING -> generatedKeys
+            SortDirection.DESCENDING -> generatedKeys.asReversed()
+        }
+        val updatedItems = rankedItems.mapIndexed { index, item ->
+            item.copy(key = orderedKeys[index])
+        }
+
+        return commitRebalance(
+            mode = mode,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
+            updatedItems = updatedItems,
+        )
+    }
+
+    private fun commitRebalance(
+        mode: RebalanceMode,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
+        updatedItems: List<RankedItem>,
+    ): RebalanceResult {
+        val changes = rankedItems.zip(updatedItems).mapNotNull { (before, after) ->
+            if (before.key == after.key) {
+                null
+            } else {
+                RebalanceChange(
+                    id = before.id,
+                    label = before.label,
+                    oldKey = before.key,
+                    newKey = after.key,
+                )
+            }
+        }
+
+        rankedItems.clear()
+        rankedItems.addAll(updatedItems)
+
+        return RebalanceResult(
+            mode = mode,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
+            changes = changes,
         )
     }
 

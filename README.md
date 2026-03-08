@@ -41,7 +41,7 @@ check(left < mid && mid < right)
 - Run the drag-and-drop list demo with `./gradlew :example:jvmRun`.
 - The example includes `Rebalance all` and `Rebalance in-range` actions to compare open-ended rewriting vs endpoint-based rewriting that reuses the current first/last keys.
 
-https://github.com/user-attachments/assets/6060a329-eb4c-44a3-8625-1ab7e67779db
+https://github.com/user-attachments/assets/37b3f98f-a8ec-45a9-ac35-c822c50be74f
 
 ## Extension API
 
@@ -113,7 +113,7 @@ Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return fail
 
 ## Versioning
 
-This library follows [Semantic Versioning](https://semver.org/).  
+This library follows [Semantic Versioning](https://semver.org/).
 Changes to the key format or generation algorithm that **break compatibility with previously generated keys** are treated as breaking changes (major version bump).
 
 **Note:** Upgrading to a new major version may require migrating your existing database records to maintain the correct sort order.

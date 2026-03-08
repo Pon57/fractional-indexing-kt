@@ -49,6 +49,8 @@ private class FractionalIndexExampleFrame : JFrame("Fractional Indexing Drag-and
     private val eventLog = JTextArea()
     private val sortButton = JButton()
     private val addButton = JButton("Add item")
+    private val rebalanceAllButton = JButton("Rebalance all")
+    private val rebalanceInRangeButton = JButton("Rebalance in-range")
     private val resetButton = JButton("Reset")
     private var nextAddedItemNumber: Int = 1
 
@@ -61,7 +63,7 @@ private class FractionalIndexExampleFrame : JFrame("Fractional Indexing Drag-and
         add(createContent(), BorderLayout.CENTER)
         updateSortButtonLabel()
         refreshList()
-        log("Drag items to reorder. Key updates are logged below.")
+        log("Drag items to reorder. Use rebalance buttons to rewrite keys and inspect the results below.")
     }
 
     private fun createContent(): JComponent {
@@ -110,8 +112,28 @@ private class FractionalIndexExampleFrame : JFrame("Fractional Indexing Drag-and
             refreshList(rankedList.items().lastIndex)
             log(
                 "Added ${added.label}: key=${added.key.toHexString()} (${keyByteLength(added.key)}B, " +
-                    "${rankedList.sortDirection().name.lowercase(Locale.ROOT)})",
+                "${rankedList.sortDirection().name.lowercase(Locale.ROOT)})",
             )
+        }
+
+        rebalanceAllButton.isFocusable = false
+        rebalanceAllButton.addActionListener {
+            val selectedIndex = list.selectedIndex.takeIf { it >= 0 }
+            val result = rankedList.rebalanceAll()
+            refreshList(selectedIndex)
+            logRebalanceResult(result)
+        }
+
+        rebalanceInRangeButton.isFocusable = false
+        rebalanceInRangeButton.addActionListener {
+            val selectedIndex = list.selectedIndex.takeIf { it >= 0 }
+            val result = rankedList.rebalanceWithinCurrentRange()
+            if (result == null) {
+                log("Rebalance in-range requires at least 1 item.")
+                return@addActionListener
+            }
+            refreshList(selectedIndex)
+            logRebalanceResult(result)
         }
 
         resetButton.isFocusable = false
@@ -127,6 +149,8 @@ private class FractionalIndexExampleFrame : JFrame("Fractional Indexing Drag-and
             border = BorderFactory.createEmptyBorder(0, 4, 0, 0)
             add(sortButton)
             add(addButton)
+            add(rebalanceAllButton)
+            add(rebalanceInRangeButton)
             add(resetButton)
             add(Box.createHorizontalGlue())
         }
@@ -160,6 +184,37 @@ private class FractionalIndexExampleFrame : JFrame("Fractional Indexing Drag-and
             SortDirection.DESCENDING -> "Sort: descending"
         }
         sortButton.text = label
+    }
+
+    private fun logRebalanceResult(result: RebalanceResult) {
+        if (result.changes.isEmpty()) {
+            val mode = when (result.mode) {
+                RebalanceMode.ALL -> "Rebalance all"
+                RebalanceMode.WITHIN_CURRENT_RANGE -> "Rebalance in-range"
+            }
+            log("$mode: no key changes.")
+            return
+        }
+        val oldTotalBytes = result.changes.sumOf { keyByteLength(it.oldKey) }
+        val newTotalBytes = result.changes.sumOf { keyByteLength(it.newKey) }
+        val oldMaxBytes = result.changes.maxOfOrNull { keyByteLength(it.oldKey) } ?: 0
+        val newMaxBytes = result.changes.maxOfOrNull { keyByteLength(it.newKey) } ?: 0
+        val mode = when (result.mode) {
+            RebalanceMode.ALL -> "Rebalance all"
+            RebalanceMode.WITHIN_CURRENT_RANGE -> "Rebalance in-range"
+        }
+        val bounds = when {
+            result.lowerEndpoint == null && result.upperEndpoint == null -> "endpoints=open"
+            else -> "endpoints=(${result.lowerEndpoint?.toHexString()}, ${result.upperEndpoint?.toHexString()})"
+        }
+        val details = result.changes.joinToString(separator = "\n") { change ->
+            "${change.label}: ${change.oldKey.toHexString()} (${keyByteLength(change.oldKey)}B) -> " +
+                "${change.newKey.toHexString()} (${keyByteLength(change.newKey)}B)"
+        }
+        log(
+            "$mode: count=${result.changes.size}, totalBytes=$oldTotalBytes->$newTotalBytes, " +
+                "maxBytes=$oldMaxBytes->$newMaxBytes, $bounds\n$details",
+        )
     }
 
     private fun keyByteLength(key: FractionalIndex): Int = key.getByteSize()
