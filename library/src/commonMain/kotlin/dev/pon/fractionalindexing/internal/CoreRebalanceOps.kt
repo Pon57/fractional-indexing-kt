@@ -5,48 +5,48 @@ import dev.pon.fractionalindexing.FractionalIndex
 @OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.rebalanceKeysOrThrow(
     count: Int,
-    lowerExclusive: FractionalIndex?,
-    upperExclusive: FractionalIndex?,
+    lowerEndpoint: FractionalIndex?,
+    upperEndpoint: FractionalIndex?,
 ): List<FractionalIndex> {
     require(count >= 0) { NON_NEGATIVE_COUNT_MESSAGE }
     if (count == 0) {
         return emptyList()
     }
 
-    if (lowerExclusive == null) {
-        if (upperExclusive == null) {
+    if (lowerEndpoint == null) {
+        if (upperEndpoint == null) {
             return rebalanceUnbounded(count)
         }
-        return rebalanceWithUpperBoundOnly(
+        return rebalanceWithUpperEndpointOnly(
             count = count,
-            upperExclusive = upperExclusive,
+            upperEndpoint = upperEndpoint,
         )
     }
 
-    if (upperExclusive == null) {
-        return rebalanceWithLowerBoundOnly(
+    if (upperEndpoint == null) {
+        return rebalanceWithLowerEndpointOnly(
             count = count,
-            lowerExclusive = lowerExclusive,
+            lowerEndpoint = lowerEndpoint,
         )
     }
 
-    require(lowerExclusive != upperExclusive) { DISTINCT_BOUNDS_MESSAGE }
-    val boundOrder = lowerExclusive.compareTo(upperExclusive)
-    val lowerBound: FractionalIndex
-    val upperBound: FractionalIndex
-    if (boundOrder < 0) {
-        lowerBound = lowerExclusive
-        upperBound = upperExclusive
-    } else {
-        lowerBound = upperExclusive
-        upperBound = lowerExclusive
-    }
+    val endpointOrder = lowerEndpoint.compareTo(upperEndpoint)
+    return when {
+        endpointOrder > 0 -> throw IllegalArgumentException(INVALID_ENDPOINT_ORDER_MESSAGE)
+        endpointOrder == 0 -> {
+            require(count == 1) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
+            listOf(lowerEndpoint)
+        }
 
-    return rebalanceWithinBounds(
-        count = count,
-        lowerExclusive = lowerBound,
-        upperExclusive = upperBound,
-    )
+        else -> {
+            require(count >= 2) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
+            rebalanceWithinEndpoints(
+                count = count,
+                lowerEndpoint = lowerEndpoint,
+                upperEndpoint = upperEndpoint,
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -66,13 +66,15 @@ private fun FractionalIndexGeneratorCore.rebalanceUnbounded(
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-private fun FractionalIndexGeneratorCore.rebalanceWithLowerBoundOnly(
+private fun FractionalIndexGeneratorCore.rebalanceWithLowerEndpointOnly(
     count: Int,
-    lowerExclusive: FractionalIndex,
+    lowerEndpoint: FractionalIndex,
 ): List<FractionalIndex> {
     val generated = ArrayList<FractionalIndex>(count)
-    var current = lowerExclusive
-    repeat(count) {
+    var current = lowerEndpoint
+    generated.add(current)
+
+    repeat(count - 1) {
         current = after(current)
         generated.add(current)
     }
@@ -80,13 +82,13 @@ private fun FractionalIndexGeneratorCore.rebalanceWithLowerBoundOnly(
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-private fun FractionalIndexGeneratorCore.rebalanceWithUpperBoundOnly(
+private fun FractionalIndexGeneratorCore.rebalanceWithUpperEndpointOnly(
     count: Int,
-    upperExclusive: FractionalIndex,
+    upperEndpoint: FractionalIndex,
 ): List<FractionalIndex> {
-    val generated = MutableList(count) { upperExclusive }
-    var current = upperExclusive
-    for (index in count - 1 downTo 0) {
+    val generated = MutableList(count) { upperEndpoint }
+    var current = upperEndpoint
+    for (index in count - 2 downTo 0) {
         current = before(current)
         generated[index] = current
     }
@@ -94,12 +96,17 @@ private fun FractionalIndexGeneratorCore.rebalanceWithUpperBoundOnly(
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-private fun FractionalIndexGeneratorCore.rebalanceWithinBounds(
+private fun FractionalIndexGeneratorCore.rebalanceWithinEndpoints(
     count: Int,
-    lowerExclusive: FractionalIndex,
-    upperExclusive: FractionalIndex,
+    lowerEndpoint: FractionalIndex,
+    upperEndpoint: FractionalIndex,
 ): List<FractionalIndex> {
+    if (count == 2) {
+        return listOf(lowerEndpoint, upperEndpoint)
+    }
+
     val generated = ArrayList<FractionalIndex>(count)
+    generated.add(lowerEndpoint)
 
     fun appendBalancedKeys(
         remaining: Int,
@@ -126,9 +133,10 @@ private fun FractionalIndexGeneratorCore.rebalanceWithinBounds(
     }
 
     appendBalancedKeys(
-        remaining = count,
-        lower = lowerExclusive,
-        upper = upperExclusive,
+        remaining = count - 2,
+        lower = lowerEndpoint,
+        upper = upperEndpoint,
     )
+    generated.add(upperEndpoint)
     return generated
 }

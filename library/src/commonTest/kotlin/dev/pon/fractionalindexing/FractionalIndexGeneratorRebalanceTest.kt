@@ -18,36 +18,36 @@ class FractionalIndexGeneratorRebalanceTest {
     )
 
     @Test
-    fun rebalance_withBothBounds_generatesSortedKeysInsideBounds() {
+    fun rebalance_withBothEndpoints_includesEndpointsAndKeepsOrder() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
 
         val generated = FractionalIndexGenerator.rebalance(
             count = 30,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         ).getOrThrow()
 
         assertEquals(30, generated.size)
+        assertEquals(lower, generated.first())
+        assertEquals(upper, generated.last())
         assertStrictlySorted(generated)
-        assertTrue(generated.first() > lower, "first generated key must be greater than lowerExclusive")
-        assertTrue(generated.last() < upper, "last generated key must be less than upperExclusive")
     }
 
     @Test
-    fun rebalance_onSkewedWindow_reducesLengthProfile() {
+    fun rebalance_onRightSkewedEndpointRange_reducesLengthProfile() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
         val count = 120
-        val skewed = generateRightAnchoredWithinBounds(
+        val skewed = generateRightEndpointBiasedSequence(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         val rebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         val skewedStats = keyLengthStats(skewed)
@@ -56,7 +56,7 @@ class FractionalIndexGeneratorRebalanceTest {
         assertAverageImprovement(
             baseline = skewedStats,
             candidate = rebalancedStats,
-            scenario = "window rebalance",
+            scenario = "right-skewed endpoint rebalance",
         )
         assertTrue(
             rebalancedStats.p95 <= skewedStats.p95,
@@ -69,34 +69,30 @@ class FractionalIndexGeneratorRebalanceTest {
     }
 
     @Test
-    fun rebalance_onSkewedWindow_reducesHotspotInsertLengthProfile() {
+    fun rebalance_onRightSkewedEndpointRange_reducesHotspotInsertLengthProfile() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
         val count = 120
-        val skewed = generateRightAnchoredWithinBounds(
+        val skewed = generateRightEndpointBiasedSequence(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         val rebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         val skewedInsertStats = intLengthStats(
             simulateHotspotInsertGeneratedLengths(
                 initial = skewed,
-                lowerExclusive = lower,
-                upperExclusive = upper,
                 operations = 300,
             ),
         )
         val rebalancedInsertStats = intLengthStats(
             simulateHotspotInsertGeneratedLengths(
                 initial = rebalanced,
-                lowerExclusive = lower,
-                upperExclusive = upper,
                 operations = 300,
             ),
         )
@@ -104,7 +100,7 @@ class FractionalIndexGeneratorRebalanceTest {
         assertAverageImprovement(
             baseline = skewedInsertStats,
             candidate = rebalancedInsertStats,
-            scenario = "hotspot insert simulation",
+            scenario = "right-skewed hotspot insert simulation",
         )
         assertTrue(
             rebalancedInsertStats.p95 <= skewedInsertStats.p95,
@@ -117,19 +113,19 @@ class FractionalIndexGeneratorRebalanceTest {
     }
 
     @Test
-    fun rebalance_onLeftSkewedWindow_reducesLengthProfile() {
+    fun rebalance_onLeftSkewedEndpointRange_reducesLengthProfile() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
         val count = 120
-        val skewed = generateLeftAnchoredWithinBounds(
+        val skewed = generateLeftEndpointBiasedSequence(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         val rebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         val skewedStats = keyLengthStats(skewed)
@@ -138,7 +134,7 @@ class FractionalIndexGeneratorRebalanceTest {
         assertAverageImprovement(
             baseline = skewedStats,
             candidate = rebalancedStats,
-            scenario = "left-skewed window rebalance",
+            scenario = "left-skewed endpoint rebalance",
         )
         assertTrue(
             rebalancedStats.p95 <= skewedStats.p95,
@@ -151,34 +147,30 @@ class FractionalIndexGeneratorRebalanceTest {
     }
 
     @Test
-    fun rebalance_onLeftSkewedWindow_reducesHotspotInsertLengthProfile() {
+    fun rebalance_onLeftSkewedEndpointRange_reducesHotspotInsertLengthProfile() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
         val count = 120
-        val skewed = generateLeftAnchoredWithinBounds(
+        val skewed = generateLeftEndpointBiasedSequence(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         val rebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         val skewedInsertStats = intLengthStats(
             simulateHotspotInsertGeneratedLengths(
                 initial = skewed,
-                lowerExclusive = lower,
-                upperExclusive = upper,
                 operations = 300,
             ),
         )
         val rebalancedInsertStats = intLengthStats(
             simulateHotspotInsertGeneratedLengths(
                 initial = rebalanced,
-                lowerExclusive = lower,
-                upperExclusive = upper,
                 operations = 300,
             ),
         )
@@ -199,22 +191,35 @@ class FractionalIndexGeneratorRebalanceTest {
     }
 
     @Test
-    fun rebalance_acceptsUnorderedBounds() {
+    fun rebalance_withReversedEndpoints_returnsFailure() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
 
-        val forward = FractionalIndexGenerator.rebalance(
+        val result = FractionalIndexGenerator.rebalance(
             count = 12,
-            lowerExclusive = lower,
-            upperExclusive = upper,
-        ).getOrThrow()
-        val reversed = FractionalIndexGenerator.rebalance(
-            count = 12,
-            lowerExclusive = upper,
-            upperExclusive = lower,
-        ).getOrThrow()
+            lowerEndpoint = upper,
+            upperEndpoint = lower,
+        )
 
-        assertEquals(forward, reversed)
+        assertTrue(result.isFailure)
+        assertEquals(
+            "lowerEndpoint must be before upperEndpoint",
+            result.exceptionOrNull()?.message,
+        )
+    }
+
+    @Test
+    fun rebalanceOrThrow_withReversedEndpoints_throws() {
+        val lower = FractionalIndex.default().before()
+        val upper = FractionalIndex.default().after()
+
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = 12,
+                lowerEndpoint = upper,
+                upperEndpoint = lower,
+            )
+        }
     }
 
     @Test
@@ -224,47 +229,52 @@ class FractionalIndexGeneratorRebalanceTest {
 
         assertRebalanceParity(
             count = 16,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         assertRebalanceParity(
             count = 16,
-            lowerExclusive = lower,
-            upperExclusive = null,
+            lowerEndpoint = lower,
+            upperEndpoint = null,
         )
         assertRebalanceParity(
             count = 16,
-            lowerExclusive = null,
-            upperExclusive = upper,
+            lowerEndpoint = null,
+            upperEndpoint = upper,
         )
         assertRebalanceParity(
             count = 16,
-            lowerExclusive = null,
-            upperExclusive = null,
+            lowerEndpoint = null,
+            upperEndpoint = null,
+        )
+        assertRebalanceParity(
+            count = 1,
+            lowerEndpoint = lower,
+            upperEndpoint = lower,
         )
         assertRebalanceParity(
             count = 0,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
     }
 
     @Test
-    fun rebalance_withLargeCount_keepsOrderAndBounds() {
+    fun rebalance_withLargeCount_keepsOrderAndEndpoints() {
         val lower = FractionalIndex.default().before()
         val upper = FractionalIndex.default().after()
         val count = 10_000
 
         val generated = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = upper,
-            upperExclusive = lower,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         assertEquals(count, generated.size)
+        assertEquals(lower, generated.first())
+        assertEquals(upper, generated.last())
         assertStrictlySorted(generated)
-        assertTrue(generated.first() > lower, "first generated key must be greater than lowerExclusive")
-        assertTrue(generated.last() < upper, "last generated key must be less than upperExclusive")
     }
 
     @Test
@@ -275,81 +285,129 @@ class FractionalIndexGeneratorRebalanceTest {
 
         val firstRebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lower,
-            upperExclusive = upper,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
         val secondRebalanced = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = upper,
-            upperExclusive = lower,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
         )
 
         assertEquals(firstRebalanced, secondRebalanced)
     }
 
     @Test
-    fun rebalance_withIdenticalBounds_returnsFailure() {
+    fun rebalance_withIdenticalEndpointsAndCountOne_returnsSingleEndpoint() {
+        val index = FractionalIndex.default()
+
+        val result = FractionalIndexGenerator.rebalance(
+            count = 1,
+            lowerEndpoint = index,
+            upperEndpoint = index,
+        ).getOrThrow()
+
+        assertEquals(listOf(index), result)
+    }
+
+    @Test
+    fun rebalance_withIdenticalEndpointsAndCountGreaterThanOne_returnsFailure() {
         val index = FractionalIndex.default()
 
         val result = FractionalIndexGenerator.rebalance(
             count = 3,
-            lowerExclusive = index,
-            upperExclusive = index,
+            lowerEndpoint = index,
+            upperEndpoint = index,
         )
 
         assertTrue(result.isFailure)
-        assertEquals("bounds must be distinct", result.exceptionOrNull()?.message)
+        assertEquals(
+            "lowerEndpoint and upperEndpoint must define a valid range for count",
+            result.exceptionOrNull()?.message,
+        )
     }
 
     @Test
-    fun rebalanceOrThrow_withIdenticalBounds_throws() {
+    fun rebalanceOrThrow_withIdenticalEndpointsAndCountGreaterThanOne_throws() {
         val index = FractionalIndex.default()
 
         assertFailsWith<IllegalArgumentException> {
             FractionalIndexGenerator.rebalanceOrThrow(
                 count = 3,
-                lowerExclusive = index,
-                upperExclusive = index,
+                lowerEndpoint = index,
+                upperEndpoint = index,
             )
         }
     }
 
     @Test
-    fun rebalance_withLowerOnly_generatesSortedKeysAfterLower() {
+    fun rebalance_withDistinctEndpointsAndCountOne_returnsFailure() {
+        val lower = FractionalIndex.default().before()
+        val upper = FractionalIndex.default().after()
+
+        val result = FractionalIndexGenerator.rebalance(
+            count = 1,
+            lowerEndpoint = lower,
+            upperEndpoint = upper,
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals(
+            "lowerEndpoint and upperEndpoint must define a valid range for count",
+            result.exceptionOrNull()?.message,
+        )
+    }
+
+    @Test
+    fun rebalanceOrThrow_withDistinctEndpointsAndCountOne_throws() {
+        val lower = FractionalIndex.default().before()
+        val upper = FractionalIndex.default().after()
+
+        assertFailsWith<IllegalArgumentException> {
+            FractionalIndexGenerator.rebalanceOrThrow(
+                count = 1,
+                lowerEndpoint = lower,
+                upperEndpoint = upper,
+            )
+        }
+    }
+
+    @Test
+    fun rebalance_withLowerOnly_generatesSortedKeysStartingAtLower() {
         val lower = FractionalIndex.default()
 
         val generated = FractionalIndexGenerator.rebalance(
             count = 10,
-            lowerExclusive = lower,
-            upperExclusive = null,
+            lowerEndpoint = lower,
+            upperEndpoint = null,
         ).getOrThrow()
 
         assertEquals(10, generated.size)
+        assertEquals(lower, generated.first())
         assertStrictlySorted(generated)
-        assertTrue(generated.first() > lower, "first generated key must be greater than lowerExclusive")
     }
 
     @Test
-    fun rebalance_withUpperOnly_generatesSortedKeysBeforeUpper() {
+    fun rebalance_withUpperOnly_generatesSortedKeysEndingAtUpper() {
         val upper = FractionalIndex.default()
 
         val generated = FractionalIndexGenerator.rebalance(
             count = 10,
-            lowerExclusive = null,
-            upperExclusive = upper,
+            lowerEndpoint = null,
+            upperEndpoint = upper,
         ).getOrThrow()
 
         assertEquals(10, generated.size)
+        assertEquals(upper, generated.last())
         assertStrictlySorted(generated)
-        assertTrue(generated.last() < upper, "last generated key must be less than upperExclusive")
     }
 
     @Test
-    fun rebalance_withoutBounds_startsFromDefaultAndAscending() {
+    fun rebalance_withoutEndpoints_startsFromDefaultAndAscending() {
         val generated = FractionalIndexGenerator.rebalance(
             count = 5,
-            lowerExclusive = null,
-            upperExclusive = null,
+            lowerEndpoint = null,
+            upperEndpoint = null,
         ).getOrThrow()
 
         assertEquals(5, generated.size)
@@ -361,32 +419,32 @@ class FractionalIndexGeneratorRebalanceTest {
     fun rebalance_withZeroCount_returnsEmptyList() {
         val generated = FractionalIndexGenerator.rebalance(
             count = 0,
-            lowerExclusive = FractionalIndex.default(),
-            upperExclusive = null,
+            lowerEndpoint = FractionalIndex.default(),
+            upperEndpoint = null,
         ).getOrThrow()
 
         assertTrue(generated.isEmpty())
     }
 
     @Test
-    fun rebalance_withZeroCountAndIdenticalBounds_returnsEmptyList() {
+    fun rebalance_withZeroCountAndIdenticalEndpoints_returnsEmptyList() {
         val index = FractionalIndex.default()
         val result = FractionalIndexGenerator.rebalance(
             count = 0,
-            lowerExclusive = index,
-            upperExclusive = index,
+            lowerEndpoint = index,
+            upperEndpoint = index,
         ).getOrThrow()
 
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun rebalanceOrThrow_withZeroCountAndIdenticalBounds_returnsEmptyList() {
+    fun rebalanceOrThrow_withZeroCountAndIdenticalEndpoints_returnsEmptyList() {
         val index = FractionalIndex.default()
         val result = FractionalIndexGenerator.rebalanceOrThrow(
             count = 0,
-            lowerExclusive = index,
-            upperExclusive = index,
+            lowerEndpoint = index,
+            upperEndpoint = index,
         )
 
         assertTrue(result.isEmpty())
@@ -396,8 +454,8 @@ class FractionalIndexGeneratorRebalanceTest {
     fun rebalance_withNegativeCount_returnsFailure() {
         val result = FractionalIndexGenerator.rebalance(
             count = -1,
-            lowerExclusive = null,
-            upperExclusive = null,
+            lowerEndpoint = null,
+            upperEndpoint = null,
         )
 
         assertTrue(result.isFailure)
@@ -409,8 +467,8 @@ class FractionalIndexGeneratorRebalanceTest {
         assertFailsWith<IllegalArgumentException> {
             FractionalIndexGenerator.rebalanceOrThrow(
                 count = -1,
-                lowerExclusive = null,
-                upperExclusive = null,
+                lowerEndpoint = null,
+                upperEndpoint = null,
             )
         }
     }
@@ -421,39 +479,51 @@ class FractionalIndexGeneratorRebalanceTest {
         }
     }
 
-    private fun generateRightAnchoredWithinBounds(
+    private fun generateRightEndpointBiasedSequence(
         count: Int,
-        lowerExclusive: FractionalIndex,
-        upperExclusive: FractionalIndex,
+        lowerEndpoint: FractionalIndex,
+        upperEndpoint: FractionalIndex,
     ): List<FractionalIndex> {
+        if (count == 1) {
+            return listOf(lowerEndpoint)
+        }
+
         val generated = ArrayList<FractionalIndex>(count)
-        var current = lowerExclusive
-        repeat(count) {
-            current = FractionalIndexGenerator.between(current, upperExclusive).getOrThrow()
+        generated.add(lowerEndpoint)
+        var current = lowerEndpoint
+        repeat(count - 2) {
+            current = FractionalIndexGenerator.between(current, upperEndpoint).getOrThrow()
             generated.add(current)
         }
+        generated.add(upperEndpoint)
         return generated
     }
 
-    private fun generateLeftAnchoredWithinBounds(
+    private fun generateLeftEndpointBiasedSequence(
         count: Int,
-        lowerExclusive: FractionalIndex,
-        upperExclusive: FractionalIndex,
+        lowerEndpoint: FractionalIndex,
+        upperEndpoint: FractionalIndex,
     ): List<FractionalIndex> {
-        val generated = ArrayList<FractionalIndex>(count)
-        var current = upperExclusive
-        repeat(count) {
-            current = FractionalIndexGenerator.between(lowerExclusive, current).getOrThrow()
-            generated.add(current)
+        if (count == 1) {
+            return listOf(lowerEndpoint)
         }
-        generated.reverse()
-        return generated
+
+        val interior = ArrayList<FractionalIndex>(count - 2)
+        var current = upperEndpoint
+        repeat(count - 2) {
+            current = FractionalIndexGenerator.between(lowerEndpoint, current).getOrThrow()
+            interior.add(current)
+        }
+
+        return buildList(count) {
+            add(lowerEndpoint)
+            addAll(interior.asReversed())
+            add(upperEndpoint)
+        }
     }
 
     private fun simulateHotspotInsertGeneratedLengths(
         initial: List<FractionalIndex>,
-        lowerExclusive: FractionalIndex,
-        upperExclusive: FractionalIndex,
         operations: Int,
     ): List<Int> {
         val ordered = initial.toMutableList()
@@ -467,8 +537,16 @@ class FractionalIndexGeneratorRebalanceTest {
                 else -> 1
             }
             val insertAt = (center + offset).coerceIn(0, ordered.size)
-            val left = if (insertAt == 0) lowerExclusive else ordered[insertAt - 1]
-            val right = if (insertAt == ordered.size) upperExclusive else ordered[insertAt]
+            val left = if (insertAt == 0) {
+                FractionalIndexGenerator.before(ordered.first())
+            } else {
+                ordered[insertAt - 1]
+            }
+            val right = if (insertAt == ordered.size) {
+                FractionalIndexGenerator.after(ordered.last())
+            } else {
+                ordered[insertAt]
+            }
             val generated = FractionalIndexGenerator.between(left, right).getOrThrow()
             ordered.add(insertAt, generated)
             generatedLengths.add(generated.bytes.size)
@@ -484,18 +562,18 @@ class FractionalIndexGeneratorRebalanceTest {
 
     private fun assertRebalanceParity(
         count: Int,
-        lowerExclusive: FractionalIndex?,
-        upperExclusive: FractionalIndex?,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
     ) {
         val safe = FractionalIndexGenerator.rebalance(
             count = count,
-            lowerExclusive = lowerExclusive,
-            upperExclusive = upperExclusive,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
         ).getOrThrow()
         val throwing = FractionalIndexGenerator.rebalanceOrThrow(
             count = count,
-            lowerExclusive = lowerExclusive,
-            upperExclusive = upperExclusive,
+            lowerEndpoint = lowerEndpoint,
+            upperEndpoint = upperEndpoint,
         )
         assertEquals(safe, throwing)
     }

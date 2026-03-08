@@ -37,45 +37,41 @@ public object FractionalIndexGenerator {
     ): FractionalIndex = FractionalIndexGeneratorCore.betweenOrThrow(first, second)
 
     /**
-     * Rebalances [count] keys within optional exclusive bounds.
+     * Rebalances a sequence of [count] keys around optional endpoints.
      *
-     * If [count] is `0`, returns an empty list without validating bounds.
-     * If both bounds are non-null, keys are strictly between them
-     * (bounds may be in either order, but must be distinct).
-     * Otherwise, generates an open-ended sequence;
-     * if both bounds are null, it starts from [FractionalIndex.default].
-     * When mixing with an existing keyspace, provide explicit bounds
-     * (or handle collisions) to avoid key conflicts.
+     * If [count] is `0`, returns an empty list without validating endpoints.
+     * If both endpoints are non-null, they are included in the returned list and must define
+     * a valid ascending sequence for [count].
+     * If only one endpoint is provided, it is included at the corresponding edge and the rest are generated outward.
+     * If both endpoints are null, it generates an open-ended sequence starting from [FractionalIndex.default].
      */
     public fun rebalance(
         count: Int,
-        lowerExclusive: FractionalIndex?,
-        upperExclusive: FractionalIndex?,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
     ): Result<List<FractionalIndex>> = FractionalIndexGeneratorCore.rebalance(
         count = count,
-        lowerExclusive = lowerExclusive,
-        upperExclusive = upperExclusive,
+        lowerEndpoint = lowerEndpoint,
+        upperEndpoint = upperEndpoint,
     )
 
     /**
-     * Rebalances [count] keys within optional exclusive bounds, throwing on invalid arguments.
+     * Rebalances a sequence of [count] keys around optional endpoints, throwing on invalid arguments.
      *
-     * If [count] is `0`, returns an empty list without validating bounds.
-     * If both bounds are non-null, keys are strictly between them
-     * (bounds may be in either order, but must be distinct).
-     * Otherwise, generates an open-ended sequence;
-     * if both bounds are null, it starts from [FractionalIndex.default].
-     * When mixing with an existing keyspace, provide explicit bounds
-     * (or handle collisions) to avoid key conflicts.
+     * If [count] is `0`, returns an empty list without validating endpoints.
+     * If both endpoints are non-null, they are included in the returned list and must define
+     * a valid ascending sequence for [count].
+     * If only one endpoint is provided, it is included at the corresponding edge and the rest are generated outward.
+     * If both endpoints are null, it generates an open-ended sequence starting from [FractionalIndex.default].
      */
     @Throws(IllegalArgumentException::class)
     public fun rebalanceOrThrow(
         count: Int,
-        lowerExclusive: FractionalIndex?,
-        upperExclusive: FractionalIndex?,
+        lowerEndpoint: FractionalIndex?,
+        upperEndpoint: FractionalIndex?,
     ): List<FractionalIndex> = FractionalIndexGeneratorCore.rebalanceOrThrow(
         count = count,
-        lowerExclusive = lowerExclusive,
-        upperExclusive = upperExclusive,
+        lowerEndpoint = lowerEndpoint,
+        upperEndpoint = upperEndpoint,
     )
 }
