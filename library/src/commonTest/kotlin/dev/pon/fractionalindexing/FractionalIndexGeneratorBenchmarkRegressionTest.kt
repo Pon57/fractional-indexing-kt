@@ -125,7 +125,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
         )
 
         assertEquals(
-            LengthStats(total = 7519, p95 = 4, max = 4),
+            LengthStats(total = 7520, p95 = 4, max = 4),
             actual,
             "Edge-biased insert raw-length distribution snapshot changed. actual=$actual",
         )
@@ -149,7 +149,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
         )
 
         assertEquals(
-            LengthStats(total = 15461, p95 = 6, max = 8),
+            LengthStats(total = 15460, p95 = 6, max = 8),
             actual,
             "Uniform-random move raw-length distribution snapshot changed. actual=$actual",
         )

@@ -24,22 +24,38 @@ internal object FractionalIndexGeneratorCore {
 
     internal val TERMINATOR_INT = FractionalIndex.TERMINATOR.toInt()
     internal val UBYTE_MAX_INT = UByte.MAX_VALUE.toInt()
+    internal val DEFAULT_MINOR = ubyteArrayOf(FractionalIndex.TERMINATOR)
 
-    fun before(index: FractionalIndex): FractionalIndex = edgeInsert(
-        index = index,
-        minorStep = ::beforeMinor,
-        boundaryMajor = MIN_MAJOR,
-        fallbackDelta = -1L,
-        overflowMessage = "major underflow",
-    )
+    fun before(index: FractionalIndex): FractionalIndex {
+        if (index.major == 0L && index.minor.contentEquals(COMPACT_SUCCESSOR_MINOR)) {
+            return FractionalIndex.default()
+        }
 
-    fun after(index: FractionalIndex): FractionalIndex = edgeInsert(
-        index = index,
-        minorStep = ::afterMinor,
-        boundaryMajor = MAX_MAJOR,
-        fallbackDelta = 1L,
-        overflowMessage = "major overflow",
-    )
+        return edgeInsert(
+            index = index,
+            minorStep = ::beforeMinor,
+            boundaryMajor = MIN_MAJOR,
+            fallbackDelta = -1L,
+            overflowMessage = "major underflow",
+        )
+    }
+
+    fun after(index: FractionalIndex): FractionalIndex {
+        if (index.major == 0L && index.minor.contentEquals(DEFAULT_MINOR)) {
+            return FractionalIndex.fromMajorMinor(
+                major = 0L,
+                minor = COMPACT_SUCCESSOR_MINOR,
+            )
+        }
+
+        return edgeInsert(
+            index = index,
+            minorStep = ::afterMinor,
+            boundaryMajor = MAX_MAJOR,
+            fallbackDelta = 1L,
+            overflowMessage = "major overflow",
+        )
+    }
 
     fun between(
         first: FractionalIndex,
@@ -66,7 +82,7 @@ internal object FractionalIndexGeneratorCore {
         return when {
             hasNonAdjacentMajorGap(left.major, right.major) -> {
                 val midMajor = midpointMajor(left.major, right.major)
-                FractionalIndex.fromMajorMinor(major = midMajor, minor = defaultMinor())
+                FractionalIndex.fromMajorMinor(major = midMajor, minor = DEFAULT_MINOR)
             }
 
             left.major < right.major -> {
@@ -74,6 +90,14 @@ internal object FractionalIndexGeneratorCore {
             }
 
             else -> {
+                // The compact successor of default() is [TERMINATOR, TERMINATOR].
+                // Between before(default()) and after(default()), the 1-byte
+                // default minor is the optimal midpoint that the general algorithm
+                // cannot discover (it only produces results at lengths ≥ both bounds).
+                if (left.major == 0L && isCompactSuccessorInterval(left.minor, right.minor)) {
+                    return FractionalIndex.default()
+                }
+
                 val minimal = minimalBetweenMinor(
                     left = left.minor,
                     right = right.minor,
@@ -114,4 +138,17 @@ internal object FractionalIndexGeneratorCore {
         lowerExclusive = lowerExclusive,
         upperExclusive = upperExclusive,
     )
+
+    private val BEFORE_DEFAULT_MINOR = ubyteArrayOf(
+        (FractionalIndex.TERMINATOR - 1u).toUByte(),
+        FractionalIndex.TERMINATOR,
+    )
+    private val COMPACT_SUCCESSOR_MINOR = ubyteArrayOf(
+        FractionalIndex.TERMINATOR,
+        FractionalIndex.TERMINATOR,
+    )
+
+    private fun isCompactSuccessorInterval(left: UByteArray, right: UByteArray): Boolean {
+        return left.contentEquals(BEFORE_DEFAULT_MINOR) && right.contentEquals(COMPACT_SUCCESSOR_MINOR)
+    }
 }
