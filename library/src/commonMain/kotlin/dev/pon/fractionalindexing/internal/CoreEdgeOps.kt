@@ -3,7 +3,6 @@ package dev.pon.fractionalindexing.internal
 import dev.pon.fractionalindexing.FractionalIndex
 import dev.pon.fractionalindexing.FractionalIndex.Companion.TERMINATOR
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.edgeInsert(
     index: FractionalIndex,
     minorStep: (UByteArray) -> UByteArray,
@@ -39,7 +38,6 @@ internal fun FractionalIndexGeneratorCore.edgeInsert(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.beforeMinor(bytes: UByteArray): UByteArray {
     for (i in bytes.indices) {
         val current = bytes[i].toInt()
@@ -58,7 +56,6 @@ internal fun FractionalIndexGeneratorCore.beforeMinor(bytes: UByteArray): UByteA
     error("Invalid fractional index: missing valid decrement point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.beforeMinorSize(bytes: UByteArray): Int {
     for (i in bytes.indices) {
         val current = bytes[i].toInt()
@@ -68,7 +65,6 @@ internal fun FractionalIndexGeneratorCore.beforeMinorSize(bytes: UByteArray): In
     error("Invalid fractional index: missing valid decrement point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.afterMinor(bytes: UByteArray): UByteArray {
     for (i in bytes.indices) {
         val current = bytes[i].toInt()
@@ -87,7 +83,6 @@ internal fun FractionalIndexGeneratorCore.afterMinor(bytes: UByteArray): UByteAr
     error("Invalid fractional index: missing valid increment point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.afterMinorSize(bytes: UByteArray): Int {
     for (i in bytes.indices) {
         val current = bytes[i].toInt()

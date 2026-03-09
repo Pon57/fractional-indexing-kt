@@ -2,7 +2,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex.Companion.TERMINATOR
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceBeforeMinimal(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -35,7 +34,6 @@ internal fun FractionalIndexGeneratorCore.spliceBeforeMinimal(
     error("Invalid fractional index: missing valid decrement point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceBeforeMinimalSize(
     source: UByteArray,
     tailStart: Int,
@@ -48,7 +46,6 @@ internal fun FractionalIndexGeneratorCore.spliceBeforeMinimalSize(
     error("Invalid fractional index: missing valid decrement point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceAfterMinimal(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -81,7 +78,6 @@ internal fun FractionalIndexGeneratorCore.spliceAfterMinimal(
     error("Invalid fractional index: missing valid increment point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceAfterMinimalSize(
     source: UByteArray,
     tailStart: Int,
@@ -94,7 +90,6 @@ internal fun FractionalIndexGeneratorCore.spliceAfterMinimalSize(
     error("Invalid fractional index: missing valid increment point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceBeforeSpread(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -131,7 +126,6 @@ internal fun FractionalIndexGeneratorCore.spliceBeforeSpread(
     error("Invalid fractional index: missing valid decrement point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.spliceAfterSpread(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -168,7 +162,6 @@ internal fun FractionalIndexGeneratorCore.spliceAfterSpread(
     error("Invalid fractional index: missing valid increment point")
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.buildSplicedCopy(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -199,7 +192,6 @@ internal fun FractionalIndexGeneratorCore.buildSplicedCopy(
     return out
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.buildSplicedModified(
     source: UByteArray,
     prefixEndExclusive: Int,
@@ -218,7 +210,6 @@ internal fun FractionalIndexGeneratorCore.buildSplicedModified(
     return out
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun UByteArray.terminatedCopyOfRange(
     fromIndex: Int,
     toIndex: Int,

@@ -3,7 +3,6 @@ package dev.pon.fractionalindexing.internal
 import dev.pon.fractionalindexing.FractionalIndex
 import kotlin.math.abs
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.candidateProjectedNextLength(
     leftMajor: Long,
     leftMinor: UByteArray,
@@ -27,7 +26,6 @@ internal fun FractionalIndexGeneratorCore.candidateProjectedNextLength(
     return maxOf(nextLeftLength, nextRightLength)
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.compareCandidateScores(
     leftMajor: Long,
     leftMinor: UByteArray,
@@ -64,7 +62,6 @@ internal fun FractionalIndexGeneratorCore.compareCandidateScores(
     return boundaryPressure(candidateAMinor).compareTo(boundaryPressure(candidateBMinor))
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.estimateMinimalBetweenLength(
     leftMajor: Long,
     leftMinor: UByteArray,
@@ -130,7 +127,6 @@ internal fun FractionalIndexGeneratorCore.estimateMinimalBetweenLength(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.hasNonAdjacentMajorGap(
     leftMajor: Long,
     rightMajor: Long,
@@ -142,7 +138,6 @@ internal fun FractionalIndexGeneratorCore.hasNonAdjacentMajorGap(
     return leftMajor < (rightMajor - 1L)
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.midpointMajor(
     leftMajor: Long,
     rightMajor: Long,
@@ -156,11 +151,9 @@ internal fun FractionalIndexGeneratorCore.midpointMajor(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.boundaryPressure(minor: UByteArray): Int {
     return abs(minor.first().toInt() - TERMINATOR_INT)
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.majorDistancePenalty(major: Long): Int =
     abs(major).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()

@@ -7,7 +7,6 @@ import dev.pon.fractionalindexing.internal.FractionalIndexGeneratorCore
  *
  * See also the extension functions [before], [after], and [between] on [FractionalIndex].
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 public object FractionalIndexGenerator {
     /** Returns a new index that sorts **before** [index]. */
     public fun before(index: FractionalIndex): FractionalIndex = FractionalIndexGeneratorCore.before(index)

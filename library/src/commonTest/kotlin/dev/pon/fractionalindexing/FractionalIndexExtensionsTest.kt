@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexExtensionsTest {
     @Test
     fun beforeAndAfter_delegateToGenerator() {

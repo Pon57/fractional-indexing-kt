@@ -11,7 +11,6 @@ package dev.pon.fractionalindexing
  *   Unused trailing bits in the last character must be zero.
  * - String length `4n+1` is invalid (cannot represent a whole number of bytes).
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 internal object SortableBase64 {
     private const val ALPHABET = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
 

@@ -4,7 +4,6 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexGeneratorBenchmarkRegressionTest {
     private data class LengthStats(
         val total: Int,

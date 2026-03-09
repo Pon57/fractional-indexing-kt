@@ -2,7 +2,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal object FractionalIndexGeneratorCore {
     internal const val DISTINCT_BOUNDS_MESSAGE = "bounds must be distinct"
     internal const val NON_NEGATIVE_COUNT_MESSAGE = "count must be non-negative"

@@ -6,7 +6,6 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal object FractionalIndexGeneratorTestFixtures {
     val fractionalIndexArb: Arb<FractionalIndex> = arbitrary(
         edgecases = listOf(
