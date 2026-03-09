@@ -57,7 +57,7 @@ internal class RebalanceCandidateAccumulator(
 }
 
 internal fun encodedLength(index: FractionalIndex): Int =
-    FractionalIndex.encodedLength(index.major, index.minor.size)
+    index.encodedLength
 
 internal fun FractionalIndexGeneratorCore.newRebalanceCandidateAccumulator(
     lowerExclusive: FractionalIndex,
@@ -150,8 +150,5 @@ private fun FractionalIndexGeneratorCore.immediateBetweenLength(
     ),
 ) {
     val between = betweenOrThrow(lowerBound, upperBound)
-    FractionalIndex.encodedLength(
-        major = between.major,
-        minorSize = between.minor.size,
-    )
+    between.encodedLength
 }
