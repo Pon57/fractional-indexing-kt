@@ -113,7 +113,10 @@ Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return fail
 ## Versioning
 
 This library follows [Semantic Versioning](https://semver.org/).
-Changes to the key format or generation algorithm that **break compatibility with previously generated keys** are treated as breaking changes (major version bump).
+
+- Changes to the key format or generation algorithm that **break compatibility with previously generated keys** are treated as breaking changes (major version bump).
+- Changes that only affect the exact canonical keys produced by future calls are not considered breaking as long as existing keys remain valid and continue to sort correctly.
+- Algorithmic output changes may still be called out in release notes.
 
 **Note:** Upgrading to a new major version may require migrating your existing database records to maintain the correct sort order.
 
