@@ -135,7 +135,7 @@ private fun FractionalIndexGeneratorCore.buildEvenlySpacedMajorRebalance(
         val delta = (quotient * step) + ((remainder * step) / divisor)
         val major = (lowerUnsignedMajor + delta).toLong()
         generated.add(
-            fractionalIndexFromOwnedRebalanceMinor(
+            FractionalIndex.fromMajorMinor(
                 major = major,
                 minor = DEFAULT_MINOR,
             ),
