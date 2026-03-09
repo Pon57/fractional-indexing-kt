@@ -2,16 +2,12 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-// The compact-frontier candidate enumerates whole profile alternatives, so keep it
-// to the same tight-range budget as the recursive single-pivot path.
-private const val ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE_THRESHOLD = 32
-
 internal fun FractionalIndexGeneratorCore.rebalanceAroundZeroMajorCompactFrontierOrNull(
     count: Int,
     lowerExclusive: FractionalIndex,
     upperExclusive: FractionalIndex,
 ): List<FractionalIndex>? {
-    if (count > ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE_THRESHOLD) {
+    if (count > RebalanceThresholds.ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE) {
         return null
     }
     if (lowerExclusive.major != 0L || upperExclusive.major != 0L) {

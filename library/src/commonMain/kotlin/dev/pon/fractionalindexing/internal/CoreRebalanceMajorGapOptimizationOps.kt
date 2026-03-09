@@ -2,10 +2,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-// One-sided major-gap candidates help preserve shorter follow-up insertions near
-// the boundaries, but only matter in relatively small windows.
-private const val MAJOR_GAP_EDGE_CANDIDATE_THRESHOLD = 32
-
 internal fun FractionalIndexGeneratorCore.rebalanceAcrossMajorGapOrNull(
     count: Int,
     lowerExclusive: FractionalIndex,
@@ -43,7 +39,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceAcrossMajorGapOrNull(
                 depth = depth,
             ),
         )
-        if (count <= MAJOR_GAP_EDGE_CANDIDATE_THRESHOLD) {
+        if (count <= RebalanceThresholds.MAJOR_GAP_EDGE_CANDIDATE) {
             consider(
                 rebalanceFromLowerMajorEdgeOrNull(
                     count = count,
