@@ -9,7 +9,6 @@ import kotlin.io.encoding.Base64
  * Create instances with [default], [fromBytes], [fromHexString], [fromBase64String], or [fromSortableBase64String].
  * Generate new keys with [FractionalIndexGenerator] (or the [before] / [after] / [between] extensions).
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 public class FractionalIndex private constructor(
     private val unsafeRawBytes: UByteArray,
     internal val major: Long,

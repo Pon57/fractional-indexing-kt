@@ -64,6 +64,10 @@ kotlin {
         nodejs()
     }
 
+    sourceSets.all {
+        languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
+    }
+
     sourceSets {
         commonMain.dependencies {}
         commonTest.dependencies {

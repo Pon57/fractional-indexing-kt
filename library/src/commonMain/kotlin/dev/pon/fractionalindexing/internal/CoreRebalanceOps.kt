@@ -140,7 +140,6 @@ private fun FractionalIndexGeneratorCore.rebalanceWithinEndpoints(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.rebalanceWithinExclusiveBounds(
     count: Int,
     lowerExclusive: FractionalIndex,
@@ -237,7 +236,6 @@ private fun FractionalIndexGeneratorCore.rebalanceWithinExclusiveBoundsOptimized
     return null
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.buildBalancedFallbackRebalance(
     count: Int,
     lowerExclusive: FractionalIndex,

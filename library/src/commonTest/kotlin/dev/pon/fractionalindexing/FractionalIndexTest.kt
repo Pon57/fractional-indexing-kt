@@ -6,7 +6,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexTest {
     @Test
     fun default_returnsTerminatorOnlyIndex() {

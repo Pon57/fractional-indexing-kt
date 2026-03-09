@@ -3,7 +3,6 @@ package dev.pon.fractionalindexing.internal
 import dev.pon.fractionalindexing.FractionalIndex
 import kotlin.math.abs
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.betweenAdjacentMajors(
     left: FractionalIndex,
     right: FractionalIndex,
@@ -47,7 +46,6 @@ internal fun FractionalIndexGeneratorCore.betweenAdjacentMajors(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.chooseAdjacentSide(
     left: FractionalIndex,
     right: FractionalIndex,
@@ -120,7 +118,6 @@ internal fun FractionalIndexGeneratorCore.chooseAdjacentSide(
     ) <= 0
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.adjacentCandidate(
     left: FractionalIndex,
     right: FractionalIndex,
@@ -149,7 +146,6 @@ internal fun FractionalIndexGeneratorCore.adjacentCandidate(
     )
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.selectAdjacentMinorVariant(
     left: FractionalIndex,
     right: FractionalIndex,

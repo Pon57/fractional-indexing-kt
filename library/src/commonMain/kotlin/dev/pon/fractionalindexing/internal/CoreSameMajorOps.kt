@@ -2,7 +2,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex.Companion.TERMINATOR
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.shouldFallbackToMinimal(left: UByteArray, right: UByteArray): Boolean {
     if (left.size == 1 && left[0] == TERMINATOR) {
         return right.isNotEmpty() && right[0].toInt() <= TERMINATOR_INT + 1
@@ -15,7 +14,6 @@ internal fun FractionalIndexGeneratorCore.shouldFallbackToMinimal(left: UByteArr
     return false
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.newBetweenSpreadBalanced(
     major: Long,
     left: UByteArray,
@@ -72,7 +70,6 @@ internal fun FractionalIndexGeneratorCore.newBetweenSpreadBalanced(
     )
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.chooseSpreadCandidate(
     major: Long,
     left: UByteArray,
@@ -124,7 +121,6 @@ internal fun FractionalIndexGeneratorCore.chooseSpreadCandidate(
     return if (cmp <= 0) leftCandidate else rightCandidate
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.candidatePressure(
     candidate: UByteArray,
     pivot: Int,
@@ -134,7 +130,6 @@ internal fun FractionalIndexGeneratorCore.candidatePressure(
     return kotlin.math.abs(candidate[index].toInt() - TERMINATOR_INT)
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.minimalBetweenMinor(
     left: UByteArray,
     right: UByteArray,
@@ -169,7 +164,6 @@ internal fun FractionalIndexGeneratorCore.minimalBetweenMinor(
     )
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.minimalBetweenMinorSize(
     left: UByteArray,
     right: UByteArray,
@@ -196,7 +190,6 @@ internal fun FractionalIndexGeneratorCore.minimalBetweenMinorSize(
     return resolveLengthBoundarySizeOnly(left, right, shorterLength + 1)
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.resolveLengthBoundary(
     left: UByteArray,
     right: UByteArray,
@@ -223,7 +216,6 @@ internal fun FractionalIndexGeneratorCore.resolveLengthBoundary(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.resolveLengthBoundarySizeOnly(
     left: UByteArray,
     right: UByteArray,
@@ -248,7 +240,6 @@ internal fun FractionalIndexGeneratorCore.resolveLengthBoundarySizeOnly(
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal fun FractionalIndexGeneratorCore.midpointBetweenOrNull(
     left: UByteArray,
     index: Int,

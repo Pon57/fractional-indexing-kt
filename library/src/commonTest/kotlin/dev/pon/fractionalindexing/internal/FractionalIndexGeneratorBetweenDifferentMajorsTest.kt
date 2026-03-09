@@ -5,7 +5,6 @@ import dev.pon.fractionalindexing.FractionalIndexGenerator
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexGeneratorBetweenDifferentMajorsTest {
     @Test
     fun between_adjacentMajors_staysInsideBounds() {

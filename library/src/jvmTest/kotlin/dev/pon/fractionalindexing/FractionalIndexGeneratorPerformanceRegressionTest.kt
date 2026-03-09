@@ -6,7 +6,6 @@ import kotlin.system.measureNanoTime
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class FractionalIndexGeneratorPerformanceRegressionTest {
     private data class MoveSelection(
         val from: Int,

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUnsignedTypes::class)
-
 package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
