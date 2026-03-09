@@ -2,6 +2,7 @@ package dev.pon.fractionalindexing
 
 import kotlin.io.encoding.Base64
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
@@ -454,4 +455,103 @@ class FractionalIndexTest {
         }
     }
 
+    @Test
+    fun parseBranchRegression_compact_roundTripsMajorAndMinor() {
+        // Compact: first byte in [0x40..0xBF], major=0, minor=rawBytes
+        val index = FractionalIndex.fromHexStringOrThrow("817f80")
+        assertEquals(0L, index.major)
+        assertContentEquals(ubyteArrayOf(0x81u, 0x7fu, 0x80u), index.minor)
+        assertEquals("817f80", index.toHexString())
+    }
+
+    @Test
+    fun parseBranchRegression_positiveShort_roundTripsMajorAndMinor() {
+        // Positive short: tag 0xC0 → major=1
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(1L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(1L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_positiveShortMax_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(41L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(41L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_positiveMedium_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(42L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(42L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_positiveMediumMax_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(4137L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(4137L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_positiveLong_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(4138L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(4138L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_negativeShort_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(-1L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(-1L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_negativeShortMax_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(-41L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(-41L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_negativeMedium_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(-42L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(-42L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_negativeMediumMax_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(-4137L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(-4137L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
+
+    @Test
+    fun parseBranchRegression_negativeLong_roundTripsMajorAndMinor() {
+        val minor = ubyteArrayOf(0x70u, 0x90u, FractionalIndex.TERMINATOR)
+        val encoded = FractionalIndex.fromMajorMinor(-4138L, minor)
+        val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
+        assertEquals(-4138L, decoded.major)
+        assertContentEquals(minor, decoded.minor)
+    }
 }
