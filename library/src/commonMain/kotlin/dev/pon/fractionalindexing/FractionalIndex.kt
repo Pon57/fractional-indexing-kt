@@ -108,11 +108,11 @@ public class FractionalIndex private constructor(
         private const val COMPACT_FIRST_MAX = 0xBF
         private const val EXTENDED_MAJOR_MAX_LENGTH = 8
 
+        // Safe to share: all internal arrays are never mutated and `bytes` returns a defensive copy.
+        private val DEFAULT = run { val bytes = ubyteArrayOf(TERMINATOR); FractionalIndex(bytes, 0L, bytes) }
+
         /** Returns the default index, a neutral starting point for key generation. */
-        public fun default(): FractionalIndex {
-            val bytes = ubyteArrayOf(TERMINATOR)
-            return FractionalIndex(bytes, 0L, bytes)
-        }
+        public fun default(): FractionalIndex = DEFAULT
 
         /**
          * Decodes a [FractionalIndex] from raw bytes.

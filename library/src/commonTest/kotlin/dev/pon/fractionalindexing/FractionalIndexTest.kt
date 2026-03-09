@@ -4,6 +4,7 @@ import kotlin.io.encoding.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class FractionalIndexTest {
@@ -13,6 +14,20 @@ class FractionalIndexTest {
 
         assertEquals("80", index.toHexString())
         assertEquals("gA==", index.toBase64String())
+    }
+
+    @Test
+    fun default_returnsSameInstance() {
+        assertSame(FractionalIndex.default(), FractionalIndex.default())
+    }
+
+    @Test
+    fun default_bytesReturnsDefensiveCopy() {
+        val first = FractionalIndex.default().bytes
+        first[0] = 0x00u
+
+        val second = FractionalIndex.default().bytes
+        assertEquals(0x80u.toUByte(), second[0])
     }
 
     @Test
