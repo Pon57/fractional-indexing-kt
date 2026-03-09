@@ -4,14 +4,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-// Cross-terminator windows can hide shorter recursive layouts that are invisible
-// to the immediate-byte capacity estimate around 0x80, so try every split while
-// the rebalance is still small enough to keep candidate explosion bounded.
-private const val TERMINATOR_PIVOT_SPLIT_CANDIDATE_THRESHOLD = 32
-// Wide same-major byte gaps can look good under simple even spacing but still
-// lose immediate headroom against the midpoint-recursive layout.
-private const val MINOR_GAP_BALANCED_CANDIDATE_THRESHOLD = 32
-
 internal fun FractionalIndexGeneratorCore.rebalanceAcrossMinorGapOrNull(
     count: Int,
     lowerExclusive: FractionalIndex,
@@ -50,7 +42,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceAcrossMinorGapOrNull(
             ),
         )
     }
-    if (candidates.bestOrNull() == null || count > MINOR_GAP_BALANCED_CANDIDATE_THRESHOLD) {
+    if (candidates.bestOrNull() == null || count > RebalanceThresholds.MINOR_GAP_BALANCED_CANDIDATE) {
         return candidates.bestOrNull()
     }
     return candidates.consider(
@@ -116,7 +108,7 @@ private fun FractionalIndexGeneratorCore.rebalanceAroundTerminatorMinorPivotOrNu
         pivot = pivot,
         upperExclusive = upperExclusive,
     )
-    val exhaustive = count <= TERMINATOR_PIVOT_SPLIT_CANDIDATE_THRESHOLD
+    val exhaustive = count <= RebalanceThresholds.TERMINATOR_PIVOT_SPLIT_CANDIDATE
     val bestFixedPivot = chooseBestFixedPivotCandidateOrNull(
         lowerExclusive = lowerExclusive,
         pivot = pivot,

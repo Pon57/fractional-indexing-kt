@@ -4,10 +4,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-// The recursive pivot candidate only wins in very tight windows. Cap it so large
-// rebalances do not pay to materialize extra candidate lists just to confirm that.
-private const val SINGLE_BYTE_PIVOT_RECURSIVE_CANDIDATE_THRESHOLD = 32
-
 internal fun FractionalIndexGeneratorCore.rebalanceAroundSingleBytePivotOrNull(
     count: Int,
     lowerExclusive: FractionalIndex,
@@ -28,7 +24,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceAroundSingleBytePivotOrNull(
         leftByte = gap.leftByte,
         rightByte = gap.rightByte,
     )
-    if (count > SINGLE_BYTE_PIVOT_RECURSIVE_CANDIDATE_THRESHOLD) {
+    if (count > RebalanceThresholds.SINGLE_BYTE_PIVOT_RECURSIVE_CANDIDATE) {
         return direct
     }
 

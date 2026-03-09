@@ -2,12 +2,6 @@ package dev.pon.fractionalindexing.internal
 
 import dev.pon.fractionalindexing.FractionalIndex
 
-// Below this count, the optimized result is compared against the balanced fallback and
-// the better profile wins. Above it, the optimized result is accepted directly because
-// the fallback's recursive candidate exploration becomes too expensive for diminishing
-// returns — in practice the optimized strategies already dominate at larger counts.
-private const val OPTIMIZED_VS_BALANCED_FALLBACK_THRESHOLD = 32
-
 // Maximum recursion depth for the optimization pipeline. When exceeded,
 // rebalanceWithinExclusiveBounds skips optimization and falls back to balanced
 // binary splitting, which has O(log count) depth on its own and does not
@@ -159,7 +153,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceWithinExclusiveBounds(
             depth = depth,
         )
         if (optimized != null) {
-            if (count > OPTIMIZED_VS_BALANCED_FALLBACK_THRESHOLD) {
+            if (count > RebalanceThresholds.OPTIMIZED_VS_BALANCED_FALLBACK) {
                 return optimized
             }
             return bestRebalanceCandidateOrThrow(
@@ -190,7 +184,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceWithinExclusiveBounds(
 //
 // 1. Major gap        — different majors; can distribute keys across whole major slots
 // 2. Single byte pivot — same major, adjacent byte gap; direct balanced split
-// 3. Compact frontier  — zero-major only (count ≤ 32); greedily consumes short compact
+// 3. Compact frontier  — zero-major only (count ≤ ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE); greedily consumes short compact
 //                        keys before minor gap, which cannot see these cross-length slots
 // 4. Minor gap         — same major, same length; evenly spaced or terminator pivot split
 // 5. Length boundary    — same major, different minor lengths; fills the boundary gap
