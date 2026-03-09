@@ -66,7 +66,7 @@ private fun FractionalIndexGeneratorCore.rebalanceFromExtendedLowerBoundaryOrNul
         return emptyList()
     }
 
-    val pivot = fractionalIndexFromOwnedRebalanceMinor(
+    val pivot = fractionalIndexFromOwnedMinor(
         major = lowerExclusive.major,
         minor = extendMinorWithTerminator(lowerExclusive.minor),
     )

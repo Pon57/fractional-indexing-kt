@@ -116,7 +116,7 @@ internal object FractionalIndexGeneratorCore {
                     )
                     if (minimal.size < spread.size) minimal else spread
                 }
-                FractionalIndex.fromMajorMinor(major = left.major, minor = minorBetween)
+                fractionalIndexFromOwnedMinor(major = left.major, minor = minorBetween)
             }
         }
     }
@@ -154,5 +154,19 @@ internal object FractionalIndexGeneratorCore {
 
     private fun isCompactSuccessorInterval(left: UByteArray, right: UByteArray): Boolean {
         return left.contentEquals(BEFORE_DEFAULT_MINOR) && right.contentEquals(COMPACT_SUCCESSOR_MINOR)
+    }
+}
+
+// Callers transfer ownership of [minor]. The array must be freshly allocated —
+// do NOT pass shared constants (DEFAULT_MINOR, COMPACT_SUCCESSOR_MINOR) or
+// minor arrays borrowed from existing FractionalIndex instances.
+internal fun fractionalIndexFromOwnedMinor(
+    major: Long,
+    minor: UByteArray,
+): FractionalIndex {
+    return if (major == 0L && FractionalIndex.isCompactMinor(minor)) {
+        FractionalIndex.fromCompactMinorUnsafe(minor)
+    } else {
+        FractionalIndex.fromMajorMinor(major, minor)
     }
 }

@@ -40,9 +40,9 @@ internal fun FractionalIndexGeneratorCore.betweenAdjacentMajors(
     }
 
     return if (chooseLeft) {
-        FractionalIndex.fromMajorMinor(major = left.major, minor = leftMinorCandidate)
+        fractionalIndexFromOwnedMinor(major = left.major, minor = leftMinorCandidate)
     } else {
-        FractionalIndex.fromMajorMinor(major = right.major, minor = rightMinorCandidate)
+        fractionalIndexFromOwnedMinor(major = right.major, minor = rightMinorCandidate)
     }
 }
 

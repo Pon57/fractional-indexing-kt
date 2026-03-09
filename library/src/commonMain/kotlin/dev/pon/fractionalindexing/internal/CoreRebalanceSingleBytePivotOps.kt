@@ -26,7 +26,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceAroundSingleBytePivotOrNull(
         return direct
     }
 
-    val pivot = fractionalIndexFromOwnedRebalanceMinor(
+    val pivot = fractionalIndexFromOwnedMinor(
         major = gap.major,
         minor = buildMinorAtPivot(
             prefix = gap.leftMinor,

@@ -67,7 +67,7 @@ internal fun FractionalIndexGeneratorCore.buildEvenlySpacedMinorGapRebalance(
     repeat(count) { offset ->
         val pivotByte = (leftByte + ((byteGap * (offset + 1)) / divisor)).toUByte()
         generated.add(
-            fractionalIndexFromOwnedRebalanceMinor(
+            fractionalIndexFromOwnedMinor(
                 major = major,
                 minor = buildMinorAtPivot(
                     prefix = prefix,
@@ -92,7 +92,7 @@ private fun FractionalIndexGeneratorCore.rebalanceAroundTerminatorMinorPivotOrNu
         return null
     }
 
-    val pivot = fractionalIndexFromOwnedRebalanceMinor(
+    val pivot = fractionalIndexFromOwnedMinor(
         major = gap.major,
         minor = buildMinorAtPivot(
             prefix = gap.leftMinor,

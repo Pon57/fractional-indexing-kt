@@ -10,19 +10,6 @@ private const val AFTER_RANK_STRIDE = 127
 // TERMINATOR is 0x80 (128).
 private const val BEFORE_RANK_STRIDE = 128
 
-// Rebalance builders allocate fresh minor arrays, so this helper can centralize
-// the zero-copy compact-zero-major fast path.
-internal fun fractionalIndexFromOwnedRebalanceMinor(
-    major: Long,
-    minor: UByteArray,
-): FractionalIndex {
-    return if (major == 0L && FractionalIndex.isCompactMinor(minor)) {
-        FractionalIndex.fromCompactMinorUnsafe(minor)
-    } else {
-        FractionalIndex.fromMajorMinor(major, minor)
-    }
-}
-
 internal fun isShortZeroMajorCompactKey(index: FractionalIndex): Boolean =
     index.major == 0L && index.minor.size <= 2
 

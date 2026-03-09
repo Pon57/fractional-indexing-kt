@@ -14,7 +14,7 @@ internal fun FractionalIndexGeneratorCore.edgeInsert(
 
     if (index.major == boundaryMajor) {
         require(FractionalIndex.isEncodableMinorForMajor(index.major, sameMajorCandidate)) { overflowMessage }
-        return FractionalIndex.fromMajorMinor(major = index.major, minor = sameMajorCandidate)
+        return fractionalIndexFromOwnedMinor(major = index.major, minor = sameMajorCandidate)
     }
 
     val fallbackMajor = index.major + fallbackDelta
@@ -32,7 +32,7 @@ internal fun FractionalIndexGeneratorCore.edgeInsert(
         minorSize = fallbackMinor.size,
     )
     return if (sameMajorLength <= fallbackLength) {
-        FractionalIndex.fromMajorMinor(major = index.major, minor = sameMajorCandidate)
+        fractionalIndexFromOwnedMinor(major = index.major, minor = sameMajorCandidate)
     } else {
         FractionalIndex.fromMajorMinor(major = fallbackMajor, minor = fallbackMinor)
     }

@@ -219,7 +219,7 @@ internal fun FractionalIndexGeneratorCore.buildSingleBytePivotBalancedRebalance(
     val includePivot = (count % 2) != 0
     val rightCount = count / 2
     val buildIndex: (UByteArray) -> FractionalIndex = { minor ->
-        fractionalIndexFromOwnedRebalanceMinor(
+        fractionalIndexFromOwnedMinor(
             major = major,
             minor = minor,
         )
