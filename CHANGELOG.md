@@ -3,9 +3,9 @@
 ## [v2.0.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.2.0...v2.0.0) - 2026-03-08
 ### Breaking Changes
 - fix!: use compact successor after FractionalIndex.default() by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/49
-  - `after(FractionalIndex.default())` now returns the compact successor `8080`.
-    In v1, the first key generated after `FractionalIndex.default()` was different. This change also affects nearby `before(...)`, `between(...)`, and `rebalance(...)` results around the default key.
-    Existing canonical keys remain valid and continue to sort correctly, but code or tests that depend on exact generated hex values must be updated.
+  - `after(FractionalIndex.default())` now returns the compact successor `8080`. In v1, the first key generated after `FractionalIndex.default()` was different.
+    - This also affects nearby `before(...)`, `between(...)`, and `rebalance(...)` results around the default key
+    - Existing canonical keys remain valid and continue to sort correctly
 - Redesign rebalance with multi-strategy optimization by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/50
   - `FractionalIndexGenerator.rebalance(...)` has been redesigned around optional inclusive endpoints instead of exclusive bounds.
     - Parameters were renamed from `lowerExclusive` / `upperExclusive` to `lowerEndpoint` / `upperEndpoint`
@@ -13,6 +13,8 @@
     - When both endpoints are present, `count` now means the total number of returned keys, including the endpoints
     - Reversed endpoints are now invalid; callers must pass an ascending range
     - Exact rebalance output may differ from v1 because v2 uses a new optimization pipeline that prefers shorter layouts in major-gap, minor-gap, zero-major, pivot, and boundary cases
+> [!NOTE]
+> The compact successor change was conservatively listed as breaking at the time. Under the versioning policy now clarified in the README, this change alone would not require a major bump, as existing keys remain valid. See [Versioning](README.md#versioning).
 ### Migration Notes
 - If you previously used `rebalance(count, lower, upper)` to generate `count` interior keys, change it to request the new total count including both endpoints
 - If you used named arguments, rename them to `lowerEndpoint` / `upperEndpoint`
