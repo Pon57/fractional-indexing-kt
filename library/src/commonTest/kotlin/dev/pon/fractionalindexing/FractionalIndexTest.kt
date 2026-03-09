@@ -426,4 +426,32 @@ class FractionalIndexTest {
         assertEquals(sortedByIndex, sortedByString)
     }
 
+    @Test
+    fun encodedLength_matchesCompanionMethod() {
+        val terminator = ubyteArrayOf(FractionalIndex.TERMINATOR)
+        // zero-major, positive short, negative short, zero-major multi-byte,
+        // and tier boundaries: 41 (short max), 42 (medium min), 4137 (medium max), 4138 (long min)
+        val indices = listOf(
+            FractionalIndex.default(),
+            FractionalIndex.fromMajorMinor(1, terminator),       // positive short min
+            FractionalIndex.fromMajorMinor(-1, terminator),      // negative short min
+            FractionalIndex.fromMajorMinor(41, terminator),      // positive short max
+            FractionalIndex.fromMajorMinor(-41, terminator),     // negative short max
+            FractionalIndex.fromMajorMinor(42, terminator),      // positive medium min
+            FractionalIndex.fromMajorMinor(-42, terminator),     // negative medium min
+            FractionalIndex.fromMajorMinor(4137, terminator),    // positive medium max
+            FractionalIndex.fromMajorMinor(-4137, terminator),   // negative medium max
+            FractionalIndex.fromMajorMinor(4138, terminator),    // positive long min
+            FractionalIndex.fromMajorMinor(-4138, terminator),   // negative long min
+            FractionalIndex.fromBytesOrThrow(ubyteArrayOf(0x81u, 0x7fu, 0x80u)), // zero-major multi-byte
+        )
+        for (index in indices) {
+            assertEquals(
+                FractionalIndex.encodedLength(index.major, index.minor.size),
+                index.encodedLength,
+                "encodedLength mismatch for $index",
+            )
+        }
+    }
+
 }

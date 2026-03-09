@@ -15,6 +15,7 @@ public class FractionalIndex private constructor(
     internal val minor: UByteArray,
 ) : Comparable<FractionalIndex> {
     private val cachedHashCode: Int = unsafeRawBytes.contentHashCode()
+    internal val encodedLength: Int get() = unsafeRawBytes.size
 
     /** Returns a defensive copy of the raw bytes backing this index. */
     public val bytes: UByteArray

@@ -83,14 +83,8 @@ internal fun FractionalIndexGeneratorCore.chooseAdjacentSide(
         return leftCandidateLength < rightCandidateLength
     }
 
-    val leftCurrentLength = FractionalIndex.encodedLength(
-        major = left.major,
-        minorSize = left.minor.size,
-    )
-    val rightCurrentLength = FractionalIndex.encodedLength(
-        major = right.major,
-        minorSize = right.minor.size,
-    )
+    val leftCurrentLength = left.encodedLength
+    val rightCurrentLength = right.encodedLength
     if (leftCurrentLength != rightCurrentLength) {
         return leftCurrentLength < rightCurrentLength
     }
