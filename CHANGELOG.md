@@ -20,20 +20,20 @@
 - If you used named arguments, rename them to `lowerEndpoint` / `upperEndpoint`
 - If you passed bounds in arbitrary order, normalize them before calling `rebalance`
 - If you assert exact generated keys in tests, especially around `FractionalIndex.default()`, update the expected values for v2
-### Dependencies
+### Dependency Updates
 - chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.1.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/46
 - chore(deps): update gradle to v9.4.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/48
 
 ## [v1.2.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.1.0...v1.2.0) - 2026-03-02
-### Other Changes
+### General Changes
 - feat: add rebalance API with deterministic in-range key redistribution by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/44
 
 ## [v1.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.1...v1.1.0) - 2026-03-01
-### Other Changes
+### General Changes
 - feat: add OrThrow APIs by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/42
 
 ## [v1.0.1](https://github.com/Pon57/fractional-indexing-kt/compare/v1.0.0...v1.0.1) - 2026-03-01
-### Other Changes
+### General Changes
 - test: add benchmark quality regression tests by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/36
 - test: add relative and strict performance regression checks by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/38
 - ci: pin upload-artifact action in perf-strict workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/40
@@ -42,7 +42,7 @@
 ## [v1.0.0](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.4...v1.0.0) - 2026-02-27
 ### Breaking Changes
 - feat!: redesign key generation with tiered encoding by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/28
-### Other Changes
+### General Changes
 - build: enable Kotlin ABI validation and ABI check in CI by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/22
 - ci: run test workflow tasks at repository scope by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/23
 - chore: add KMP drag-and-drop sample app by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/24
@@ -54,15 +54,17 @@
 - feat: add sortable Base64 encoding that preserves sort order by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/33
 - docs: add versioning policy and remove pre-v1.0.0 warning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/34
 - perf: reduce object allocations in between() hot path by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/35
-### Dependencies
+### Dependency Updates
 - chore(deps): update gradle/actions action to v5.0.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/20
 - fix(deps): update kotest to v6.1.4 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/26
 - chore(deps): update songmu/tagpr action to v1.17.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/27
 
 ## [v0.0.4](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.3...v0.0.4) - 2026-02-23
+### General Changes
 - ci: rename MavenCentral labels to Maven Central in publish workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/18
 
 ## [v0.0.3](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.2...v0.0.3) - 2026-02-23
+### General Changes
 - ci: add Gradle cache to tagpr workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/12
 - Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/14
 - Ci workflow tuning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/15
@@ -70,9 +72,11 @@
 - ci: switch publish workflow to publishAndReleaseToMavenCentral by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/17
 
 ## [v0.0.2](https://github.com/Pon57/fractional-indexing-kt/compare/v0.0.1...v0.0.2) - 2026-02-22
+### General Changes
 - Add test workflow by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/3
 - Configure tagpr to auto-update JS/Wasm lockfiles after version bumps by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/5
 - chore: Configure Renovate by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/6
+### Dependency Updates
 - chore(deps): update gradle/actions action to v4.4.4 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/7
 - chore(deps): update actions/checkout action to v6 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/8
 - chore(deps): update gradle/actions action to v5 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/11
