@@ -184,7 +184,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceWithinExclusiveBounds(
 //
 // 1. Major gap        — different majors; can distribute keys across whole major slots
 // 2. Single byte pivot — same major, adjacent byte gap; direct balanced split
-// 3. Compact frontier  — zero-major only (count ≤ ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE); greedily consumes short compact
+// 3. Compact frontier  — zero-major only (count ≤ RebalanceThresholds.ZERO_MAJOR_COMPACT_FRONTIER_CANDIDATE); greedily consumes short compact
 //                        keys before minor gap, which cannot see these cross-length slots
 // 4. Minor gap         — same major, same length; evenly spaced or terminator pivot split
 // 5. Length boundary    — same major, different minor lengths; fills the boundary gap
