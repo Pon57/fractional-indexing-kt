@@ -92,18 +92,19 @@ internal fun FractionalIndexGeneratorCore.afterMinorSize(bytes: UByteArray): Int
     error("Invalid fractional index: missing valid increment point")
 }
 
-private val COMPACT_RANGE = FractionalIndex.COMPACT_FIRST_MIN..FractionalIndex.COMPACT_FIRST_MAX
+private fun isCompactFirstByte(value: Int): Boolean =
+    value in FractionalIndex.COMPACT_FIRST_MIN..FractionalIndex.COMPACT_FIRST_MAX
 
 internal fun FractionalIndexGeneratorCore.afterMinorCompactSizeOrNegative(bytes: UByteArray): Int {
     for (i in bytes.indices) {
         val current = bytes[i].toInt()
         if (current < TERMINATOR_INT) {
             val firstByte = if (i == 0) TERMINATOR_INT else bytes[0].toInt()
-            return if (firstByte in COMPACT_RANGE) i + 1 else -1
+            return if (isCompactFirstByte(firstByte)) i + 1 else -1
         }
         if (current < UBYTE_MAX_INT) {
             val firstByte = if (i == 0) current + 1 else bytes[0].toInt()
-            return if (firstByte in COMPACT_RANGE) i + 2 else -1
+            return if (isCompactFirstByte(firstByte)) i + 2 else -1
         }
     }
     error("Invalid fractional index: missing valid increment point")
@@ -114,11 +115,11 @@ internal fun FractionalIndexGeneratorCore.beforeMinorCompactSizeOrNegative(bytes
         val current = bytes[i].toInt()
         if (current > TERMINATOR_INT) {
             val firstByte = if (i == 0) TERMINATOR_INT else bytes[0].toInt()
-            return if (firstByte in COMPACT_RANGE) i + 1 else -1
+            return if (isCompactFirstByte(firstByte)) i + 1 else -1
         }
         if (current > 0) {
             val firstByte = if (i == 0) current - 1 else bytes[0].toInt()
-            return if (firstByte in COMPACT_RANGE) i + 2 else -1
+            return if (isCompactFirstByte(firstByte)) i + 2 else -1
         }
     }
     error("Invalid fractional index: missing valid decrement point")
