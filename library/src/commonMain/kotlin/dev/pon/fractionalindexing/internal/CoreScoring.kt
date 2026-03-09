@@ -89,9 +89,9 @@ internal fun FractionalIndexGeneratorCore.estimateMinimalBetweenLength(
                     ),
                 )
             } else {
-                val leftCandidate = afterMinor(leftMinor)
-                if (FractionalIndex.isEncodableMinorForMajor(0L, leftCandidate)) {
-                    minLength = minOf(minLength, leftCandidate.size)
+                val leftCompactSize = afterMinorCompactSizeOrNegative(leftMinor)
+                if (leftCompactSize >= 0) {
+                    minLength = minOf(minLength, leftCompactSize)
                 }
             }
 
@@ -104,9 +104,9 @@ internal fun FractionalIndexGeneratorCore.estimateMinimalBetweenLength(
                     ),
                 )
             } else {
-                val rightCandidate = beforeMinor(rightMinor)
-                if (FractionalIndex.isEncodableMinorForMajor(0L, rightCandidate)) {
-                    minLength = minOf(minLength, rightCandidate.size)
+                val rightCompactSize = beforeMinorCompactSizeOrNegative(rightMinor)
+                if (rightCompactSize >= 0) {
+                    minLength = minOf(minLength, rightCompactSize)
                 }
             }
 
