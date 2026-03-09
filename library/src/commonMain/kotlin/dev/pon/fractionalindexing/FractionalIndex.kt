@@ -255,45 +255,44 @@ public class FractionalIndex private constructor(
             require(rawBytes.last() == TERMINATOR) {
                 "FractionalIndex must end with terminator $TERMINATOR value: FractionalIndex(${rawBytes.contentToString()})"
             }
-            val (major, minor) = parseRawBytes(rawBytes)
-            return FractionalIndex(rawBytes, major, minor)
+            return parseRawBytes(rawBytes)
         }
 
-        private fun parseRawBytes(bytes: UByteArray): Pair<Long, UByteArray> {
-            val first = bytes[0].toInt()
+        private fun parseRawBytes(rawBytes: UByteArray): FractionalIndex {
+            val first = rawBytes[0].toInt()
             if (first in 0..NEGATIVE_SHORT_MAX_TAG) {
-                return parseNegative(bytes)
+                return parseNegative(rawBytes)
             }
 
             if (first in POSITIVE_SHORT_MIN_TAG..0xFF) {
-                return parsePositive(bytes)
+                return parsePositive(rawBytes)
             }
 
-            require(isCompactFirstByte(bytes[0])) { INVALID_FORMAT_MESSAGE }
+            require(isCompactFirstByte(rawBytes[0])) { INVALID_FORMAT_MESSAGE }
             // major=0: minor is the entire raw bytes; share the same instance
-            return Pair(0L, bytes)
+            return FractionalIndex(rawBytes, 0L, rawBytes)
         }
 
-        private fun parseNegative(bytes: UByteArray): Pair<Long, UByteArray> {
-            require(bytes.size >= 2) { INVALID_FORMAT_MESSAGE }
+        private fun parseNegative(rawBytes: UByteArray): FractionalIndex {
+            require(rawBytes.size >= 2) { INVALID_FORMAT_MESSAGE }
 
-            val first = bytes[0].toInt()
+            val first = rawBytes[0].toInt()
             return if (first in NEGATIVE_SHORT_MIN_TAG..NEGATIVE_SHORT_MAX_TAG) {
                 val magnitude = (NEGATIVE_SHORT_MAX_TAG + 1) - first
                 val major = -magnitude.toLong()
-                val minor = bytes.copyOfRange(1, bytes.size)
+                val minor = rawBytes.copyOfRange(1, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
-                Pair(major, minor)
+                FractionalIndex(rawBytes, major, minor)
             } else if (first in NEGATIVE_MEDIUM_MIN_TAG..NEGATIVE_MEDIUM_MAX_TAG) {
-                require(bytes.size >= 3) { INVALID_FORMAT_MESSAGE }
+                require(rawBytes.size >= 3) { INVALID_FORMAT_MESSAGE }
                 val group = NEGATIVE_MEDIUM_MAX_TAG - first
-                val remainder = UByte.MAX_VALUE.toInt() - bytes[1].toInt()
+                val remainder = UByte.MAX_VALUE.toInt() - rawBytes[1].toInt()
                 val magnitude = SHORT_MAJOR_MAX + 1L + (group.toLong() * 256L) + remainder.toLong()
                 require(magnitude in (SHORT_MAJOR_MAX + 1L)..MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
 
-                val minor = bytes.copyOfRange(2, bytes.size)
+                val minor = rawBytes.copyOfRange(2, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
-                Pair(-magnitude, minor)
+                FractionalIndex(rawBytes, -magnitude, minor)
             } else {
                 require(first in NEGATIVE_LONG_MIN_TAG..NEGATIVE_LONG_MAX_TAG) { INVALID_FORMAT_MESSAGE }
                 val majorLength = EXTENDED_MAJOR_MAX_LENGTH - first
@@ -301,36 +300,36 @@ public class FractionalIndex private constructor(
 
                 val payloadStart = 1
                 val payloadEndExclusive = payloadStart + majorLength
-                require(bytes.size > payloadEndExclusive) { INVALID_FORMAT_MESSAGE }
-                val majorPayload = bytes.copyOfRange(payloadStart, payloadEndExclusive)
-                val minor = bytes.copyOfRange(payloadEndExclusive, bytes.size)
+                require(rawBytes.size > payloadEndExclusive) { INVALID_FORMAT_MESSAGE }
+                val majorPayload = rawBytes.copyOfRange(payloadStart, payloadEndExclusive)
+                val minor = rawBytes.copyOfRange(payloadEndExclusive, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
                 val magnitude = decodeUnsignedMagnitude(complementBytes(majorPayload))
                 require(magnitude > MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
-                Pair(-magnitude, minor)
+                FractionalIndex(rawBytes, -magnitude, minor)
             }
         }
 
-        private fun parsePositive(bytes: UByteArray): Pair<Long, UByteArray> {
-            require(bytes.size >= 2) { INVALID_FORMAT_MESSAGE }
+        private fun parsePositive(rawBytes: UByteArray): FractionalIndex {
+            require(rawBytes.size >= 2) { INVALID_FORMAT_MESSAGE }
 
-            val first = bytes[0].toInt()
+            val first = rawBytes[0].toInt()
             return if (first in POSITIVE_SHORT_MIN_TAG..POSITIVE_SHORT_MAX_TAG) {
                 val major = (first - POSITIVE_SHORT_MIN_TAG + 1).toLong()
-                val minor = bytes.copyOfRange(1, bytes.size)
+                val minor = rawBytes.copyOfRange(1, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
-                Pair(major, minor)
+                FractionalIndex(rawBytes, major, minor)
             } else if (first in POSITIVE_MEDIUM_MIN_TAG..POSITIVE_MEDIUM_MAX_TAG) {
-                require(bytes.size >= 3) { INVALID_FORMAT_MESSAGE }
+                require(rawBytes.size >= 3) { INVALID_FORMAT_MESSAGE }
                 val group = first - POSITIVE_MEDIUM_MIN_TAG
-                val remainder = bytes[1].toInt()
+                val remainder = rawBytes[1].toInt()
                 val major = SHORT_MAJOR_MAX + 1L + (group.toLong() * 256L) + remainder.toLong()
                 require(major in (SHORT_MAJOR_MAX + 1L)..MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
 
-                val minor = bytes.copyOfRange(2, bytes.size)
+                val minor = rawBytes.copyOfRange(2, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
-                Pair(major, minor)
+                FractionalIndex(rawBytes, major, minor)
             } else {
                 require(first in POSITIVE_LONG_MIN_TAG..POSITIVE_LONG_MAX_TAG) { INVALID_FORMAT_MESSAGE }
                 val majorLength = first - POSITIVE_LONG_MIN_TAG + 2
@@ -338,14 +337,14 @@ public class FractionalIndex private constructor(
 
                 val payloadStart = 1
                 val payloadEndExclusive = payloadStart + majorLength
-                require(bytes.size > payloadEndExclusive) { INVALID_FORMAT_MESSAGE }
-                val majorPayload = bytes.copyOfRange(payloadStart, payloadEndExclusive)
-                val minor = bytes.copyOfRange(payloadEndExclusive, bytes.size)
+                require(rawBytes.size > payloadEndExclusive) { INVALID_FORMAT_MESSAGE }
+                val majorPayload = rawBytes.copyOfRange(payloadStart, payloadEndExclusive)
+                val minor = rawBytes.copyOfRange(payloadEndExclusive, rawBytes.size)
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
                 val major = decodeUnsignedMagnitude(majorPayload)
                 require(major > MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
-                Pair(major, minor)
+                FractionalIndex(rawBytes, major, minor)
             }
         }
 
