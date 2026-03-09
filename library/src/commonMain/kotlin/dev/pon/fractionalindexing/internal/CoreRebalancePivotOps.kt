@@ -272,7 +272,7 @@ internal fun FractionalIndexGeneratorCore.extraCompactSuccessorCapacityOrZero(
     pivot: FractionalIndex,
     upperExclusive: FractionalIndex,
 ): ULong {
-    if (pivot != FractionalIndex.default()) {
+    if (pivot != DEFAULT_INDEX) {
         return 0uL
     }
 
