@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.maven.publish)
-    alias(libs.plugins.kotest)
     alias(libs.plugins.ksp)
 }
 
