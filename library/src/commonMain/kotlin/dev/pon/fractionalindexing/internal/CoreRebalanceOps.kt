@@ -80,7 +80,7 @@ private fun FractionalIndexGeneratorCore.rebalanceUnbounded(
     count: Int,
 ): List<FractionalIndex> {
     val generated = ArrayList<FractionalIndex>(count)
-    var current = FractionalIndex.default()
+    var current = DEFAULT_INDEX
     generated.add(current)
 
     repeat(count - 1) {

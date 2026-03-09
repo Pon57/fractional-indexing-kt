@@ -28,10 +28,11 @@ internal object FractionalIndexGeneratorCore {
     internal val TERMINATOR_INT = FractionalIndex.TERMINATOR.toInt()
     internal val UBYTE_MAX_INT = UByte.MAX_VALUE.toInt()
     internal val DEFAULT_MINOR = ubyteArrayOf(FractionalIndex.TERMINATOR)
+    internal val DEFAULT_INDEX = FractionalIndex.default()
 
     fun before(index: FractionalIndex): FractionalIndex {
         if (index.major == 0L && index.minor.contentEquals(COMPACT_SUCCESSOR_MINOR)) {
-            return FractionalIndex.default()
+            return DEFAULT_INDEX
         }
 
         return edgeInsert(
@@ -98,7 +99,7 @@ internal object FractionalIndexGeneratorCore {
                 // default minor is the optimal midpoint that the general algorithm
                 // cannot discover (it only produces results at lengths ≥ both bounds).
                 if (left.major == 0L && isCompactSuccessorInterval(left.minor, right.minor)) {
-                    return FractionalIndex.default()
+                    return DEFAULT_INDEX
                 }
 
                 val minimal = minimalBetweenMinor(

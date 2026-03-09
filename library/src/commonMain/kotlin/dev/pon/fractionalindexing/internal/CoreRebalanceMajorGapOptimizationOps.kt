@@ -159,7 +159,7 @@ private fun FractionalIndexGeneratorCore.rebalanceAroundZeroMajorPivotOrNull(
         return null
     }
 
-    val pivot = FractionalIndex.default()
+    val pivot = DEFAULT_INDEX
     val leftAvailable = (-lowerExclusive.major).toULong() - 1uL
     val rightAvailable = upperExclusive.major.toULong() - 1uL
     return chooseBestFixedPivotCandidateOrNull(

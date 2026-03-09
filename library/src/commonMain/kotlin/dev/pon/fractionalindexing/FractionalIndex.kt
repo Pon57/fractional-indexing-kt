@@ -14,6 +14,8 @@ public class FractionalIndex private constructor(
     internal val major: Long,
     internal val minor: UByteArray,
 ) : Comparable<FractionalIndex> {
+    private val cachedHashCode: Int = unsafeRawBytes.contentHashCode()
+
     /** Returns a defensive copy of the raw bytes backing this index. */
     public val bytes: UByteArray
         get() = unsafeRawBytes.copyOf()
@@ -51,6 +53,7 @@ public class FractionalIndex private constructor(
     override fun toString(): String = "FractionalIndex(${unsafeRawBytes.contentToString()})"
 
     override fun compareTo(other: FractionalIndex): Int {
+        if (this === other) return 0
         val minLength = minOf(unsafeRawBytes.size, other.unsafeRawBytes.size)
 
         for (i in 0 until minLength) {
@@ -71,7 +74,7 @@ public class FractionalIndex private constructor(
         return unsafeRawBytes.contentEquals(other.unsafeRawBytes)
     }
 
-    override fun hashCode(): Int = unsafeRawBytes.contentHashCode()
+    override fun hashCode(): Int = cachedHashCode
 
     public companion object {
         internal const val TERMINATOR: UByte = 0x80u
