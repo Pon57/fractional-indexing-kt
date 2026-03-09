@@ -105,8 +105,8 @@ public class FractionalIndex private constructor(
         private const val POSITIVE_MEDIUM_MAX_TAG = 0xF8
         private const val POSITIVE_LONG_MIN_TAG = 0xF9
         private const val POSITIVE_LONG_MAX_TAG = 0xFF
-        private const val COMPACT_FIRST_MIN = 0x40
-        private const val COMPACT_FIRST_MAX = 0xBF
+        internal const val COMPACT_FIRST_MIN = 0x40
+        internal const val COMPACT_FIRST_MAX = 0xBF
         private const val EXTENDED_MAJOR_MAX_LENGTH = 8
 
         // Safe to share: all internal arrays are never mutated and `bytes` returns a defensive copy.
