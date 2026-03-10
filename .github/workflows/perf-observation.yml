@@ -1,4 +1,4 @@
-name: Strict Performance Regression
+name: Performance Observation
 
 on:
   workflow_dispatch:
@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  performance-strict:
-    name: "jvm strict performance regression"
+  performance-observation:
+    name: "jvm performance observation"
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -29,26 +29,26 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
-      - name: Run strict performance regression test
+      - name: Run JVM performance regression test with memory observation
         id: run_perf
         continue-on-error: true
         run: |
           set -o pipefail
-          ./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest -DfractionalIndexing.perf.strict=true --rerun-tasks --no-configuration-cache | tee perf-strict.log
+          ./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache | tee perf-observation.log
 
       - name: Publish perf summary
         if: always()
         run: |
           status="${{ steps.run_perf.outcome }}"
           profile_line="$(
-            grep -Rho -m1 'PERF_PROFILE [^<]*' perf-strict.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            grep -Rho -m1 'PERF_PROFILE [^<]*' perf-observation.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
           )"
           memory_line="$(
-            grep -Rho -m1 'PERF_MEMORY [^<]*' perf-strict.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            grep -Rho -m1 'PERF_MEMORY [^<]*' perf-observation.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
           )"
           
           {
-            echo "## Strict Performance Regression"
+            echo "## JVM Performance Observation"
             if [ "$status" = "success" ]; then
               echo "- Result: ✅ Passed"
             else
@@ -102,22 +102,22 @@ jobs:
             echo "<details><summary>Log tail</summary>"
             echo ""
             echo '```text'
-            tail -n 80 perf-strict.log || true
+            tail -n 80 perf-observation.log || true
             echo '```'
             echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload strict perf artifacts
+      - name: Upload perf artifacts
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: perf-strict-${{ github.run_id }}-${{ github.run_attempt }}
+          name: perf-observation-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            perf-strict.log
+            perf-observation.log
             library/build/test-results/jvmTest/*.xml
             library/build/reports/tests/jvmTest/**
           if-no-files-found: warn
 
-      - name: Fail on strict perf regression
+      - name: Fail on performance regression
         if: steps.run_perf.outcome != 'success'
         run: exit 1
