@@ -127,11 +127,11 @@ This library follows [Semantic Versioning](https://semver.org/).
 
 ## Performance Regression Check
 
-- Relative performance regression checks run in regular JVM tests.
-- Strict absolute-budget checks can be run locally with:
-  - `./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest -DfractionalIndexing.perf.strict=true --rerun-tasks --no-configuration-cache`
-- CI also provides a dedicated strict workflow (`.github/workflows/perf-strict.yml`) for scheduled/manual verification.
-- The strict workflow additionally publishes non-gating memory observations (peak/retained used heap) for trend tracking.
+- Relative and absolute performance regression checks run in regular JVM tests.
+- CI publishes the measured JVM perf profile and memory observation in the main test workflow so regressions are visible on PRs.
+- Run the JVM perf regression test directly with:
+  - `./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache`
+- CI also provides a dedicated perf observation workflow (`.github/workflows/perf-observation.yml`) that archives the same profile and memory snapshot.
 
 ## License
 
