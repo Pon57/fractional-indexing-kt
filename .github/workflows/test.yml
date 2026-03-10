@@ -85,9 +85,12 @@ jobs:
           profile_line="$(
             grep -Rho -m1 'PERF_PROFILE [^<]*' jvm-test.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
           )"
+          memory_line="$(
+            grep -Rho -m1 'PERF_MEMORY [^<]*' jvm-test.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
 
           {
-            echo "## JVM Performance Profile (relative)"
+            echo "## JVM Performance Profile"
             if [ "${{ steps.run_tests.outcome }}" = "success" ]; then
               echo "- Test step result: ✅ Passed"
             else
@@ -100,5 +103,15 @@ jobs:
               echo '```'
             else
               echo "- PERF_PROFILE line not found."
+            fi
+            echo ""
+            if [ -n "$memory_line" ]; then
+              echo "### Memory Observation"
+              echo '```text'
+              echo "$memory_line"
+              echo '```'
+            else
+              echo "### Memory Observation"
+              echo "- PERF_MEMORY line not found."
             fi
           } >> "$GITHUB_STEP_SUMMARY"

@@ -52,9 +52,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
     }
 
     @Test
-    fun performanceRegression_absoluteBudget_strictModeOnly() {
-        if (!STRICT_MODE) return
-
+    fun performanceRegression_absoluteBudget_staysWithinBudget() {
         val profile = getOrMeasureProfile()
         assertTrue(
             profile.appendAfterNsPerOp <= MAX_APPEND_ABSOLUTE_NS_PER_OP,
@@ -81,10 +79,8 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         val measured = measureThroughputProfile()
         cachedProfile = measured
         logProfile(measured)
-        if (STRICT_MODE) {
-            val memory = getOrMeasureMemoryObservation()
-            logMemoryObservation(memory)
-        }
+        val memory = getOrMeasureMemoryObservation()
+        logMemoryObservation(memory)
         return measured
     }
 
@@ -154,8 +150,6 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
                 append(formatDecimal(appendVsRandomInsert))
                 append(" move_vs_random_insert=")
                 append(formatDecimal(moveVsRandomInsert))
-                append(" strict_mode=")
-                append(STRICT_MODE)
             },
         )
     }
@@ -403,15 +397,12 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val MOVE_STEPS = 3_000
         private const val MOVE_INITIAL_SIZE = 256
 
-        private val STRICT_MODE: Boolean =
-            System.getProperty("fractionalIndexing.perf.strict")?.toBooleanStrictOrNull() == true
-
         // Relative budgets are stable across CI/local machine differences.
         private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 9.0
         private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 2.5
         private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.5
 
-        // Absolute budgets are optional (strict mode) and intended for controlled runners.
+        // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
         private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 130.0
         private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 4200.0
         private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 760.0
