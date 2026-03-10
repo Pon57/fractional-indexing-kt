@@ -1,5 +1,25 @@
 # Changelog
 
+## [v2.0.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.0...v2.0.1) - 2026-03-10
+### Bug Fixes
+- fix: use defensive copy for shared DEFAULT_MINOR by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/60
+### General Changes
+- docs: clarify versioning policy and v2 changelog notes by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/53
+- docs: refine release note category titles by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/54
+- refactor: replace per-file @OptIn(ExperimentalUnsignedTypes) with module-level opt-in by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/55
+- perf: cache hashCode, short-circuit compareTo, and intern default index by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/57
+- refactor: consolidate rebalance threshold constants into single object by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/56
+- perf: cache FractionalIndex.default() as a singleton by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/58
+- perf: add encodedLength property to FractionalIndex by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/59
+- perf: zero-copy owned-minor construction in core insert paths by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/61
+- chore: remove unused kotest Gradle plugin to fix test api warning by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/64
+- perf: allocation-free compact minor estimation in scoring by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/63
+- perf: eliminate Pair allocations in parse path by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/62
+- Fix hashCode performance regression with a manual lazy cache by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/65
+- Revert "perf: cache FractionalIndex.default() as a singleton" by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/66
+### Dependency Updates
+- fix(deps): update kotest to v6.1.5 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/51
+
 ## [v2.0.0](https://github.com/Pon57/fractional-indexing-kt/compare/v1.2.0...v2.0.0) - 2026-03-08
 ### Breaking Changes
 - fix!: use compact successor after FractionalIndex.default() by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/49
