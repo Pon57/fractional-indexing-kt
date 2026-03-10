@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing
 
+import kotlin.concurrent.Volatile
 import kotlin.io.encoding.Base64
 
 /**
@@ -14,7 +15,8 @@ public class FractionalIndex private constructor(
     internal val major: Long,
     internal val minor: UByteArray,
 ) : Comparable<FractionalIndex> {
-    private val cachedHashCode: Int = unsafeRawBytes.contentHashCode()
+    @Volatile
+    private var cachedHashCode: Long = UNCOMPUTED_HASH_CODE
     internal val encodedLength: Int get() = unsafeRawBytes.size
 
     /** Returns a defensive copy of the raw bytes backing this index. */
@@ -75,12 +77,20 @@ public class FractionalIndex private constructor(
         return unsafeRawBytes.contentEquals(other.unsafeRawBytes)
     }
 
-    override fun hashCode(): Int = cachedHashCode
+    override fun hashCode(): Int {
+        val cached = cachedHashCode
+        if (cached != UNCOMPUTED_HASH_CODE) return cached.toInt()
+
+        val computed = unsafeRawBytes.contentHashCode()
+        cachedHashCode = computed.toLong()
+        return computed
+    }
 
     public companion object {
         internal const val TERMINATOR: UByte = 0x80u
 
         private const val INVALID_FORMAT_MESSAGE = "invalid fractional index format"
+        private const val UNCOMPUTED_HASH_CODE: Long = Long.MIN_VALUE
 
         // First-byte encoding layout:
         //   0x00..0x3F  negative major (long / medium / short tiers)
