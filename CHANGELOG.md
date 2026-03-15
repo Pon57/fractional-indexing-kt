@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.0.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.1...v2.0.2) - 2026-03-15
+### Dependency Updates
+- fix(deps): update kotest to v6.1.6 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/67
+- chore(deps): update actions/create-github-app-token action to v2.2.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/69
+- chore(deps): update actions/create-github-app-token action to v3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/70
+- fix(deps): update kotest to v6.1.7 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/71
+
 ## [v2.0.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.0...v2.0.1) - 2026-03-10
 ### Bug Fixes
 - fix: use defensive copy for shared DEFAULT_MINOR by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/60
