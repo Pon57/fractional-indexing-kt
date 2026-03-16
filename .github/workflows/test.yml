@@ -8,8 +8,8 @@ on:
   workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.head_ref || '', 'tagpr-from-') }}
+  group: ${{ github.workflow }}-${{ github.ref }}${{ startsWith(github.head_ref || '', 'tagpr-from-') && format('-{0}', github.run_id) || '' }}
+  cancel-in-progress: true
 
 jobs:
   abi-check:
