@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   abi-check:
-    name: "checkLegacyAbi"
+    name: "checkKotlinAbi"
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -32,7 +32,7 @@ jobs:
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
 
       - name: Run ABI compatibility check
-        run: ./gradlew checkLegacyAbi --no-configuration-cache
+        run: ./gradlew :library:checkKotlinAbi --no-configuration-cache
 
   test:
     name: "${{ matrix.os }} / ${{ matrix.target }}"
