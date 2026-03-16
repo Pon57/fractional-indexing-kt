@@ -122,8 +122,8 @@ This library follows [Semantic Versioning](https://semver.org/).
 
 ## API Compatibility Check
 
-- CI runs `./gradlew :library:checkLegacyAbi --no-configuration-cache` to detect binary-incompatible public API changes.
-- When intentionally changing public API, regenerate the baseline with `./gradlew :library:updateLegacyAbi --no-configuration-cache` and commit the updated ABI dump files under `library/api/`.
+- CI runs `./gradlew :library:checkKotlinAbi --no-configuration-cache` to detect binary-incompatible public API changes.
+- When intentionally changing public API, regenerate the baseline with `./gradlew :library:updateKotlinAbi --no-configuration-cache` and commit the updated ABI dump files under `library/api/`.
 
 ## Performance Regression Check
 
