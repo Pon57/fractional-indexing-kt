@@ -1,5 +1,12 @@
 [![Maven Central](https://img.shields.io/maven-central/v/dev.pon/fractional-indexing?label=Maven%20Central)](https://central.sonatype.com/artifact/dev.pon/fractional-indexing)
 
+![JVM](https://img.shields.io/badge/-jvm-DB413D.svg?style=flat)
+![Android](https://img.shields.io/badge/-android-6EDB8D.svg?style=flat)
+![iOS](https://img.shields.io/badge/-ios-CDCDCD.svg?style=flat)
+![macOS](https://img.shields.io/badge/-macos-111111.svg?style=flat)
+![JS](https://img.shields.io/badge/-js-F8DB5D.svg?style=flat)
+![wasmJS](https://img.shields.io/badge/-wasm--js-624FE8.svg?style=flat)
+
 # Fractional Indexing for Kotlin
 
 A Kotlin Multiplatform library that generates lexicographically sortable keys for application-defined ordering (e.g., drag-and-drop lists).
