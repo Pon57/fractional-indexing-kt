@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.0.3](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.2...v2.0.3) - 2026-04-15
+### General Changes
+- docs(readme): add Kotlin Multiplatform target badges by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/88
+- chore(renovate): config maintenance by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/89
+### Dependency Updates
+- chore(deps): update gradle to v9.4.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/75
+- fix(deps): update kotest to v6.1.8 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/78
+- fix(deps): update kotest to v6.1.9 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/79
+- chore(deps): update gradle/actions action to v6 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/77
+- fix(deps): update kotest to v6.1.11 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/82
+- chore(deps): update songmu/tagpr action to v1.18.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/83
+- chore(deps): update gradle/actions action to v6.1.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/81
+- chore(deps): update actions/upload-artifact action to v7.0.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/84
+- chore(deps): update actions/create-github-app-token action to v3.1.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/85
+- chore(deps): update songmu/tagpr action to v1.18.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/86
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.1.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/87
+
 ## [v2.0.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.1...v2.0.2) - 2026-03-16
 ### General Changes
 - fix(ci): prevent tagpr double-push from leaving cancelled test status by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/73
