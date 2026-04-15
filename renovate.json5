@@ -1,15 +1,24 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "labels": ["dependencies"],
-  "packageRules": [
-    {
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "automerge": true,
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        "helpers:pinGitHubActionDigests",
+    ],
+    "labels": [
+        "dependencies"
+    ],
+    "configMigration": true,
+    "minimumReleaseAge": "7 days",
+    "osvVulnerabilityAlerts": true,
+    "vulnerabilityAlerts": {
+        "minimumReleaseAge": "2 days",
     },
-  ]
+    "packageRules": [
+        {
+            "matchUpdateTypes": [
+                "patch",
+            ],
+            "automerge": true,
+        },
+    ],
 }
