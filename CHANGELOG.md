@@ -1,5 +1,9 @@
 # Changelog
 
+## [v2.0.4](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.3...v2.0.4) - 2026-04-24
+### Dependency Updates
+- chore(deps): update songmu/tagpr action to v1.18.3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/90
+
 ## [v2.0.3](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.2...v2.0.3) - 2026-04-15
 ### General Changes
 - docs(readme): add Kotlin Multiplatform target badges by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/88
