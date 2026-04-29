@@ -10,7 +10,7 @@ jvmTarget = "11"
 
 agp = "9.1.1"
 kotest = "6.1.11"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 ksp = "2.3.6"
 kotlinxCoroutinesTest = "1.10.2"
 vanniktechMavenPublish = "0.36.0"
