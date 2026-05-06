@@ -1,4 +1,4 @@
-import org.gradle.kotlin.dsl.androidLibrary
+import org.gradle.kotlin.dsl.android
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
@@ -32,7 +32,7 @@ kotlin {
         }
     }
 
-    androidLibrary {
+    android {
         namespace = "dev.pon.fractionalindexing"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
