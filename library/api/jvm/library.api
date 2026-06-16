@@ -1,6 +1,5 @@
 public final class dev/pon/fractionalindexing/FractionalIndex : java/lang/Comparable {
 	public static final field Companion Ldev/pon/fractionalindexing/FractionalIndex$Companion;
-	public synthetic fun <init> ([BJ[BLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun compareTo (Ldev/pon/fractionalindexing/FractionalIndex;)I
 	public synthetic fun compareTo (Ljava/lang/Object;)I
 	public fun equals (Ljava/lang/Object;)Z

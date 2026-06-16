@@ -15,9 +15,7 @@ version = rootProject.file("VERSION").readText().trim()
 
 kotlin {
     @OptIn(ExperimentalAbiValidation::class)
-    abiValidation {
-        enabled.set(true)
-    }
+    abiValidation()
     explicitApi()
     jvmToolchain(libs.versions.jvmToolchain.get().toInt())
 
