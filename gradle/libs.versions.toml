@@ -13,7 +13,7 @@ kotest = "6.2.1"
 kotlin = "2.4.0"
 ksp = "2.3.9"
 kotlinxCoroutinesTest = "1.11.0"
-vanniktechMavenPublish = "0.36.0"
+vanniktechMavenPublish = "0.37.0"
 
 [libraries]
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
