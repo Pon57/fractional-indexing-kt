@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.0.5](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.4...v2.0.5) - 2026-06-29
+
+### General Changes
+- Fix Kotlin JS npm audit warnings by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/111
+### Dependency Updates
+- chore(deps): update ksp monorepo to v2.3.9 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/103
+- chore(deps): update songmu/tagpr action to v1.20.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/105
+- chore(deps): update actions/checkout action to v6.0.3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/106
+- fix(deps): update kotlin monorepo to v2.4.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/107
+- chore(deps): update gradle/actions action to v6.2.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/108
+- chore(deps): update actions/setup-java action to v5.3.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/110
+- fix(deps): update kotest to v6.2.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/109
+- chore(deps): update actions/checkout action to v7 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/112
+- fix(deps): update kotest to v6.2.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/113
+- chore(deps): update dependency com.vanniktech.maven.publish to v0.37.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/115
+- chore(deps): update gradle to v9.6.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/114
+
 ## [v2.0.4](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.3...v2.0.4) - 2026-05-21
 ### General Changes
 - chore: replace deprecated Android KMP DSL by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/96
