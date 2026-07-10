@@ -316,7 +316,9 @@ public class FractionalIndex private constructor(
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
                 val magnitude = decodeUnsignedMagnitude(complementBytes(majorPayload))
-                require(magnitude > MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
+                require(
+                    magnitude > MEDIUM_MAJOR_MAX && unsignedMagnitudeByteLength(magnitude) == majorLength,
+                ) { INVALID_FORMAT_MESSAGE }
                 FractionalIndex(rawBytes, -magnitude, minor)
             }
         }
@@ -353,7 +355,9 @@ public class FractionalIndex private constructor(
                 require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
                 val major = decodeUnsignedMagnitude(majorPayload)
-                require(major > MEDIUM_MAJOR_MAX) { INVALID_FORMAT_MESSAGE }
+                require(
+                    major > MEDIUM_MAJOR_MAX && unsignedMagnitudeByteLength(major) == majorLength,
+                ) { INVALID_FORMAT_MESSAGE }
                 FractionalIndex(rawBytes, major, minor)
             }
         }

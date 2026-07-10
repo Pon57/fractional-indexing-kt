@@ -144,6 +144,21 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromHexString_rejectsNonMinimalLongMajorFormats() {
+        val nonCanonical = listOf(
+            "fa00102a80", // positive 4138 with a redundant leading 00; canonical form is f9102a80
+            "05ffefd580", // negative 4138 with a redundant leading ff; canonical form is 06efd580
+        )
+
+        for (hex in nonCanonical) {
+            assertTrue(
+                FractionalIndex.fromHexString(hex).isFailure,
+                "Expected non-minimal long-major format to fail: $hex",
+            )
+        }
+    }
+
+    @Test
     fun fromBytes_parsesValidBytes() {
         val result = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u))
 
