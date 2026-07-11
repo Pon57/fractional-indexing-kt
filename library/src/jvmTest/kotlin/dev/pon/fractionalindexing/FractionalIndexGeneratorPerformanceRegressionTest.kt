@@ -397,16 +397,16 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val MOVE_STEPS = 3_000
         private const val MOVE_INITIAL_SIZE = 256
 
-        // Relative budgets are stable across CI/local machine differences.
-        private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 9.0
-        private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 2.5
-        private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.5
+        // Relative budgets reduce, but do not eliminate, environment variance.
+        private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 7.5
+        private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 1.8
+        private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.4
 
         // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
-        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 130.0
-        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 4200.0
-        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 760.0
-        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 1000.0
+        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 120.0
+        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 3400.0
+        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 550.0
+        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 800.0
 
         private const val MEMORY_SAMPLE_INTERVAL = 64
 
