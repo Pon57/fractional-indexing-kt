@@ -42,7 +42,7 @@ class FractionalIndexGeneratorRebalanceNegativeMajorTest {
         assertEquals(lower, generated.first())
         assertEquals(upper, generated.last())
         assertTrue(
-            interior.all { it.bytes.size == 2 },
+            interior.all { it.encodedLength == 2 },
             "Expected all interior keys to be short (2-byte) when major gap is wide. generated=${generated.map { it.toHexString() }}",
         )
     }
@@ -60,7 +60,7 @@ class FractionalIndexGeneratorRebalanceNegativeMajorTest {
         )
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(
             2,
@@ -164,7 +164,7 @@ class FractionalIndexGeneratorRebalanceNegativeMajorTest {
         val interior = generated.subList(1, generated.lastIndex)
 
         assertTrue(
-            interior.all { it.bytes.size == 3 },
+            interior.all { it.encodedLength == 3 },
             "Expected all interior keys to be 3-byte in a tight length boundary window. " +
                 "generated=${generated.map { it.toHexString() }}",
         )
@@ -204,7 +204,7 @@ class FractionalIndexGeneratorRebalanceNegativeMajorTest {
         )
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(
             3,

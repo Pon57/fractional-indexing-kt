@@ -20,8 +20,8 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
     fun growthProfile_snapshot_rawAndBase64TransportLength() {
         val checkpoints = listOf(300, 3_000, 10_000)
 
-        val adjacentRaw = runAdjacentPairPattern(checkpoints) { it.bytes.size }
-        val rootAnchoredRaw = runRootAnchoredPattern(checkpoints) { it.bytes.size }
+        val adjacentRaw = runAdjacentPairPattern(checkpoints) { it.encodedLength }
+        val rootAnchoredRaw = runRootAnchoredPattern(checkpoints) { it.encodedLength }
         val adjacentBase64 = runAdjacentPairPattern(checkpoints) { it.toBase64String().length }
         val rootAnchoredBase64 = runRootAnchoredPattern(checkpoints) { it.toBase64String().length }
 
@@ -97,7 +97,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
             steps = 2_500,
             seed = 7,
             insertSelector = { size, _, random -> random.nextInt(size + 1) },
-            measure = { it.bytes.size },
+            measure = { it.encodedLength },
         )
 
         assertEquals(
@@ -120,7 +120,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
                     random.nextInt(size + 1)
                 }
             },
-            measure = { it.bytes.size },
+            measure = { it.encodedLength },
         )
 
         assertEquals(
@@ -144,7 +144,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
                 }
                 MoveSelection(from = from, to = to)
             },
-            measure = { it.bytes.size },
+            measure = { it.encodedLength },
         )
 
         assertEquals(
@@ -167,7 +167,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
                     MoveSelection(from = size - 1, to = (size - 5).coerceAtLeast(0))
                 }
             },
-            measure = { it.bytes.size },
+            measure = { it.encodedLength },
         )
 
         assertEquals(
@@ -249,7 +249,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
         for (i in 1..sorted.last()) {
             current = step(current)
             if (i in targets) {
-                results[i] = current.bytes.size
+                results[i] = current.encodedLength
             }
         }
 
@@ -362,7 +362,7 @@ class FractionalIndexGeneratorBenchmarkRegressionTest {
             }
 
             ordered.add(insertAt, generated)
-            totalLength += generated.bytes.size.toDouble()
+            totalLength += generated.encodedLength.toDouble()
         }
 
         return totalLength / steps.toDouble()

@@ -294,7 +294,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         var checksum = 0
         repeat(steps) {
             current = FractionalIndexGenerator.after(current)
-            checksum = checksum xor current.bytes.size
+            checksum = checksum xor current.encodedLength
         }
         blackhole = blackhole xor checksum.toLong()
         return checksum
@@ -307,7 +307,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         repeat(steps) {
             left = FractionalIndexGenerator.between(left, right).getOrThrow()
             right = FractionalIndexGenerator.between(left, right).getOrThrow()
-            checksum = checksum xor left.bytes.size xor right.bytes.size
+            checksum = checksum xor left.encodedLength xor right.encodedLength
         }
         blackhole = blackhole xor checksum.toLong()
         return checksum
@@ -330,7 +330,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
                 else -> FractionalIndexGenerator.between(ordered[insertAt - 1], ordered[insertAt]).getOrThrow()
             }
             ordered.add(insertAt, generated)
-            checksum = checksum xor generated.bytes.size
+            checksum = checksum xor generated.encodedLength
         }
 
         blackhole = blackhole xor checksum.toLong()
@@ -362,7 +362,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
             }
 
             ordered.add(to, generated)
-            checksum = checksum xor generated.bytes.size
+            checksum = checksum xor generated.encodedLength
         }
 
         blackhole = blackhole xor checksum.toLong()

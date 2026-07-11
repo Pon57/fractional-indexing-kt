@@ -77,7 +77,7 @@ class FractionalIndexGeneratorBetweenDifferentMajorsTest {
             end = FractionalIndexGenerator.between(start, end).getOrThrow()
 
             if (i in targets) {
-                results[i] = start.bytes.size
+                results[i] = start.encodedLength
             }
         }
 
@@ -97,7 +97,7 @@ class FractionalIndexGeneratorBetweenDifferentMajorsTest {
         for (i in 1..sorted.last()) {
             end = FractionalIndexGenerator.between(start, end).getOrThrow()
             if (i in targets) {
-                results[i] = end.bytes.size
+                results[i] = end.encodedLength
             }
         }
 
