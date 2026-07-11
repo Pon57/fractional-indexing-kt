@@ -34,7 +34,7 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          ./gradlew :library:jvmTest --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache | tee perf-observation.log
+          ./gradlew :library:jvmTest -PrunPerformanceTests=true --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache | tee perf-observation.log
 
       - name: Publish perf summary
         if: always()

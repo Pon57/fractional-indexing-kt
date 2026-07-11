@@ -13,6 +13,10 @@ plugins {
 group = "dev.pon"
 version = rootProject.file("VERSION").readText().trim()
 
+val runPerformanceTests = providers.gradleProperty("runPerformanceTests")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
+
 kotlin {
     @OptIn(ExperimentalAbiValidation::class)
     abiValidation()
@@ -26,6 +30,13 @@ kotlin {
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
+                if (!runPerformanceTests) {
+                    filter {
+                        excludeTestsMatching(
+                            "dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest",
+                        )
+                    }
+                }
             }
         }
     }
