@@ -69,40 +69,43 @@ val indexFromHex = FractionalIndex.fromHexString("7f80").getOrThrow()
 val indexFromSortableBase64 = FractionalIndex.fromSortableBase64String("Us-").getOrThrow()
 val indexFromBase64 = FractionalIndex.fromBase64String("f4A=").getOrThrow()
 
+val rawBytes = indexFromHex.toByteArray()
+val indexFromBytes = FractionalIndex.fromByteArray(rawBytes).getOrThrow()
 val hex = indexFromHex.toHexString()                                  // "7f80"
 val sortableBase64 = indexFromSortableBase64.toSortableBase64String() // "Us-"
 val base64 = indexFromBase64.toBase64String()                         // "f4A="
 ```
 
-`fromBytes` / `fromHexString` / `fromSortableBase64String` / `fromBase64String` accept canonical library format only.
+`fromByteArray` / `fromHexString` / `fromSortableBase64String` / `fromBase64String` accept canonical library format only.
 Ending with `0x80` is necessary but not sufficient: the first byte is also a format tag.
 Malformed or non-canonical keys (for example `0080`, `ff80`, `0180`) return failure.
+The existing `UByteArray` APIs (`bytes`, `fromBytes`, and `fromBytesOrThrow`) remain available but are deprecated.
 
 ## Notes
 
 - `FractionalIndex` values are lexicographically comparable (`Comparable<FractionalIndex>`).
-- All valid indexes end with the terminator byte `0x80`.
 - `FractionalIndexGenerator.between(...)` accepts bounds in either order.
 - `FractionalIndexGenerator.rebalance(...)` accepts either-side null endpoints for open-ended generation.
 - `FractionalIndexGenerator.rebalance(count, null, null)` starts from `FractionalIndex.default()`.
 - `FractionalIndexGenerator.rebalance(count, lowerEndpoint, upperEndpoint)` includes non-null endpoints in the returned list.
 - When both endpoints are non-null, they must define a valid ascending sequence for `count`.
-- `toString()` is a debug representation. Use `toHexString()`, `toSortableBase64String()`, or `toBase64String()` for serialization.
+- Raw bytes preserve `FractionalIndex` order only under unsigned-lexicographic comparison. `ByteArray` is not `Comparable` in Kotlin, and signed `Byte` comparison does not preserve this order; compare `FractionalIndex` values instead.
+- `toString()` is a debug representation. Use `toByteArray()`, `toHexString()`, `toSortableBase64String()`, or `toBase64String()` for serialization.
 - `toSortableBase64String()` is a **library-specific encoding** that preserves sort order. Not a standard — see [`SortableBase64`](library/src/commonMain/kotlin/dev/pon/fractionalindexing/SortableBase64.kt) for the encoding specification.
 - `toBase64String()` uses standard Base64 (RFC 4648) but does **not** preserve sort order.
 
 ## Public API Overview
 
 - `FractionalIndex.default()`
-- `FractionalIndex.fromBytes(bytes)`
-- `FractionalIndex.fromBytesOrThrow(bytes)`
+- `FractionalIndex.fromByteArray(bytes)`
+- `FractionalIndex.fromByteArrayOrThrow(bytes)`
 - `FractionalIndex.fromHexString(hex)`
 - `FractionalIndex.fromHexStringOrThrow(hex)`
 - `FractionalIndex.fromSortableBase64String(str)`
 - `FractionalIndex.fromSortableBase64StringOrThrow(str)`
 - `FractionalIndex.fromBase64String(base64)`
 - `FractionalIndex.fromBase64StringOrThrow(base64)`
-- `FractionalIndex.bytes`
+- `FractionalIndex.toByteArray()`
 - `FractionalIndex.toHexString()`
 - `FractionalIndex.toSortableBase64String()`
 - `FractionalIndex.toBase64String()`

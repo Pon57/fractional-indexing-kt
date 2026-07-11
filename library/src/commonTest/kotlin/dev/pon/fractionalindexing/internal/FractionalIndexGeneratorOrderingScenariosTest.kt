@@ -89,9 +89,9 @@ class FractionalIndexGeneratorOrderingScenariosTest {
                 val after = FractionalIndexGenerator.after(a)
                 val between = FractionalIndexGenerator.between(before, after).getOrThrow()
 
-                assertEquals(FractionalIndex.TERMINATOR, before.bytes.last())
-                assertEquals(FractionalIndex.TERMINATOR, after.bytes.last())
-                assertEquals(FractionalIndex.TERMINATOR, between.bytes.last())
+                assertEquals(FractionalIndex.TERMINATOR.toByte(), before.toByteArray().last())
+                assertEquals(FractionalIndex.TERMINATOR.toByte(), after.toByteArray().last())
+                assertEquals(FractionalIndex.TERMINATOR.toByte(), between.toByteArray().last())
             }
         }
     }

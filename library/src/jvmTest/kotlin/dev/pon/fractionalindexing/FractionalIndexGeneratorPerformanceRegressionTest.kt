@@ -294,7 +294,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         var checksum = 0
         repeat(steps) {
             current = FractionalIndexGenerator.after(current)
-            checksum = checksum xor current.bytes.size
+            checksum = checksum xor current.encodedLength
         }
         blackhole = blackhole xor checksum.toLong()
         return checksum
@@ -307,7 +307,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         repeat(steps) {
             left = FractionalIndexGenerator.between(left, right).getOrThrow()
             right = FractionalIndexGenerator.between(left, right).getOrThrow()
-            checksum = checksum xor left.bytes.size xor right.bytes.size
+            checksum = checksum xor left.encodedLength xor right.encodedLength
         }
         blackhole = blackhole xor checksum.toLong()
         return checksum
@@ -330,7 +330,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
                 else -> FractionalIndexGenerator.between(ordered[insertAt - 1], ordered[insertAt]).getOrThrow()
             }
             ordered.add(insertAt, generated)
-            checksum = checksum xor generated.bytes.size
+            checksum = checksum xor generated.encodedLength
         }
 
         blackhole = blackhole xor checksum.toLong()
@@ -362,7 +362,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
             }
 
             ordered.add(to, generated)
-            checksum = checksum xor generated.bytes.size
+            checksum = checksum xor generated.encodedLength
         }
 
         blackhole = blackhole xor checksum.toLong()
@@ -397,16 +397,16 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val MOVE_STEPS = 3_000
         private const val MOVE_INITIAL_SIZE = 256
 
-        // Relative budgets are stable across CI/local machine differences.
-        private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 9.0
-        private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 2.5
-        private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.5
+        // Relative budgets reduce, but do not eliminate, environment variance.
+        private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 7.5
+        private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 1.8
+        private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.4
 
         // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
-        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 130.0
-        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 4200.0
-        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 760.0
-        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 1000.0
+        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 120.0
+        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 3400.0
+        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 550.0
+        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 800.0
 
         private const val MEMORY_SAMPLE_INTERVAL = 64
 

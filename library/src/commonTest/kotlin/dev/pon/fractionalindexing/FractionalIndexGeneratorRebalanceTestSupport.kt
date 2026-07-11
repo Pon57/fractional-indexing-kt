@@ -87,14 +87,14 @@ internal fun simulateHotspotInsertGeneratedLengths(
         }
         val generated = FractionalIndexGenerator.between(left, right).getOrThrow()
         ordered.add(insertAt, generated)
-        generatedLengths.add(generated.bytes.size)
+        generatedLengths.add(generated.encodedLength)
     }
 
     return generatedLengths
 }
 
 internal fun keyLengthStats(keys: List<FractionalIndex>): RebalanceLengthStats {
-    val lengths = keys.map { it.bytes.size }
+    val lengths = keys.map { it.encodedLength }
     return intLengthStats(lengths)
 }
 

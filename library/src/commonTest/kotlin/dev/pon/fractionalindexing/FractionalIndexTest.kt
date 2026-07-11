@@ -159,63 +159,89 @@ class FractionalIndexTest {
     }
 
     @Test
-    fun fromBytes_parsesValidBytes() {
-        val result = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u))
+    fun fromByteArray_parsesValidBytes() {
+        val result = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80))
 
         assertTrue(result.isSuccess)
         assertEquals("gX+A", result.getOrThrow().toBase64String())
     }
 
     @Test
-    fun fromBytes_rejectsEmptyBytes() {
-        val result = FractionalIndex.fromBytes(ubyteArrayOf())
+    fun fromByteArray_rejectsEmptyBytes() {
+        val result = FractionalIndex.fromByteArray(byteArrayOf())
 
         assertTrue(result.isFailure)
     }
 
     @Test
-    fun fromBytes_rejectsMissingTerminator() {
-        val result = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu))
+    fun fromByteArray_rejectsMissingTerminator() {
+        val result = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f))
 
         assertTrue(result.isFailure)
     }
 
     @Test
-    fun fromBytes_rejectsNonCanonicalFormats() {
+    fun fromByteArray_rejectsNonCanonicalFormats() {
         val nonCanonical = listOf(
-            ubyteArrayOf(0x00u, 0x80u),
-            ubyteArrayOf(0xffu, 0x80u),
-            ubyteArrayOf(0x01u, 0x80u),
+            byteArray(0x00, 0x80),
+            byteArray(0xff, 0x80),
+            byteArray(0x01, 0x80),
         )
 
         for (bytes in nonCanonical) {
             assertTrue(
-                FractionalIndex.fromBytes(bytes).isFailure,
+                FractionalIndex.fromByteArray(bytes).isFailure,
                 "Expected non-canonical bytes to fail: ${bytes.toHexString()}",
             )
         }
     }
 
     @Test
-    fun fromBytesOrThrow_throwsOnInvalidBytes() {
+    fun fromByteArrayOrThrow_throwsOnInvalidBytes() {
         assertFailsWith<IllegalArgumentException> {
-            FractionalIndex.fromBytesOrThrow(ubyteArrayOf(0xffu, 0x80u))
+            FractionalIndex.fromByteArrayOrThrow(byteArray(0xff, 0x80))
         }
     }
 
     @Test
-    fun fromBytes_makesDefensiveCopyFromInputArray() {
-        val source = ubyteArrayOf(0x81u, 0x80u)
-        val index = FractionalIndex.fromBytes(source).getOrThrow()
+    fun fromByteArray_makesDefensiveCopyFromInputArray() {
+        val source = byteArray(0x81, 0x80)
+        val index = FractionalIndex.fromByteArray(source).getOrThrow()
 
-        source[0] = 0x01u
+        source[0] = 0x01
 
         assertEquals("gYA=", index.toBase64String())
     }
 
     @Test
+    fun byteArrayApi_roundTripsWithoutSignednessLoss() {
+        val source = byteArray(0x81, 0xff, 0x80)
+        val original = FractionalIndex.fromByteArrayOrThrow(source)
+        val decoded = FractionalIndex.fromByteArrayOrThrow(original.toByteArray())
+
+        assertContentEquals(source, original.toByteArray())
+        assertEquals(original, decoded)
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun deprecatedUnsignedByteApis_remainCompatible() {
+        val source = ubyteArrayOf(0x81u, 0x7fu, 0x80u)
+        val expected = source.copyOf()
+        val resultIndex = FractionalIndex.fromBytes(source).getOrThrow()
+        val throwingIndex = FractionalIndex.fromBytesOrThrow(source)
+
+        source[0] = 0x01u
+        val exposed = resultIndex.bytes
+        exposed[0] = 0x01u
+
+        assertEquals(resultIndex, throwingIndex)
+        assertContentEquals(expected, resultIndex.bytes)
+    }
+
+    @Test
     fun toBase64String_roundTripsWithFromBase64String() {
-        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val original = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
         val encoded = original.toBase64String()
         val decoded = FractionalIndex.fromBase64String(encoded).getOrThrow()
 
@@ -225,7 +251,7 @@ class FractionalIndexTest {
 
     @Test
     fun toHexString_roundTripsWithFromHexString() {
-        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val original = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
         val encoded = original.toHexString()
         val decoded = FractionalIndex.fromHexString(encoded).getOrThrow()
 
@@ -235,8 +261,8 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_returnsZero_forSameBytes() {
-        val a = FractionalIndex.fromBytes(ubyteArrayOf(0x80u)).getOrThrow()
-        val b = FractionalIndex.fromBytes(ubyteArrayOf(0x80u)).getOrThrow()
+        val a = FractionalIndex.fromByteArray(byteArray(0x80)).getOrThrow()
+        val b = FractionalIndex.fromByteArray(byteArray(0x80)).getOrThrow()
 
         assertEquals(0, a.compareTo(b))
         assertEquals(0, b.compareTo(a))
@@ -244,8 +270,8 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_comparesUnsignedByteValues() {
-        val low = FractionalIndex.fromBytes(ubyteArrayOf(0x40u, 0x80u)).getOrThrow()
-        val high = FractionalIndex.fromBytes(ubyteArrayOf(0xbfu, 0x80u)).getOrThrow()
+        val low = FractionalIndex.fromByteArray(byteArray(0x40, 0x80)).getOrThrow()
+        val high = FractionalIndex.fromByteArray(byteArray(0xbf, 0x80)).getOrThrow()
 
         assertTrue(low < high)
         assertTrue(high > low)
@@ -253,8 +279,8 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_usesLexicographicalOrder() {
-        val smaller = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
-        val larger = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow()
+        val smaller = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
+        val larger = FractionalIndex.fromByteArray(byteArray(0x81, 0x80)).getOrThrow()
 
         assertTrue(smaller < larger)
         assertTrue(larger > smaller)
@@ -262,8 +288,8 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_usesLengthWhenOneIsPrefix() {
-        val shorter = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow()
-        val longer = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u, 0x80u)).getOrThrow()
+        val shorter = FractionalIndex.fromByteArray(byteArray(0x81, 0x80)).getOrThrow()
+        val longer = FractionalIndex.fromByteArray(byteArray(0x81, 0x80, 0x80)).getOrThrow()
 
         assertTrue(shorter < longer)
         assertTrue(longer > shorter)
@@ -271,10 +297,10 @@ class FractionalIndexTest {
 
     @Test
     fun compareTo_sortsInExpectedOrder() {
-        val a = FractionalIndex.fromBytes(ubyteArrayOf(0x7fu, 0x80u)).getOrThrow()
-        val b = FractionalIndex.fromBytes(ubyteArrayOf(0x80u)).getOrThrow()
-        val c = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
-        val d = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow()
+        val a = FractionalIndex.fromByteArray(byteArray(0x7f, 0x80)).getOrThrow()
+        val b = FractionalIndex.fromByteArray(byteArray(0x80)).getOrThrow()
+        val c = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
+        val d = FractionalIndex.fromByteArray(byteArray(0x81, 0x80)).getOrThrow()
 
         val sorted = listOf(d, b, a, c).sorted()
 
@@ -283,27 +309,30 @@ class FractionalIndexTest {
 
     @Test
     fun equalsAndHashCode_areConsistentForSameContent() {
-        val a = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
-        val b = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val a = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
+        val b = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
 
         assertEquals(a, b)
         assertEquals(a.hashCode(), b.hashCode())
     }
 
     @Test
-    fun bytes_returnsDefensiveCopy() {
-        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow()
-        val leaked = index.bytes
+    fun toByteArray_returnsDefensiveCopy() {
+        val index = FractionalIndex.fromByteArray(byteArray(0x81, 0x80)).getOrThrow()
+        val originalHash = index.hashCode()
+        val leaked = index.toByteArray()
 
-        leaked[0] = 0x01u
+        leaked[0] = 0x01
 
         assertEquals("gYA=", index.toBase64String())
+        assertEquals(originalHash, index.hashCode())
+        assertContentEquals(byteArray(0x81, 0x80), index.toByteArray())
     }
 
     @Test
     fun toBase64String_withUrlSafe_usesUrlSafeAlphabet() {
         // 0x81, 0x7f, 0x80 encodes to "gX+A" in standard, "gX-A" in URL-safe
-        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val index = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
 
         assertEquals("gX+A", index.toBase64String())
         assertEquals("gX-A", index.toBase64String(Base64.UrlSafe))
@@ -311,7 +340,7 @@ class FractionalIndexTest {
 
     @Test
     fun toBase64String_withUrlSafe_roundTrips() {
-        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val original = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
         val encoded = original.toBase64String(Base64.UrlSafe)
         val decoded = FractionalIndex.fromBase64String(encoded, Base64.UrlSafe).getOrThrow()
 
@@ -333,7 +362,7 @@ class FractionalIndexTest {
     @Test
     fun toBase64String_withUrlSafeAndPaddingAbsent_roundTrips() {
         val codec = Base64.UrlSafe.withPadding(Base64.PaddingOption.ABSENT)
-        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val index = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
 
         val encoded = index.toBase64String(codec)
         assertEquals("gX-A", encoded)
@@ -345,7 +374,7 @@ class FractionalIndexTest {
     @Test
     fun fromBase64String_rejectsCrossCodecMismatch() {
         // Standard encodes as "gX+A"; decoding with UrlSafe should fail because '+' is invalid in URL-safe
-        val index = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val index = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
         val standardEncoded = index.toBase64String()
 
         assertTrue(FractionalIndex.fromBase64String(standardEncoded, Base64.UrlSafe).isFailure)
@@ -372,7 +401,7 @@ class FractionalIndexTest {
 
     @Test
     fun toSortableBase64String_roundTripsWithFromSortableBase64String() {
-        val original = FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow()
+        val original = FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow()
         val encoded = original.toSortableBase64String()
         val decoded = FractionalIndex.fromSortableBase64String(encoded).getOrThrow()
 
@@ -412,13 +441,13 @@ class FractionalIndexTest {
     @Test
     fun sortableBase64String_preservesSortOrder() {
         val indices = listOf(
-            FractionalIndex.fromBytes(ubyteArrayOf(0x40u, 0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0x60u, 0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x7fu, 0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0x81u, 0x80u, 0x80u)).getOrThrow(),
-            FractionalIndex.fromBytes(ubyteArrayOf(0xBFu, 0x80u)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x40, 0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x60, 0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x81, 0x7f, 0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x81, 0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0x81, 0x80, 0x80)).getOrThrow(),
+            FractionalIndex.fromByteArray(byteArray(0xBF, 0x80)).getOrThrow(),
         )
 
         val sortedByIndex = indices.sorted()
@@ -444,7 +473,7 @@ class FractionalIndexTest {
             FractionalIndex.fromMajorMinor(-4137, terminator),   // negative medium max
             FractionalIndex.fromMajorMinor(4138, terminator),    // positive long min
             FractionalIndex.fromMajorMinor(-4138, terminator),   // negative long min
-            FractionalIndex.fromBytesOrThrow(ubyteArrayOf(0x81u, 0x7fu, 0x80u)), // zero-major multi-byte
+            FractionalIndex.fromByteArrayOrThrow(byteArray(0x81, 0x7f, 0x80)), // zero-major multi-byte
         )
         for (index in indices) {
             assertEquals(
@@ -553,5 +582,10 @@ class FractionalIndexTest {
         val decoded = FractionalIndex.fromHexStringOrThrow(encoded.toHexString())
         assertEquals(-4138L, decoded.major)
         assertContentEquals(minor, decoded.minor)
+    }
+
+    private fun byteArray(vararg values: Int): ByteArray {
+        require(values.all { it in 0x00..0xff })
+        return ByteArray(values.size) { values[it].toByte() }
     }
 }

@@ -20,7 +20,7 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
             listOf("7b80", "7c80", "7d80", "7e80", "7f80", "80", "8080", "8180", "8280", "8380", "8480"),
             generated.map { it.toHexString() },
         )
-        assertEquals(21, generated.sumOf { it.bytes.size })
+        assertEquals(21, generated.sumOf { it.encodedLength })
     }
 
     @Test
@@ -59,11 +59,11 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
         )
         assertTrue(
             generated.windowed(size = 2)
-                .none { (left, right) -> left.bytes.size == 3 && right.bytes.size == 3 },
+                .none { (left, right) -> left.encodedLength == 3 && right.encodedLength == 3 },
             "Expected rebalance to avoid clustering longer keys while short-bound gaps still exist.",
         )
-        assertEquals(15, generated.sumOf { it.bytes.size })
-        assertEquals(1, generated.subList(1, generated.lastIndex).count { it.bytes.size == 3 })
+        assertEquals(15, generated.sumOf { it.encodedLength })
+        assertEquals(1, generated.subList(1, generated.lastIndex).count { it.encodedLength == 3 })
     }
 
     @Test
@@ -85,7 +85,7 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
             "Expected rebalance to keep the compact frontier intact before exhausting longer gaps.",
         )
         assertTrue(
-            generated.windowed(size = 2).none { (left, right) -> left.bytes.size == 3 && right.bytes.size == 3 },
+            generated.windowed(size = 2).none { (left, right) -> left.encodedLength == 3 && right.encodedLength == 3 },
             "Expected 3-byte keys to stay separated by shorter keys in the tight zero-major window.",
         )
     }
@@ -103,7 +103,7 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
 
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(
             3,
@@ -124,7 +124,7 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
         )
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(lower, generated.first())
         assertEquals(upper, generated.last())
@@ -133,7 +133,7 @@ class FractionalIndexGeneratorRebalanceZeroMajorOptimizationTest {
             generated.map { it.toHexString() }.containsAll(listOf("8080", "8180", "8280", "8380")),
             "Expected rebalance to keep all available compact 2-byte keys before emitting extra 3-byte keys.",
         )
-        assertEquals(1, generated.subList(1, generated.lastIndex).count { it.bytes.size == 3 })
+        assertEquals(1, generated.subList(1, generated.lastIndex).count { it.encodedLength == 3 })
         assertEquals(
             3,
             nextInsertionLengths.max(),

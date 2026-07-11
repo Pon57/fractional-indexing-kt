@@ -90,7 +90,7 @@ class FractionalIndexGeneratorEdgeOpsTest {
         for (i in 1..checkpoints.last()) {
             current = FractionalIndexGenerator.after(current)
             if (i in checkpoints) {
-                lengthsAtCheckpoints[i] = current.bytes.size
+                lengthsAtCheckpoints[i] = current.encodedLength
             }
         }
 
@@ -124,7 +124,7 @@ class FractionalIndexGeneratorEdgeOpsTest {
         for (i in 1..checkpoints.last()) {
             current = FractionalIndexGenerator.before(current)
             if (i in checkpoints) {
-                lengthsAtCheckpoints[i] = current.bytes.size
+                lengthsAtCheckpoints[i] = current.encodedLength
             }
         }
 

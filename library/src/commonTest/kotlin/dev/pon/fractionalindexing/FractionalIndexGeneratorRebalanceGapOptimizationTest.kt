@@ -17,10 +17,10 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
         )
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
-        assertEquals(4, generated.subList(1, generated.lastIndex).maxOf { it.bytes.size })
-        assertEquals(7, generated.subList(1, generated.lastIndex).sumOf { it.bytes.size })
+        assertEquals(4, generated.subList(1, generated.lastIndex).maxOf { it.encodedLength })
+        assertEquals(7, generated.subList(1, generated.lastIndex).sumOf { it.encodedLength })
         assertEquals(
             4,
             nextInsertionLengths.max(),
@@ -45,7 +45,7 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
         )
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(
             2,
@@ -75,7 +75,7 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
             generated.any { it == FractionalIndex.default() },
             "Expected rebalance to reuse the compact terminator pivot when it shortens the profile.",
         )
-        assertEquals(9, generated.sumOf { it.bytes.size })
+        assertEquals(9, generated.sumOf { it.encodedLength })
     }
 
     @Test
@@ -91,7 +91,7 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
         val interior = generated.subList(1, generated.lastIndex)
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
         assertEquals(
             listOf("3b80", "3d80", "3f80"),
@@ -114,10 +114,10 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
         val interior = generated.subList(1, generated.lastIndex)
         val nextInsertionLengths = generated
             .windowed(size = 2)
-            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+            .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
-        assertEquals(3, interior.maxOf { it.bytes.size }, "generated=${generated.map { it.toHexString() }}")
-        assertEquals(43, interior.sumOf { it.bytes.size }, "generated=${generated.map { it.toHexString() }}")
+        assertEquals(3, interior.maxOf { it.encodedLength }, "generated=${generated.map { it.toHexString() }}")
+        assertEquals(43, interior.sumOf { it.encodedLength }, "generated=${generated.map { it.toHexString() }}")
         assertEquals(
             3,
             nextInsertionLengths.max(),
@@ -144,7 +144,7 @@ class FractionalIndexGeneratorRebalanceGapOptimizationTest {
             )
             val nextInsertionLengths = generated
                 .windowed(size = 2)
-                .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().bytes.size }
+                .map { (left, right) -> FractionalIndexGenerator.between(left, right).getOrThrow().encodedLength }
 
             assertEquals(
                 3,

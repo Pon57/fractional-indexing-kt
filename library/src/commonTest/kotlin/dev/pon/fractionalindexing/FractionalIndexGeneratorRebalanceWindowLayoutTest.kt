@@ -44,7 +44,7 @@ class FractionalIndexGeneratorRebalanceWindowLayoutTest {
             interior.any { it.toHexString() == "8080" },
             "Expected rebalance to consume the remaining 2-byte compact slot before emitting more 3-byte keys.",
         )
-        assertEquals(12, interior.sumOf { it.bytes.size })
+        assertEquals(12, interior.sumOf { it.encodedLength })
     }
 
     @Test
@@ -76,7 +76,7 @@ class FractionalIndexGeneratorRebalanceWindowLayoutTest {
         )
 
         assertEquals(FractionalIndex.default(), generated[1])
-        assertEquals(1, generated[1].bytes.size)
+        assertEquals(1, generated[1].encodedLength)
     }
 
     @Test
@@ -94,12 +94,12 @@ class FractionalIndexGeneratorRebalanceWindowLayoutTest {
         assertEquals(lower, generated.first())
         assertEquals(upper, generated.last())
         assertTrue(
-            interior.all { it.bytes.size == 2 },
+            interior.all { it.encodedLength == 2 },
             "generated=${generated.map { it.toHexString() }}",
         )
         assertEquals(
             8,
-            interior.sumOf { it.bytes.size },
+            interior.sumOf { it.encodedLength },
             "generated=${generated.map { it.toHexString() }}",
         )
     }

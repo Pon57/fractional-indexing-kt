@@ -7,7 +7,7 @@ import kotlin.io.encoding.Base64
  * An opaque key that supports arbitrary insertions between any two existing keys
  * while preserving a total sort order via unsigned-lexicographic byte comparison.
  *
- * Create instances with [default], [fromBytes], [fromHexString], [fromBase64String], or [fromSortableBase64String].
+ * Create instances with [default], [fromByteArray], [fromHexString], [fromBase64String], or [fromSortableBase64String].
  * Generate new keys with [FractionalIndexGenerator] (or the [before] / [after] / [between] extensions).
  */
 public class FractionalIndex private constructor(
@@ -19,7 +19,20 @@ public class FractionalIndex private constructor(
     private var cachedHashCode: Long = UNCOMPUTED_HASH_CODE
     internal val encodedLength: Int get() = unsafeRawBytes.size
 
+    /**
+     * Returns a defensive copy of the raw bytes backing this index.
+     *
+     * The returned bytes preserve [FractionalIndex] order when compared unsigned-lexicographically.
+     * In Kotlin code, compare [FractionalIndex] values rather than comparing signed [Byte] elements directly.
+     */
+    public fun toByteArray(): ByteArray = unsafeRawBytes.toByteArray()
+
     /** Returns a defensive copy of the raw bytes backing this index. */
+    @Deprecated(
+        message = "Use toByteArray() for storage and interoperability. " +
+            "Compare FractionalIndex values instead of raw byte arrays.",
+        level = DeprecationLevel.WARNING,
+    )
     public val bytes: UByteArray
         get() = unsafeRawBytes.copyOf()
 
@@ -46,13 +59,17 @@ public class FractionalIndex private constructor(
      * Encodes this index as a Base64 string.
      *
      * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
-     * Use [toHexString], [toSortableBase64String], or [bytes] when lexicographic ordering must be maintained.
+     * Use [toHexString], [toSortableBase64String], or [toByteArray] with unsigned-lexicographic
+     * comparison when ordering must be maintained.
      *
      * @param codec the [Base64] instance to use (e.g. `Base64.UrlSafe`).
      */
     public fun toBase64String(codec: Base64 = Base64): String = codec.encode(unsafeRawBytes.asByteArray())
 
-    /** Debug-friendly representation. Use [toHexString], [toSortableBase64String], or [toBase64String] for wire format. */
+    /**
+     * Debug-friendly representation.
+     * Use [toByteArray], [toHexString], [toSortableBase64String], or [toBase64String] for wire format.
+     */
     override fun toString(): String = "FractionalIndex(${unsafeRawBytes.contentToString()})"
 
     override fun compareTo(other: FractionalIndex): Int {
@@ -130,7 +147,8 @@ public class FractionalIndex private constructor(
          *
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
-        public fun fromBytes(bytes: UByteArray): Result<FractionalIndex> = runCatching { fromBytesOrThrow(bytes) }
+        public fun fromByteArray(bytes: ByteArray): Result<FractionalIndex> =
+            runCatching { fromByteArrayOrThrow(bytes) }
 
         /**
          * Decodes a [FractionalIndex] from raw bytes and throws on invalid input.
@@ -138,7 +156,33 @@ public class FractionalIndex private constructor(
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
         @Throws(IllegalArgumentException::class)
-        public fun fromBytesOrThrow(bytes: UByteArray): FractionalIndex = fromRawBytes(bytes.copyOf())
+        public fun fromByteArrayOrThrow(bytes: ByteArray): FractionalIndex = fromRawBytes(bytes.toUByteArray())
+
+        /**
+         * Decodes a [FractionalIndex] from raw bytes.
+         *
+         * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
+         */
+        @Deprecated(
+            message = "Use fromByteArray() instead.",
+            replaceWith = ReplaceWith("fromByteArray(bytes.asByteArray())"),
+            level = DeprecationLevel.WARNING,
+        )
+        public fun fromBytes(bytes: UByteArray): Result<FractionalIndex> = fromByteArray(bytes.asByteArray())
+
+        /**
+         * Decodes a [FractionalIndex] from raw bytes and throws on invalid input.
+         *
+         * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
+         */
+        @Deprecated(
+            message = "Use fromByteArrayOrThrow() instead.",
+            replaceWith = ReplaceWith("fromByteArrayOrThrow(bytes.asByteArray())"),
+            level = DeprecationLevel.WARNING,
+        )
+        @Throws(IllegalArgumentException::class)
+        public fun fromBytesOrThrow(bytes: UByteArray): FractionalIndex =
+            fromByteArrayOrThrow(bytes.asByteArray())
 
         /**
          * Decodes a [FractionalIndex] from a hex string (case-insensitive).
@@ -185,7 +229,8 @@ public class FractionalIndex private constructor(
          * Decodes a [FractionalIndex] from a Base64 string.
          *
          * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
-         * Use [fromHexString], [fromSortableBase64String], or [fromBytes] when lexicographic ordering must be maintained.
+         * Use [fromHexString], [fromSortableBase64String], or [fromByteArray] when lexicographic ordering
+         * must be maintained.
          *
          * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
@@ -197,7 +242,7 @@ public class FractionalIndex private constructor(
          * Decodes a [FractionalIndex] from a Base64 string and throws on invalid input.
          *
          * **Note:** Base64 encoding does **not** preserve the sort order of [FractionalIndex].
-         * Use [fromHexStringOrThrow], [fromSortableBase64StringOrThrow], or [fromBytesOrThrow]
+         * Use [fromHexStringOrThrow], [fromSortableBase64StringOrThrow], or [fromByteArrayOrThrow]
          * when lexicographic ordering must be maintained.
          *
          * @param codec the [Base64] instance to use — must match the one used for encoding.
