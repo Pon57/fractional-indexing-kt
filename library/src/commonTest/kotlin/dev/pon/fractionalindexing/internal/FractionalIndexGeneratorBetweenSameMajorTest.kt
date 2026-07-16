@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class FractionalIndexGeneratorBetweenSameMajorTest {
@@ -34,6 +35,7 @@ class FractionalIndexGeneratorBetweenSameMajorTest {
             result.isFailure,
             "Expected between() with identical bounds to fail",
         )
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
         assertEquals(
             "bounds must be distinct",
             result.exceptionOrNull()?.message,

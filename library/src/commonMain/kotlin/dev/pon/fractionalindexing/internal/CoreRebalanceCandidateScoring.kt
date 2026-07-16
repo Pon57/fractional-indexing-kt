@@ -45,7 +45,7 @@ internal class RebalanceCandidateAccumulator(
     fun bestOrNull(): List<FractionalIndex>? = best
 
     fun bestOrThrow(): List<FractionalIndex> =
-        requireNotNull(best) { "candidates must not be empty" }
+        checkNotNull(best) { "candidates must not be empty" }
 
     private fun score(candidate: List<FractionalIndex>): RebalanceProfileScore =
         core.scoreRebalanceProfile(

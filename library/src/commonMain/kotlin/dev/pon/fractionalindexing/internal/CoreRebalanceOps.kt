@@ -29,44 +29,49 @@ internal fun FractionalIndexGeneratorCore.rebalanceKeysOrThrow(
     lowerEndpoint: FractionalIndex?,
     upperEndpoint: FractionalIndex?,
 ): List<FractionalIndex> {
-    require(count >= 0) { NON_NEGATIVE_COUNT_MESSAGE }
+    validateRebalanceArgumentsOrThrow(
+        count = count,
+        lowerEndpoint = lowerEndpoint,
+        upperEndpoint = upperEndpoint,
+    )
     if (count == 0) {
         return emptyList()
     }
 
     if (lowerEndpoint == null) {
-        if (upperEndpoint == null) {
-            return rebalanceUnbounded(count)
+        return if (upperEndpoint == null) {
+            rebalanceUnbounded(count)
+        } else {
+            rebalanceWithUpperEndpointOnly(count = count, upperEndpoint = upperEndpoint)
         }
-        return rebalanceWithUpperEndpointOnly(
-            count = count,
-            upperEndpoint = upperEndpoint,
-        )
+    }
+    if (upperEndpoint == null) {
+        return rebalanceWithLowerEndpointOnly(count = count, lowerEndpoint = lowerEndpoint)
     }
 
-    if (upperEndpoint == null) {
-        return rebalanceWithLowerEndpointOnly(
-            count = count,
-            lowerEndpoint = lowerEndpoint,
-        )
+    if (lowerEndpoint.compareTo(upperEndpoint) == 0) {
+        return listOf(lowerEndpoint)
     }
+    return rebalanceWithinEndpoints(
+        count = count,
+        lowerEndpoint = lowerEndpoint,
+        upperEndpoint = upperEndpoint,
+    )
+}
+
+internal fun FractionalIndexGeneratorCore.validateRebalanceArgumentsOrThrow(
+    count: Int,
+    lowerEndpoint: FractionalIndex?,
+    upperEndpoint: FractionalIndex?,
+) {
+    require(count >= 0) { NON_NEGATIVE_COUNT_MESSAGE }
+    if (count == 0 || lowerEndpoint == null || upperEndpoint == null) return
 
     val endpointOrder = lowerEndpoint.compareTo(upperEndpoint)
-    return when {
+    when {
         endpointOrder > 0 -> throw IllegalArgumentException(INVALID_ENDPOINT_ORDER_MESSAGE)
-        endpointOrder == 0 -> {
-            require(count == 1) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
-            listOf(lowerEndpoint)
-        }
-
-        else -> {
-            require(count >= 2) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
-            rebalanceWithinEndpoints(
-                count = count,
-                lowerEndpoint = lowerEndpoint,
-                upperEndpoint = upperEndpoint,
-            )
-        }
+        endpointOrder == 0 -> require(count == 1) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
+        else -> require(count >= 2) { INVALID_ENDPOINT_COUNT_RANGE_MESSAGE }
     }
 }
 

@@ -35,7 +35,7 @@ internal fun FractionalIndexGeneratorCore.rebalanceAroundSingleBytePivotOrNull(
         ),
     )
     val remaining = count - 1
-    val recursive = requireNotNull(
+    val recursive = checkNotNull(
         value = chooseBestFixedPivotCandidateOrNull(
             lowerExclusive = lowerExclusive,
             pivot = pivot,

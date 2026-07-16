@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing
 
+import dev.pon.fractionalindexing.internal.invalidArgumentToResult
 import kotlin.concurrent.Volatile
 import kotlin.io.encoding.Base64
 
@@ -107,6 +108,7 @@ public class FractionalIndex private constructor(
         internal const val TERMINATOR: UByte = 0x80u
 
         private const val INVALID_FORMAT_MESSAGE = "invalid fractional index format"
+        private const val EMPTY_INDEX_MESSAGE = "FractionalIndex must not be empty"
         private const val UNCOMPUTED_HASH_CODE: Long = Long.MIN_VALUE
 
         // First-byte encoding layout:
@@ -148,7 +150,7 @@ public class FractionalIndex private constructor(
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
         public fun fromByteArray(bytes: ByteArray): Result<FractionalIndex> =
-            runCatching { fromByteArrayOrThrow(bytes) }
+            invalidArgumentToResult { fromByteArrayOrThrow(bytes) }
 
         /**
          * Decodes a [FractionalIndex] from raw bytes and throws on invalid input.
@@ -156,7 +158,13 @@ public class FractionalIndex private constructor(
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
         @Throws(IllegalArgumentException::class)
-        public fun fromByteArrayOrThrow(bytes: ByteArray): FractionalIndex = fromRawBytes(bytes.toUByteArray())
+        public fun fromByteArrayOrThrow(bytes: ByteArray): FractionalIndex {
+            validateRawBytes(
+                size = bytes.size,
+                endsWithTerminator = bytes.lastOrNull() == TERMINATOR.toByte(),
+            )
+            return parseRawBytes(bytes.toUByteArray())
+        }
 
         /**
          * Decodes a [FractionalIndex] from raw bytes.
@@ -189,7 +197,8 @@ public class FractionalIndex private constructor(
          *
          * The hex representation preserves sort order, so it is safe to use as a sortable wire format.
          */
-        public fun fromHexString(hex: String): Result<FractionalIndex> = runCatching { fromHexStringOrThrow(hex) }
+        public fun fromHexString(hex: String): Result<FractionalIndex> =
+            invalidArgumentToResult { fromHexStringOrThrow(hex) }
 
         /**
          * Decodes a [FractionalIndex] from a hex string (case-insensitive) and throws on invalid input.
@@ -208,9 +217,10 @@ public class FractionalIndex private constructor(
          * This is a library-specific encoding, not a widely-adopted standard.
          * For the encoding specification, see [SortableBase64].
          */
-        public fun fromSortableBase64String(str: String): Result<FractionalIndex> = runCatching {
-            fromSortableBase64StringOrThrow(str)
-        }
+        public fun fromSortableBase64String(str: String): Result<FractionalIndex> =
+            invalidArgumentToResult {
+                fromSortableBase64StringOrThrow(str)
+            }
 
         /**
          * Decodes a [FractionalIndex] from a sortable Base64 string and throws on invalid input.
@@ -234,9 +244,10 @@ public class FractionalIndex private constructor(
          *
          * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
-        public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> = runCatching {
-            fromBase64StringOrThrow(base64, codec)
-        }
+        public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> =
+            invalidArgumentToResult {
+                fromBase64StringOrThrow(base64, codec)
+            }
 
         /**
          * Decodes a [FractionalIndex] from a Base64 string and throws on invalid input.
@@ -252,10 +263,10 @@ public class FractionalIndex private constructor(
             fromRawBytes(codec.decode(base64).asUByteArray())
 
         internal fun fromMajorMinor(major: Long, minor: UByteArray): FractionalIndex {
-            require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
+            check(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
             if (major == 0L) {
-                require(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
+                check(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
                 val rawBytes = minor.copyOf()
                 return FractionalIndex(rawBytes, 0L, rawBytes)
             }
@@ -269,12 +280,12 @@ public class FractionalIndex private constructor(
 
         // Caller transfers ownership of [minor]; this path intentionally skips a defensive copy.
         internal fun fromCompactMinorUnsafe(minor: UByteArray): FractionalIndex {
-            require(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
+            check(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
             return FractionalIndex(minor, 0L, minor)
         }
 
         internal fun encodedLength(major: Long, minorSize: Int): Int {
-            require(major != Long.MIN_VALUE) { INVALID_FORMAT_MESSAGE }
+            check(major != Long.MIN_VALUE) { INVALID_FORMAT_MESSAGE }
             if (major == 0L) {
                 return minorSize
             }
@@ -306,11 +317,18 @@ public class FractionalIndex private constructor(
         }
 
         private fun fromRawBytes(rawBytes: UByteArray): FractionalIndex {
-            require(rawBytes.isNotEmpty()) { "FractionalIndex must not be empty" }
-            require(rawBytes.last() == TERMINATOR) {
-                "FractionalIndex must end with terminator $TERMINATOR value: FractionalIndex(${rawBytes.contentToString()})"
-            }
+            validateRawBytes(
+                size = rawBytes.size,
+                endsWithTerminator = rawBytes.lastOrNull() == TERMINATOR,
+            )
             return parseRawBytes(rawBytes)
+        }
+
+        private fun validateRawBytes(size: Int, endsWithTerminator: Boolean) {
+            require(size > 0) { EMPTY_INDEX_MESSAGE }
+            require(endsWithTerminator) {
+                "FractionalIndex must end with terminator $TERMINATOR (length=$size)"
+            }
         }
 
         private fun parseRawBytes(rawBytes: UByteArray): FractionalIndex {
@@ -408,7 +426,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodePositive(major: Long, minor: UByteArray): FractionalIndex {
-            require(major > 0L) { INVALID_FORMAT_MESSAGE }
+            check(major > 0L) { INVALID_FORMAT_MESSAGE }
             if (major <= SHORT_MAJOR_MAX) {
                 val out = UByteArray(1 + minor.size)
                 out[0] = (POSITIVE_SHORT_MIN_TAG + major.toInt() - 1).toUByte()
@@ -429,7 +447,7 @@ public class FractionalIndex private constructor(
             }
 
             val payload = encodeUnsignedMagnitude(major)
-            require(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
+            check(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
             val out = UByteArray(1 + payload.size + minor.size)
             out[0] = (POSITIVE_LONG_MIN_TAG + payload.size - 2).toUByte()
             payload.copyInto(out, destinationOffset = 1)
@@ -438,7 +456,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodeNegative(major: Long, minor: UByteArray): FractionalIndex {
-            require(major != Long.MIN_VALUE && major < 0L) { INVALID_FORMAT_MESSAGE }
+            check(major != Long.MIN_VALUE && major < 0L) { INVALID_FORMAT_MESSAGE }
             val magnitude = -major
             if (magnitude <= SHORT_MAJOR_MAX) {
                 val out = UByteArray(1 + minor.size)
@@ -460,7 +478,7 @@ public class FractionalIndex private constructor(
             }
 
             val payload = encodeUnsignedMagnitude(magnitude)
-            require(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
+            check(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
             val complemented = complementBytes(payload)
             val out = UByteArray(1 + complemented.size + minor.size)
             out[0] = (EXTENDED_MAJOR_MAX_LENGTH - complemented.size).toUByte()
@@ -475,7 +493,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun unsignedMagnitudeByteLength(value: Long): Int {
-            require(value > 0L) { INVALID_FORMAT_MESSAGE }
+            check(value > 0L) { INVALID_FORMAT_MESSAGE }
             var current = value
             var count = 0
             do {
@@ -486,7 +504,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodeUnsignedMagnitude(value: Long): UByteArray {
-            require(value > 0L) { INVALID_FORMAT_MESSAGE }
+            check(value > 0L) { INVALID_FORMAT_MESSAGE }
             var current = value
             val length = unsignedMagnitudeByteLength(value)
             val bytes = UByteArray(length)
@@ -499,7 +517,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun decodeUnsignedMagnitude(bytes: UByteArray): Long {
-            require(bytes.isNotEmpty()) { INVALID_FORMAT_MESSAGE }
+            check(bytes.isNotEmpty()) { INVALID_FORMAT_MESSAGE }
             var value = 0L
             for (b in bytes) {
                 val unsigned = b.toLong()

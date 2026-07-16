@@ -53,7 +53,7 @@ internal fun buildPivotMinorWithAfterRank(
     pivotByte: UByte,
     rank: Int,
 ): UByteArray {
-    require(rank > 0) { "rank must be positive" }
+    check(rank > 0) { "rank must be positive" }
 
     val suffixRepeatCount = (rank - 1) / AFTER_RANK_STRIDE
     val terminatorInt = FractionalIndex.TERMINATOR.toInt()
@@ -84,7 +84,7 @@ internal fun buildPivotMinorWithBeforeRank(
     pivotByte: UByte,
     rank: Int,
 ): UByteArray {
-    require(rank > 0) { "rank must be positive" }
+    check(rank > 0) { "rank must be positive" }
 
     val suffixRepeatCount = (rank - 1) / BEFORE_RANK_STRIDE
     val terminatorInt = FractionalIndex.TERMINATOR.toInt()

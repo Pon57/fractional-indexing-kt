@@ -3,6 +3,7 @@ package dev.pon.fractionalindexing
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class FractionalIndexGeneratorRebalanceContractTest {
@@ -35,6 +36,7 @@ class FractionalIndexGeneratorRebalanceContractTest {
                 upperEndpoint = case.upperEndpoint,
             )
             assertTrue(result.isFailure, "Expected failure for $case")
+            assertIs<IllegalArgumentException>(result.exceptionOrNull(), "Wrong failure type for $case")
             assertEquals(case.expectedMessage, result.exceptionOrNull()?.message, "Wrong message for $case")
         }
     }

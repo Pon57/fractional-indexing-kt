@@ -134,7 +134,7 @@ class CoreRebalanceMinorBuildersTest {
 
     @Test
     fun afterRank_zeroRank_throws() {
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<IllegalStateException> {
             buildPivotMinorWithAfterRank(
                 prefix = ubyteArrayOf(),
                 prefixLength = 0,
@@ -270,7 +270,7 @@ class CoreRebalanceMinorBuildersTest {
 
     @Test
     fun beforeRank_zeroRank_throws() {
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<IllegalStateException> {
             buildPivotMinorWithBeforeRank(
                 prefix = ubyteArrayOf(),
                 prefixLength = 0,

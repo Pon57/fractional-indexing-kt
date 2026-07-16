@@ -25,7 +25,7 @@ internal fun FractionalIndexGeneratorCore.betweenAdjacentMajors(
     val leftAvailable = FractionalIndex.isEncodableMinorForMajor(left.major, leftMinorCandidate)
     val rightAvailable = FractionalIndex.isEncodableMinorForMajor(right.major, rightMinorCandidate)
 
-    require(leftAvailable || rightAvailable) { INVALID_FORMAT_MESSAGE }
+    check(leftAvailable || rightAvailable) { INVALID_FORMAT_MESSAGE }
 
     val chooseLeft = when {
         leftAvailable && rightAvailable -> chooseAdjacentSide(
