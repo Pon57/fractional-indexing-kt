@@ -181,6 +181,20 @@ class FractionalIndexTest {
     }
 
     @Test
+    fun fromByteArrayOrThrow_reportsBoundedMissingTerminatorMessage() {
+        val bytes = ByteArray(4_096) { 0x7f }
+
+        val exception = assertFailsWith<IllegalArgumentException> {
+            FractionalIndex.fromByteArrayOrThrow(bytes)
+        }
+
+        assertEquals(
+            "FractionalIndex must end with terminator 128 (length=4096)",
+            exception.message,
+        )
+    }
+
+    @Test
     fun fromByteArray_rejectsNonCanonicalFormats() {
         val nonCanonical = listOf(
             byteArray(0x00, 0x80),

@@ -107,6 +107,7 @@ public class FractionalIndex private constructor(
         internal const val TERMINATOR: UByte = 0x80u
 
         private const val INVALID_FORMAT_MESSAGE = "invalid fractional index format"
+        private const val EMPTY_INDEX_MESSAGE = "FractionalIndex must not be empty"
         private const val UNCOMPUTED_HASH_CODE: Long = Long.MIN_VALUE
 
         // First-byte encoding layout:
@@ -156,7 +157,13 @@ public class FractionalIndex private constructor(
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
         @Throws(IllegalArgumentException::class)
-        public fun fromByteArrayOrThrow(bytes: ByteArray): FractionalIndex = fromRawBytes(bytes.toUByteArray())
+        public fun fromByteArrayOrThrow(bytes: ByteArray): FractionalIndex {
+            validateRawBytes(
+                size = bytes.size,
+                endsWithTerminator = bytes.lastOrNull() == TERMINATOR.toByte(),
+            )
+            return parseRawBytes(bytes.toUByteArray())
+        }
 
         /**
          * Decodes a [FractionalIndex] from raw bytes.
@@ -306,11 +313,18 @@ public class FractionalIndex private constructor(
         }
 
         private fun fromRawBytes(rawBytes: UByteArray): FractionalIndex {
-            require(rawBytes.isNotEmpty()) { "FractionalIndex must not be empty" }
-            require(rawBytes.last() == TERMINATOR) {
-                "FractionalIndex must end with terminator $TERMINATOR value: FractionalIndex(${rawBytes.contentToString()})"
-            }
+            validateRawBytes(
+                size = rawBytes.size,
+                endsWithTerminator = rawBytes.lastOrNull() == TERMINATOR,
+            )
             return parseRawBytes(rawBytes)
+        }
+
+        private fun validateRawBytes(size: Int, endsWithTerminator: Boolean) {
+            require(size > 0) { EMPTY_INDEX_MESSAGE }
+            require(endsWithTerminator) {
+                "FractionalIndex must end with terminator $TERMINATOR (length=$size)"
+            }
         }
 
         private fun parseRawBytes(rawBytes: UByteArray): FractionalIndex {
