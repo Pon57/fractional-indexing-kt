@@ -110,7 +110,7 @@ internal fun FractionalIndexGeneratorCore.estimateMinimalBetweenLength(
                 }
             }
 
-            require(minLength < Int.MAX_VALUE) { INVALID_FORMAT_MESSAGE }
+            check(minLength < Int.MAX_VALUE) { INVALID_FORMAT_MESSAGE }
             minLength
         }
 
@@ -142,7 +142,7 @@ internal fun FractionalIndexGeneratorCore.midpointMajor(
     leftMajor: Long,
     rightMajor: Long,
 ): Long {
-    require(leftMajor < rightMajor) { INVALID_BOUNDS_MESSAGE }
+    check(leftMajor < rightMajor) { INVALID_BOUNDS_MESSAGE }
 
     return if ((leftMajor < 0L) == (rightMajor < 0L)) {
         leftMajor + ((rightMajor - leftMajor) / 2L)

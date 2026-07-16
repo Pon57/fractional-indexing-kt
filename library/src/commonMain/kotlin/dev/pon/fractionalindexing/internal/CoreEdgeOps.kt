@@ -13,7 +13,7 @@ internal fun FractionalIndexGeneratorCore.edgeInsert(
 ): FractionalIndex {
     if (index.major == boundaryMajor) {
         val sameMajorCandidate = minorStep(index.minor)
-        require(FractionalIndex.isEncodableMinorForMajor(index.major, sameMajorCandidate)) { overflowMessage }
+        check(FractionalIndex.isEncodableMinorForMajor(index.major, sameMajorCandidate)) { overflowMessage }
         return fractionalIndexFromOwnedMinor(major = index.major, minor = sameMajorCandidate)
     }
 

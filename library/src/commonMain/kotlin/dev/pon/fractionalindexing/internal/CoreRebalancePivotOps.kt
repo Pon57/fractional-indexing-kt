@@ -175,8 +175,8 @@ internal fun FractionalIndexGeneratorCore.buildFixedPivotRebalanceCandidate(
     upperExclusive: FractionalIndex,
     depth: Int,
 ): List<FractionalIndex> {
-    require(leftCount >= 0) { "leftCount must be non-negative" }
-    require(rightCount >= 0) { "rightCount must be non-negative" }
+    check(leftCount >= 0) { "leftCount must be non-negative" }
+    check(rightCount >= 0) { "rightCount must be non-negative" }
 
     val generated = ArrayList<FractionalIndex>(leftCount + rightCount + if (includePivot) 1 else 0)
     if (leftCount > 0) {
@@ -283,7 +283,7 @@ private fun buildRebalanceSplitWindowOrNull(
     leftAvailable: ULong,
     rightAvailable: ULong,
 ): RebalanceSplitWindow? {
-    require(totalCount >= 0) { "totalCount must be non-negative" }
+    check(totalCount >= 0) { "totalCount must be non-negative" }
     if (totalCount == 0) {
         return RebalanceSplitWindow(
             totalCount = 0,

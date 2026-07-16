@@ -200,7 +200,7 @@ private fun FractionalIndexGeneratorCore.chooseBestCompactFrontierInsertion(
         previous = next
     }
 
-    return requireNotNull(best) { "no valid insertion found in compact frontier" }
+    return checkNotNull(best) { "no valid insertion found in compact frontier" }
 }
 
 private fun FractionalIndexGeneratorCore.buildCompactFrontierInsertionsForGap(

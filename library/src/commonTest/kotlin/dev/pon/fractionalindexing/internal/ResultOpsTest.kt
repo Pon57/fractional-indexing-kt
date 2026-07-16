@@ -22,4 +22,13 @@ class ResultOpsTest {
             }
         }
     }
+
+    @Test
+    fun invalidArgumentToResult_doesNotCatchInternalStateFailures() {
+        assertFailsWith<IllegalStateException> {
+            invalidArgumentToResult<Unit> {
+                check(false) { "broken invariant" }
+            }
+        }
+    }
 }

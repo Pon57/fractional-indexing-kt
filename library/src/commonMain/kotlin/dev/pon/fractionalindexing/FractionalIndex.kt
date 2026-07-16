@@ -263,10 +263,10 @@ public class FractionalIndex private constructor(
             fromRawBytes(codec.decode(base64).asUByteArray())
 
         internal fun fromMajorMinor(major: Long, minor: UByteArray): FractionalIndex {
-            require(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
+            check(minor.isNotEmpty() && minor.last() == TERMINATOR) { INVALID_FORMAT_MESSAGE }
 
             if (major == 0L) {
-                require(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
+                check(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
                 val rawBytes = minor.copyOf()
                 return FractionalIndex(rawBytes, 0L, rawBytes)
             }
@@ -280,12 +280,12 @@ public class FractionalIndex private constructor(
 
         // Caller transfers ownership of [minor]; this path intentionally skips a defensive copy.
         internal fun fromCompactMinorUnsafe(minor: UByteArray): FractionalIndex {
-            require(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
+            check(isCompactMinor(minor)) { INVALID_FORMAT_MESSAGE }
             return FractionalIndex(minor, 0L, minor)
         }
 
         internal fun encodedLength(major: Long, minorSize: Int): Int {
-            require(major != Long.MIN_VALUE) { INVALID_FORMAT_MESSAGE }
+            check(major != Long.MIN_VALUE) { INVALID_FORMAT_MESSAGE }
             if (major == 0L) {
                 return minorSize
             }
@@ -426,7 +426,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodePositive(major: Long, minor: UByteArray): FractionalIndex {
-            require(major > 0L) { INVALID_FORMAT_MESSAGE }
+            check(major > 0L) { INVALID_FORMAT_MESSAGE }
             if (major <= SHORT_MAJOR_MAX) {
                 val out = UByteArray(1 + minor.size)
                 out[0] = (POSITIVE_SHORT_MIN_TAG + major.toInt() - 1).toUByte()
@@ -447,7 +447,7 @@ public class FractionalIndex private constructor(
             }
 
             val payload = encodeUnsignedMagnitude(major)
-            require(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
+            check(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
             val out = UByteArray(1 + payload.size + minor.size)
             out[0] = (POSITIVE_LONG_MIN_TAG + payload.size - 2).toUByte()
             payload.copyInto(out, destinationOffset = 1)
@@ -456,7 +456,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodeNegative(major: Long, minor: UByteArray): FractionalIndex {
-            require(major != Long.MIN_VALUE && major < 0L) { INVALID_FORMAT_MESSAGE }
+            check(major != Long.MIN_VALUE && major < 0L) { INVALID_FORMAT_MESSAGE }
             val magnitude = -major
             if (magnitude <= SHORT_MAJOR_MAX) {
                 val out = UByteArray(1 + minor.size)
@@ -478,7 +478,7 @@ public class FractionalIndex private constructor(
             }
 
             val payload = encodeUnsignedMagnitude(magnitude)
-            require(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
+            check(payload.size in 2..EXTENDED_MAJOR_MAX_LENGTH) { INVALID_FORMAT_MESSAGE }
             val complemented = complementBytes(payload)
             val out = UByteArray(1 + complemented.size + minor.size)
             out[0] = (EXTENDED_MAJOR_MAX_LENGTH - complemented.size).toUByte()
@@ -493,7 +493,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun unsignedMagnitudeByteLength(value: Long): Int {
-            require(value > 0L) { INVALID_FORMAT_MESSAGE }
+            check(value > 0L) { INVALID_FORMAT_MESSAGE }
             var current = value
             var count = 0
             do {
@@ -504,7 +504,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun encodeUnsignedMagnitude(value: Long): UByteArray {
-            require(value > 0L) { INVALID_FORMAT_MESSAGE }
+            check(value > 0L) { INVALID_FORMAT_MESSAGE }
             var current = value
             val length = unsignedMagnitudeByteLength(value)
             val bytes = UByteArray(length)
@@ -517,7 +517,7 @@ public class FractionalIndex private constructor(
         }
 
         private fun decodeUnsignedMagnitude(bytes: UByteArray): Long {
-            require(bytes.isNotEmpty()) { INVALID_FORMAT_MESSAGE }
+            check(bytes.isNotEmpty()) { INVALID_FORMAT_MESSAGE }
             var value = 0L
             for (b in bytes) {
                 val unsigned = b.toLong()
