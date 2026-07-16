@@ -66,7 +66,12 @@ internal object FractionalIndexGeneratorCore {
     fun between(
         first: FractionalIndex,
         second: FractionalIndex,
-    ): Result<FractionalIndex> = invalidArgumentToResult { betweenOrThrow(first, second) }
+    ): Result<FractionalIndex> {
+        if (first.compareTo(second) == 0) {
+            return Result.failure(IllegalArgumentException(DISTINCT_BOUNDS_MESSAGE))
+        }
+        return Result.success(betweenOrThrow(first, second))
+    }
 
     fun betweenOrThrow(
         first: FractionalIndex,
@@ -128,12 +133,23 @@ internal object FractionalIndexGeneratorCore {
         lowerEndpoint: FractionalIndex?,
         upperEndpoint: FractionalIndex?,
     ): Result<List<FractionalIndex>> = invalidArgumentToResult {
-        rebalanceOrThrow(
+        validateRebalanceArgumentsOrThrow(
             count = count,
             lowerEndpoint = lowerEndpoint,
             upperEndpoint = upperEndpoint,
         )
-    }
+    }.fold(
+        onSuccess = {
+            Result.success(
+                rebalanceKeysOrThrow(
+                    count = count,
+                    lowerEndpoint = lowerEndpoint,
+                    upperEndpoint = upperEndpoint,
+                ),
+            )
+        },
+        onFailure = { Result.failure(it) },
+    )
 
     fun rebalanceOrThrow(
         count: Int,
