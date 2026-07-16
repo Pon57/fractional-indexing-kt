@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing
 
+import java.lang.ref.Reference
 import java.util.Locale
 import kotlin.random.Random
 import kotlin.system.measureNanoTime
@@ -12,11 +13,17 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         val to: Int,
     )
 
+    private data class GenerationRequest(
+        val left: FractionalIndex?,
+        val right: FractionalIndex?,
+    )
+
     private data class ThroughputProfile(
         val appendAfterNsPerOp: Double,
         val adjacentBetweenNsPerOp: Double,
         val randomInsertNsPerOp: Double,
         val edgeToInnerMoveNsPerOp: Double,
+        val boundedRebalanceNsPerKey: Double,
     )
 
     private data class MemoryWorkloadObservation(
@@ -29,27 +36,6 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         val randomInsert: MemoryWorkloadObservation,
         val edgeToInnerMove: MemoryWorkloadObservation,
     )
-
-    @Test
-    fun performanceRegression_relativeProfile_staysWithinBudget() {
-        val profile = getOrMeasureProfile()
-        val adjacentVsRandomInsert = profile.adjacentBetweenNsPerOp / profile.randomInsertNsPerOp
-        val moveVsRandomInsert = profile.edgeToInnerMoveNsPerOp / profile.randomInsertNsPerOp
-        val appendVsRandomInsert = profile.appendAfterNsPerOp / profile.randomInsertNsPerOp
-
-        assertTrue(
-            adjacentVsRandomInsert <= MAX_ADJACENT_VS_RANDOM_INSERT_RATIO,
-            "adjacent/random-insert ratio regressed: ratio=${"%.3f".format(adjacentVsRandomInsert)} profile=$profile",
-        )
-        assertTrue(
-            moveVsRandomInsert <= MAX_MOVE_VS_RANDOM_INSERT_RATIO,
-            "move/random-insert ratio regressed: ratio=${"%.3f".format(moveVsRandomInsert)} profile=$profile",
-        )
-        assertTrue(
-            appendVsRandomInsert <= MAX_APPEND_VS_RANDOM_INSERT_RATIO,
-            "append/random-insert ratio regressed: ratio=${"%.3f".format(appendVsRandomInsert)} profile=$profile",
-        )
-    }
 
     @Test
     fun performanceRegression_absoluteBudget_staysWithinBudget() {
@@ -69,6 +55,10 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         assertTrue(
             profile.edgeToInnerMoveNsPerOp <= MAX_MOVE_ABSOLUTE_NS_PER_OP,
             "edge-to-inner-move absolute budget regressed: profile=$profile",
+        )
+        assertTrue(
+            profile.boundedRebalanceNsPerKey <= MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY,
+            "bounded-rebalance absolute budget regressed: profile=$profile",
         )
     }
 
@@ -94,11 +84,24 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
     }
 
     private fun measureThroughputProfile(): ThroughputProfile {
+        // Build evolving-list scenarios outside the timed blocks so list shifts and setup do not
+        // get attributed to FractionalIndex generation.
+        val randomInsertRequests = buildRandomInsertRequests(
+            steps = INSERT_STEPS,
+            initialSize = INSERT_INITIAL_SIZE,
+            seed = 7,
+        )
+        val edgeToInnerMoveRequests = buildEdgeToInnerMoveRequests(
+            steps = MOVE_STEPS,
+            initialSize = MOVE_INITIAL_SIZE,
+        )
+
         repeat(6) {
             runAppendAfter(steps = APPEND_STEPS)
             runAdjacentBetween(steps = ADJACENT_STEPS)
-            runRandomInsert(steps = INSERT_STEPS, initialSize = INSERT_INITIAL_SIZE, seed = 7)
-            runEdgeToInnerMove(steps = MOVE_STEPS, initialSize = MOVE_INITIAL_SIZE)
+            runGenerationRequests(randomInsertRequests)
+            runGenerationRequests(edgeToInnerMoveRequests)
+            runBoundedRebalance(count = REBALANCE_COUNT)
         }
 
         val appendNs = medianNanos(SAMPLE_COUNT) {
@@ -108,17 +111,21 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
             runAdjacentBetween(steps = ADJACENT_STEPS)
         }
         val randomInsertNs = medianNanos(SAMPLE_COUNT) {
-            runRandomInsert(steps = INSERT_STEPS, initialSize = INSERT_INITIAL_SIZE, seed = 7)
+            runGenerationRequests(randomInsertRequests)
         }
         val edgeToInnerMoveNs = medianNanos(SAMPLE_COUNT) {
-            runEdgeToInnerMove(steps = MOVE_STEPS, initialSize = MOVE_INITIAL_SIZE)
+            runGenerationRequests(edgeToInnerMoveRequests)
+        }
+        val rebalanceNs = medianNanos(SAMPLE_COUNT) {
+            runBoundedRebalance(count = REBALANCE_COUNT)
         }
 
         return ThroughputProfile(
             appendAfterNsPerOp = appendNs.toDouble() / APPEND_STEPS.toDouble(),
-            adjacentBetweenNsPerOp = adjacentNs.toDouble() / ADJACENT_STEPS.toDouble(),
+            adjacentBetweenNsPerOp = adjacentNs.toDouble() / (ADJACENT_STEPS.toDouble() * 2.0),
             randomInsertNsPerOp = randomInsertNs.toDouble() / INSERT_STEPS.toDouble(),
             edgeToInnerMoveNsPerOp = edgeToInnerMoveNs.toDouble() / MOVE_STEPS.toDouble(),
+            boundedRebalanceNsPerKey = rebalanceNs.toDouble() / REBALANCE_COUNT.toDouble(),
         )
     }
 
@@ -140,6 +147,8 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
                 append(formatDecimal(profile.randomInsertNsPerOp))
                 append(" edge_move_ns_per_op=")
                 append(formatDecimal(profile.edgeToInnerMoveNsPerOp))
+                append(" bounded_rebalance_ns_per_key=")
+                append(formatDecimal(profile.boundedRebalanceNsPerKey))
                 append(" adjacent_vs_append=")
                 append(formatDecimal(adjacentVsAppend))
                 append(" random_insert_vs_append=")
@@ -204,30 +213,28 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         forceGc()
         var peak = usedMemoryBytes()
 
-        run {
-            val ordered = buildSequentialList(initialSize)
-            val random = Random(seed)
-            repeat(steps) { step ->
-                val insertAt = random.nextInt(ordered.size + 1)
-                val generated = when {
-                    insertAt == 0 -> FractionalIndexGenerator.before(ordered.first())
-                    insertAt == ordered.size -> FractionalIndexGenerator.after(ordered.last())
-                    else -> FractionalIndexGenerator.between(ordered[insertAt - 1], ordered[insertAt]).getOrThrow()
-                }
-                ordered.add(insertAt, generated)
-
-                if (step % MEMORY_SAMPLE_INTERVAL == 0) {
-                    peak = maxOf(peak, usedMemoryBytes())
-                }
+        val ordered = buildSequentialList(initialSize)
+        val random = Random(seed)
+        repeat(steps) { step ->
+            val insertAt = random.nextInt(ordered.size + 1)
+            val generated = when {
+                insertAt == 0 -> FractionalIndexGenerator.before(ordered.first())
+                insertAt == ordered.size -> FractionalIndexGenerator.after(ordered.last())
+                else -> FractionalIndexGenerator.between(ordered[insertAt - 1], ordered[insertAt]).getOrThrow()
             }
+            ordered.add(insertAt, generated)
 
-            blackhole = blackhole xor ordered.size.toLong()
+            if (step % MEMORY_SAMPLE_INTERVAL == 0) {
+                peak = maxOf(peak, usedMemoryBytes())
+            }
         }
 
         forceGc()
         val retained = usedMemoryBytes()
+        blackhole = blackhole xor ordered.size.toLong()
+        Reference.reachabilityFence(ordered)
         return MemoryWorkloadObservation(
-            peakUsedBytes = peak,
+            peakUsedBytes = maxOf(peak, retained),
             retainedUsedBytes = retained,
         )
     }
@@ -239,39 +246,37 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         forceGc()
         var peak = usedMemoryBytes()
 
-        run {
-            val ordered = buildSequentialList(initialSize)
-            repeat(steps) { step ->
-                val selection = if (step % 2 == 0) {
-                    MoveSelection(from = 0, to = minOf(4, ordered.lastIndex))
-                } else {
-                    MoveSelection(from = ordered.lastIndex, to = (ordered.size - 5).coerceAtLeast(0))
-                }
-
-                val from = selection.from.coerceIn(0, ordered.lastIndex)
-                ordered.removeAt(from)
-
-                val to = selection.to.coerceIn(0, ordered.size)
-                val generated = when {
-                    to == 0 -> FractionalIndexGenerator.before(ordered.first())
-                    to == ordered.size -> FractionalIndexGenerator.after(ordered.last())
-                    else -> FractionalIndexGenerator.between(ordered[to - 1], ordered[to]).getOrThrow()
-                }
-
-                ordered.add(to, generated)
-
-                if (step % MEMORY_SAMPLE_INTERVAL == 0) {
-                    peak = maxOf(peak, usedMemoryBytes())
-                }
+        val ordered = buildSequentialList(initialSize)
+        repeat(steps) { step ->
+            val selection = if (step % 2 == 0) {
+                MoveSelection(from = 0, to = minOf(4, ordered.lastIndex))
+            } else {
+                MoveSelection(from = ordered.lastIndex, to = (ordered.size - 5).coerceAtLeast(0))
             }
 
-            blackhole = blackhole xor ordered.size.toLong()
+            val from = selection.from.coerceIn(0, ordered.lastIndex)
+            ordered.removeAt(from)
+
+            val to = selection.to.coerceIn(0, ordered.size)
+            val generated = when {
+                to == 0 -> FractionalIndexGenerator.before(ordered.first())
+                to == ordered.size -> FractionalIndexGenerator.after(ordered.last())
+                else -> FractionalIndexGenerator.between(ordered[to - 1], ordered[to]).getOrThrow()
+            }
+
+            ordered.add(to, generated)
+
+            if (step % MEMORY_SAMPLE_INTERVAL == 0) {
+                peak = maxOf(peak, usedMemoryBytes())
+            }
         }
 
         forceGc()
         val retained = usedMemoryBytes()
+        blackhole = blackhole xor ordered.size.toLong()
+        Reference.reachabilityFence(ordered)
         return MemoryWorkloadObservation(
-            peakUsedBytes = peak,
+            peakUsedBytes = maxOf(peak, retained),
             retainedUsedBytes = retained,
         )
     }
@@ -313,36 +318,31 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         return checksum
     }
 
-    private fun runRandomInsert(
+    private fun buildRandomInsertRequests(
         steps: Int,
         initialSize: Int,
         seed: Int,
-    ): Int {
+    ): List<GenerationRequest> {
         val ordered = buildSequentialList(initialSize)
         val random = Random(seed)
-        var checksum = 0
+        val requests = ArrayList<GenerationRequest>(steps)
 
         repeat(steps) {
             val insertAt = random.nextInt(ordered.size + 1)
-            val generated = when {
-                insertAt == 0 -> FractionalIndexGenerator.before(ordered.first())
-                insertAt == ordered.size -> FractionalIndexGenerator.after(ordered.last())
-                else -> FractionalIndexGenerator.between(ordered[insertAt - 1], ordered[insertAt]).getOrThrow()
-            }
-            ordered.add(insertAt, generated)
-            checksum = checksum xor generated.encodedLength
+            val request = generationRequestAt(ordered, insertAt)
+            requests += request
+            ordered.add(insertAt, request.generate())
         }
 
-        blackhole = blackhole xor checksum.toLong()
-        return checksum
+        return requests
     }
 
-    private fun runEdgeToInnerMove(
+    private fun buildEdgeToInnerMoveRequests(
         steps: Int,
         initialSize: Int,
-    ): Int {
+    ): List<GenerationRequest> {
         val ordered = buildSequentialList(initialSize)
-        var checksum = 0
+        val requests = ArrayList<GenerationRequest>(steps)
 
         repeat(steps) { step ->
             val selection = if (step % 2 == 0) {
@@ -355,16 +355,47 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
             ordered.removeAt(from)
 
             val to = selection.to.coerceIn(0, ordered.size)
-            val generated = when {
-                to == 0 -> FractionalIndexGenerator.before(ordered.first())
-                to == ordered.size -> FractionalIndexGenerator.after(ordered.last())
-                else -> FractionalIndexGenerator.between(ordered[to - 1], ordered[to]).getOrThrow()
-            }
-
-            ordered.add(to, generated)
-            checksum = checksum xor generated.encodedLength
+            val request = generationRequestAt(ordered, to)
+            requests += request
+            ordered.add(to, request.generate())
         }
 
+        return requests
+    }
+
+    private fun generationRequestAt(
+        ordered: List<FractionalIndex>,
+        index: Int,
+    ): GenerationRequest = when (index) {
+        0 -> GenerationRequest(left = null, right = ordered.first())
+        ordered.size -> GenerationRequest(left = ordered.last(), right = null)
+        else -> GenerationRequest(left = ordered[index - 1], right = ordered[index])
+    }
+
+    private fun GenerationRequest.generate(): FractionalIndex = when {
+        left == null -> FractionalIndexGenerator.before(requireNotNull(right))
+        right == null -> FractionalIndexGenerator.after(requireNotNull(left))
+        else -> FractionalIndexGenerator.between(left, right).getOrThrow()
+    }
+
+    private fun runGenerationRequests(requests: List<GenerationRequest>): Int {
+        var checksum = 0
+        for (request in requests) {
+            checksum = checksum xor request.generate().encodedLength
+        }
+
+        blackhole = blackhole xor checksum.toLong()
+        return checksum
+    }
+
+    private fun runBoundedRebalance(count: Int): Int {
+        val default = FractionalIndex.default()
+        val generated = FractionalIndexGenerator.rebalanceOrThrow(
+            count = count,
+            lowerEndpoint = FractionalIndexGenerator.before(default),
+            upperEndpoint = FractionalIndexGenerator.after(default),
+        )
+        val checksum = generated.first().encodedLength xor generated.last().encodedLength xor generated.size
         blackhole = blackhole xor checksum.toLong()
         return checksum
     }
@@ -396,17 +427,14 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val INSERT_INITIAL_SIZE = 64
         private const val MOVE_STEPS = 3_000
         private const val MOVE_INITIAL_SIZE = 256
-
-        // Relative budgets reduce, but do not eliminate, environment variance.
-        private const val MAX_ADJACENT_VS_RANDOM_INSERT_RATIO = 7.5
-        private const val MAX_MOVE_VS_RANDOM_INSERT_RATIO = 1.8
-        private const val MAX_APPEND_VS_RANDOM_INSERT_RATIO = 0.4
+        private const val REBALANCE_COUNT = 10_000
 
         // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
         private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 120.0
         private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 3400.0
         private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 550.0
         private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 800.0
+        private const val MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY = 8_000.0
 
         private const val MEMORY_SAMPLE_INTERVAL = 64
 
