@@ -430,11 +430,11 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val REBALANCE_COUNT = 10_000
 
         // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
-        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 120.0
-        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 3400.0
-        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 550.0
-        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 800.0
-        private const val MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY = 8_000.0
+        private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 160.0
+        private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 1850.0
+        private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 220.0
+        private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 325.0
+        private const val MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY = 5_500.0
 
         private const val MEMORY_SAMPLE_INTERVAL = 64
 

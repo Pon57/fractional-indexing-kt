@@ -69,11 +69,11 @@ jobs:
               echo "### Absolute Metrics"
               echo "| Metric | Measured | Budget |"
               echo "|---|---:|---:|"
-              echo "| append (ns/op) | $append | 120.0 |"
-              echo "| adjacent-between (ns/op) | $adjacent | 3400.0 |"
-              echo "| random-insert (ns/op) | $random_insert | 550.0 |"
-              echo "| edge-to-inner-move (ns/op) | $edge_move | 800.0 |"
-              echo "| bounded rebalance (ns/key) | $bounded_rebalance | 8000.0 |"
+              echo "| append (ns/op) | $append | 160.0 |"
+              echo "| adjacent-between (ns/op) | $adjacent | 1850.0 |"
+              echo "| random-insert (ns/op) | $random_insert | 220.0 |"
+              echo "| edge-to-inner-move (ns/op) | $edge_move | 325.0 |"
+              echo "| bounded rebalance (ns/key) | $bounded_rebalance | 5500.0 |"
             else
               echo "- PERF_PROFILE line not found in log."
             fi
