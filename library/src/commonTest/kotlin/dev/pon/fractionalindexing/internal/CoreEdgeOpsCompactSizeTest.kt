@@ -175,6 +175,30 @@ class CoreEdgeOpsCompactSizeTest {
         }
     }
 
+    @Test
+    fun edgeInsert_skipsCandidateAllocationWhenFallbackIsShorter() {
+        val index = FractionalIndex.fromMajorMinor(
+            major = 1L,
+            minor = ubyteArrayOf(FractionalIndex.TERMINATOR),
+        )
+        var minorStepCalls = 0
+
+        val generated = core.edgeInsert(
+            index = index,
+            minorStep = {
+                minorStepCalls += 1
+                ubyteArrayOf(0x81u, FractionalIndex.TERMINATOR)
+            },
+            minorStepCompactSizeOrNegative = { 2 },
+            boundaryMajor = FractionalIndexGeneratorCore.MAX_MAJOR,
+            fallbackDelta = 1L,
+            overflowMessage = "major overflow",
+        )
+
+        assertEquals(0, minorStepCalls)
+        assertEquals(2L, generated.major)
+    }
+
     private fun compactSizeOrNegative(minor: UByteArray): Int =
         if (FractionalIndex.isEncodableMinorForMajor(0L, minor)) minor.size else -1
 }

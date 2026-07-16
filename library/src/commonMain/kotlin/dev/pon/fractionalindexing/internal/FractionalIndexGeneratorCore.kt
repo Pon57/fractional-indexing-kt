@@ -38,6 +38,7 @@ internal object FractionalIndexGeneratorCore {
         return edgeInsert(
             index = index,
             minorStep = ::beforeMinor,
+            minorStepCompactSizeOrNegative = ::beforeMinorCompactSizeOrNegative,
             boundaryMajor = MIN_MAJOR,
             fallbackDelta = -1L,
             overflowMessage = "major underflow",
@@ -55,6 +56,7 @@ internal object FractionalIndexGeneratorCore {
         return edgeInsert(
             index = index,
             minorStep = ::afterMinor,
+            minorStepCompactSizeOrNegative = ::afterMinorCompactSizeOrNegative,
             boundaryMajor = MAX_MAJOR,
             fallbackDelta = 1L,
             overflowMessage = "major overflow",
