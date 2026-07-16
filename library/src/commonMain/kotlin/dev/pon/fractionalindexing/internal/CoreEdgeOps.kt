@@ -6,32 +6,34 @@ import dev.pon.fractionalindexing.FractionalIndex.Companion.TERMINATOR
 internal fun FractionalIndexGeneratorCore.edgeInsert(
     index: FractionalIndex,
     minorStep: (UByteArray) -> UByteArray,
+    minorStepCompactSizeOrNegative: (UByteArray) -> Int,
     boundaryMajor: Long,
     fallbackDelta: Long,
     overflowMessage: String,
 ): FractionalIndex {
-    val sameMajorCandidate = minorStep(index.minor)
-
     if (index.major == boundaryMajor) {
+        val sameMajorCandidate = minorStep(index.minor)
         require(FractionalIndex.isEncodableMinorForMajor(index.major, sameMajorCandidate)) { overflowMessage }
         return fractionalIndexFromOwnedMinor(major = index.major, minor = sameMajorCandidate)
     }
 
     val fallbackMajor = index.major + fallbackDelta
     val fallbackMinor = DEFAULT_MINOR
-    if (!FractionalIndex.isCompactMinor(sameMajorCandidate)) {
+    val sameMajorMinorSize = minorStepCompactSizeOrNegative(index.minor)
+    if (sameMajorMinorSize < 0) {
         return FractionalIndex.fromMajorMinor(major = fallbackMajor, minor = fallbackMinor)
     }
 
     val sameMajorLength = FractionalIndex.encodedLength(
         major = index.major,
-        minorSize = sameMajorCandidate.size,
+        minorSize = sameMajorMinorSize,
     )
     val fallbackLength = FractionalIndex.encodedLength(
         major = fallbackMajor,
         minorSize = fallbackMinor.size,
     )
     return if (sameMajorLength <= fallbackLength) {
+        val sameMajorCandidate = minorStep(index.minor)
         fractionalIndexFromOwnedMinor(major = index.major, minor = sameMajorCandidate)
     } else {
         FractionalIndex.fromMajorMinor(major = fallbackMajor, minor = fallbackMinor)
