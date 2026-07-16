@@ -1,5 +1,6 @@
 package dev.pon.fractionalindexing
 
+import dev.pon.fractionalindexing.internal.invalidArgumentToResult
 import kotlin.concurrent.Volatile
 import kotlin.io.encoding.Base64
 
@@ -149,7 +150,7 @@ public class FractionalIndex private constructor(
          * The input is defensively copied; subsequent mutations to [bytes] do not affect the returned index.
          */
         public fun fromByteArray(bytes: ByteArray): Result<FractionalIndex> =
-            runCatching { fromByteArrayOrThrow(bytes) }
+            invalidArgumentToResult { fromByteArrayOrThrow(bytes) }
 
         /**
          * Decodes a [FractionalIndex] from raw bytes and throws on invalid input.
@@ -196,7 +197,8 @@ public class FractionalIndex private constructor(
          *
          * The hex representation preserves sort order, so it is safe to use as a sortable wire format.
          */
-        public fun fromHexString(hex: String): Result<FractionalIndex> = runCatching { fromHexStringOrThrow(hex) }
+        public fun fromHexString(hex: String): Result<FractionalIndex> =
+            invalidArgumentToResult { fromHexStringOrThrow(hex) }
 
         /**
          * Decodes a [FractionalIndex] from a hex string (case-insensitive) and throws on invalid input.
@@ -215,9 +217,10 @@ public class FractionalIndex private constructor(
          * This is a library-specific encoding, not a widely-adopted standard.
          * For the encoding specification, see [SortableBase64].
          */
-        public fun fromSortableBase64String(str: String): Result<FractionalIndex> = runCatching {
-            fromSortableBase64StringOrThrow(str)
-        }
+        public fun fromSortableBase64String(str: String): Result<FractionalIndex> =
+            invalidArgumentToResult {
+                fromSortableBase64StringOrThrow(str)
+            }
 
         /**
          * Decodes a [FractionalIndex] from a sortable Base64 string and throws on invalid input.
@@ -241,9 +244,10 @@ public class FractionalIndex private constructor(
          *
          * @param codec the [Base64] instance to use — must match the one used for encoding.
          */
-        public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> = runCatching {
-            fromBase64StringOrThrow(base64, codec)
-        }
+        public fun fromBase64String(base64: String, codec: Base64 = Base64): Result<FractionalIndex> =
+            invalidArgumentToResult {
+                fromBase64StringOrThrow(base64, codec)
+            }
 
         /**
          * Decodes a [FractionalIndex] from a Base64 string and throws on invalid input.

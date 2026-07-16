@@ -66,7 +66,7 @@ internal object FractionalIndexGeneratorCore {
     fun between(
         first: FractionalIndex,
         second: FractionalIndex,
-    ): Result<FractionalIndex> = runCatching { betweenOrThrow(first, second) }
+    ): Result<FractionalIndex> = invalidArgumentToResult { betweenOrThrow(first, second) }
 
     fun betweenOrThrow(
         first: FractionalIndex,
@@ -127,7 +127,7 @@ internal object FractionalIndexGeneratorCore {
         count: Int,
         lowerEndpoint: FractionalIndex?,
         upperEndpoint: FractionalIndex?,
-    ): Result<List<FractionalIndex>> = runCatching {
+    ): Result<List<FractionalIndex>> = invalidArgumentToResult {
         rebalanceOrThrow(
             count = count,
             lowerEndpoint = lowerEndpoint,
