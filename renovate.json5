@@ -15,6 +15,12 @@
     },
     "packageRules": [
         {
+            "matchDepNames": [
+                "com.android.kotlin.multiplatform.library",
+            ],
+            "changelogUrl": "https://developer.android.com/build/releases/agp-{{newMajor}}-{{newMinor}}-0-release-notes",
+        },
+        {
             "matchUpdateTypes": [
                 "patch",
             ],
