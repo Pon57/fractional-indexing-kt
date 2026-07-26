@@ -436,7 +436,7 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 1850.0
         private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 220.0
         private const val MAX_MOVE_ABSOLUTE_NS_PER_OP = 325.0
-        private const val MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY = 5_500.0
+        private const val MAX_BOUNDED_REBALANCE_ABSOLUTE_NS_PER_KEY = 2_300.0
 
         private const val MEMORY_SAMPLE_INTERVAL = 64
 
