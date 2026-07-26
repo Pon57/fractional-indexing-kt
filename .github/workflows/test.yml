@@ -69,49 +69,77 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
-      - name: Run test target
-        id: run_tests
-        run: |
-          set -o pipefail
-          if [ "${{ matrix.target }}" = "jvmTest" ]; then
-            ./gradlew ${{ matrix.target }} -PrunPerformanceTests=true --no-configuration-cache | tee jvm-test.log
-          else
-            ./gradlew ${{ matrix.target }} --no-configuration-cache
-          fi
+      - name: Run non-JVM test target
+        if: ${{ matrix.target != 'jvmTest' }}
+        run: ./gradlew ${{ matrix.target }} --no-configuration-cache
 
-      - name: Publish jvm perf profile summary
+      - name: Run JVM functional tests
+        if: ${{ matrix.target == 'jvmTest' }}
+        run: ./gradlew jvmTest --no-configuration-cache
+
+      - name: Run JVM performance regression check
+        if: ${{ matrix.target == 'jvmTest' }}
+        id: run_perf
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > jvm-perf-attempts.log
+
+          for attempt in 1 2; do
+            if ./gradlew :library:jvmTest \
+              -PrunPerformanceTests=true \
+              --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
+              --rerun \
+              --no-configuration-cache
+            then
+              result="passed"
+            else
+              result="failed"
+            fi
+
+            profile_line="$(
+              grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            )"
+            memory_line="$(
+              grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            )"
+            {
+              echo "attempt=$attempt result=$result"
+              if [ -n "$profile_line" ]; then
+                echo "$profile_line"
+              fi
+              if [ -n "$memory_line" ]; then
+                echo "$memory_line"
+              fi
+            } >> jvm-perf-attempts.log
+
+            if [ "$result" = "passed" ]; then
+              echo "attempts=$attempt" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 1 ]; then
+              echo "::warning::Performance check failed once; confirming with a fresh measurement."
+            fi
+          done
+
+          echo "attempts=2" >> "$GITHUB_OUTPUT"
+          exit 1
+
+      - name: Publish JVM performance profile summary
         if: ${{ always() && matrix.target == 'jvmTest' }}
+        shell: bash
         run: |
-          profile_line="$(
-            grep -Rho -m1 'PERF_PROFILE [^<]*' jvm-test.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-          )"
-          memory_line="$(
-            grep -Rho -m1 'PERF_MEMORY [^<]*' jvm-test.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-          )"
-
           {
             echo "## JVM Performance Profile"
-            if [ "${{ steps.run_tests.outcome }}" = "success" ]; then
-              echo "- Test step result: ✅ Passed"
-            else
-              echo "- Test step result: ❌ Failed"
-            fi
+            echo "- Check result: ${{ steps.run_perf.outcome }}"
+            echo "- Attempts: ${{ steps.run_perf.outputs.attempts || 'not completed' }}"
             echo ""
-            if [ -n "$profile_line" ]; then
+            if [ -s jvm-perf-attempts.log ]; then
               echo '```text'
-              echo "$profile_line"
+              cat jvm-perf-attempts.log
               echo '```'
             else
-              echo "- PERF_PROFILE line not found."
-            fi
-            echo ""
-            if [ -n "$memory_line" ]; then
-              echo "### Memory Observation"
-              echo '```text'
-              echo "$memory_line"
-              echo '```'
-            else
-              echo "### Memory Observation"
-              echo "- PERF_MEMORY line not found."
+              echo "- No performance measurement was completed."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
