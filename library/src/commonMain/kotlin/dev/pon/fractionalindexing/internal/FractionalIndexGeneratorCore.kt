@@ -67,10 +67,11 @@ internal object FractionalIndexGeneratorCore {
         first: FractionalIndex,
         second: FractionalIndex,
     ): Result<FractionalIndex> {
-        if (first.compareTo(second) == 0) {
+        val comparison = first.compareTo(second)
+        if (comparison == 0) {
             return Result.failure(IllegalArgumentException(DISTINCT_BOUNDS_MESSAGE))
         }
-        return Result.success(betweenOrThrow(first, second))
+        return Result.success(betweenWithComparison(first, second, comparison))
     }
 
     fun betweenOrThrow(
@@ -80,6 +81,14 @@ internal object FractionalIndexGeneratorCore {
         val comparison = first.compareTo(second)
         require(comparison != 0) { DISTINCT_BOUNDS_MESSAGE }
 
+        return betweenWithComparison(first, second, comparison)
+    }
+
+    private fun betweenWithComparison(
+        first: FractionalIndex,
+        second: FractionalIndex,
+        comparison: Int,
+    ): FractionalIndex {
         val left: FractionalIndex
         val right: FractionalIndex
         if (comparison < 0) {
