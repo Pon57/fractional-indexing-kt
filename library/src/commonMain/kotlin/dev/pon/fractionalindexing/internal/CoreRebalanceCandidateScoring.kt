@@ -139,7 +139,7 @@ internal fun compareRebalanceProfileScores(
     return primary.nextTotalLength.compareTo(alternative.nextTotalLength)
 }
 
-private fun FractionalIndexGeneratorCore.immediateBetweenLength(
+internal fun FractionalIndexGeneratorCore.immediateBetweenLength(
     lowerBound: FractionalIndex,
     upperBound: FractionalIndex,
     immediateBetweenLengthCache: MutableMap<RebalanceGapKey, Int>,

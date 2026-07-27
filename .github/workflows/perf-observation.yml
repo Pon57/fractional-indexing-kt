@@ -73,7 +73,7 @@ jobs:
               echo "| adjacent-between (ns/op) | $adjacent | 1850.0 |"
               echo "| random-insert (ns/op) | $random_insert | 220.0 |"
               echo "| edge-to-inner-move (ns/op) | $edge_move | 325.0 |"
-              echo "| bounded rebalance (ns/key) | $bounded_rebalance | 5500.0 |"
+              echo "| bounded rebalance (ns/key) | $bounded_rebalance | 2300.0 |"
             else
               echo "- PERF_PROFILE line not found in log."
             fi
