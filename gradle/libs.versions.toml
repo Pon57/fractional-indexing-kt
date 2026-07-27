@@ -11,7 +11,6 @@ jvmTarget = "11"
 agp = "9.3.0"
 kotest = "6.2.2"
 kotlin = "2.4.10"
-ksp = "2.3.10"
 kotlinxCoroutinesTest = "1.11.0"
 vanniktechMavenPublish = "0.37.0"
 
@@ -25,4 +24,3 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktechMavenPublish" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
