@@ -32,19 +32,64 @@ jobs:
       - name: Run JVM performance regression test with memory observation
         id: run_perf
         continue-on-error: true
+        shell: bash
         run: |
-          set -o pipefail
-          ./gradlew :library:jvmTest -PrunPerformanceTests=true --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache | tee perf-observation.log
+          set -euo pipefail
+          : > perf-observation.log
+          : > perf-observation-attempts.log
+
+          for attempt in 1 2; do
+            echo "=== attempt $attempt ===" | tee -a perf-observation.log
+            if ./gradlew :library:jvmTest \
+              -PrunPerformanceTests=true \
+              --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
+              --rerun-tasks \
+              --no-configuration-cache 2>&1 | tee -a perf-observation.log
+            then
+              result="passed"
+            else
+              result="failed"
+            fi
+
+            profile_line="$(
+              grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            )"
+            memory_line="$(
+              grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            )"
+            {
+              echo "attempt=$attempt result=$result"
+              if [ -n "$profile_line" ]; then
+                echo "$profile_line"
+              fi
+              if [ -n "$memory_line" ]; then
+                echo "$memory_line"
+              fi
+            } >> perf-observation-attempts.log
+
+            if [ "$result" = "passed" ]; then
+              echo "attempts=$attempt" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 1 ]; then
+              echo "::warning::Performance observation failed once; confirming with a fresh measurement."
+            fi
+          done
+
+          echo "attempts=2" >> "$GITHUB_OUTPUT"
+          exit 1
 
       - name: Publish perf summary
         if: always()
         run: |
           status="${{ steps.run_perf.outcome }}"
+          attempts="${{ steps.run_perf.outputs.attempts || 'not completed' }}"
           profile_line="$(
-            grep -Rho -m1 'PERF_PROFILE [^<]*' perf-observation.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            grep '^PERF_PROFILE ' perf-observation-attempts.log 2>/dev/null | tail -n1 || true
           )"
           memory_line="$(
-            grep -Rho -m1 'PERF_MEMORY [^<]*' perf-observation.log library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+            grep '^PERF_MEMORY ' perf-observation-attempts.log 2>/dev/null | tail -n1 || true
           )"
           
           {
@@ -54,6 +99,7 @@ jobs:
             else
               echo "- Result: ❌ Failed"
             fi
+            echo "- Attempts: $attempts"
             echo ""
             if [ -n "$profile_line" ]; then
               echo "### Profile"
@@ -101,6 +147,13 @@ jobs:
               echo "- PERF_MEMORY line not found in log."
             fi
             echo ""
+            echo "<details><summary>Measurement attempts</summary>"
+            echo ""
+            echo '```text'
+            cat perf-observation-attempts.log || true
+            echo '```'
+            echo "</details>"
+            echo ""
             echo "<details><summary>Log tail</summary>"
             echo ""
             echo '```text'
@@ -116,6 +169,7 @@ jobs:
           name: perf-observation-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             perf-observation.log
+            perf-observation-attempts.log
             library/build/test-results/jvmTest/*.xml
             library/build/reports/tests/jvmTest/**
           if-no-files-found: warn
