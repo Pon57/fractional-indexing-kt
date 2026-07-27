@@ -429,7 +429,9 @@ class FractionalIndexGeneratorPerformanceRegressionTest {
         private const val MOVE_INITIAL_SIZE = 256
         private const val REBALANCE_COUNT = 10_000
 
-        // Absolute budgets are enforced on every JVM test run so regressions surface in PRs.
+        // Absolute budgets are enforced when this opt-in performance test runs.
+        // CI confirms an initial failure with one fresh measurement so a transient
+        // shared-runner slowdown does not look like a deterministic regression.
         private const val MAX_APPEND_ABSOLUTE_NS_PER_OP = 160.0
         private const val MAX_ADJACENT_ABSOLUTE_NS_PER_OP = 1850.0
         private const val MAX_RANDOM_INSERT_ABSOLUTE_NS_PER_OP = 220.0
