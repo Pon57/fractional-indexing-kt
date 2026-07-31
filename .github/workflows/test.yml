@@ -43,8 +43,6 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: "jvmTest"
-          - os: ubuntu-latest
             target: "jsNodeTest"
           - os: ubuntu-latest
             target: "wasmJsNodeTest"
@@ -69,77 +67,184 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
-      - name: Run non-JVM test target
-        if: ${{ matrix.target != 'jvmTest' }}
+      - name: Run test target
         run: ./gradlew ${{ matrix.target }} --no-configuration-cache
 
+  jvm-observation:
+    name: "JVM tests and performance observation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      performance_result: ${{ steps.run_perf.outputs.result }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: zulu
+          java-version: 21
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
       - name: Run JVM functional tests
-        if: ${{ matrix.target == 'jvmTest' }}
         run: ./gradlew jvmTest --no-configuration-cache
 
-      - name: Run JVM performance regression check
-        if: ${{ matrix.target == 'jvmTest' }}
+      - name: Run JVM performance observation
         id: run_perf
         shell: bash
         run: |
           set -euo pipefail
-          : > jvm-perf-attempts.log
 
-          for attempt in 1 2; do
-            if ./gradlew :library:jvmTest \
-              -PrunPerformanceTests=true \
-              --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
-              --rerun \
-              --no-configuration-cache
-            then
-              result="passed"
-            else
-              result="failed"
-            fi
+          if ./gradlew :library:jvmTest \
+            -PrunPerformanceTests=true \
+            --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
+            --rerun \
+            --no-configuration-cache
+          then
+            result="passed"
+          else
+            result="failed"
+            echo "::warning::Performance observation failed; confirming on a fresh runner."
+          fi
 
-            profile_line="$(
-              grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-            )"
-            memory_line="$(
-              grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-            )"
-            {
-              echo "attempt=$attempt result=$result"
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Publish JVM performance observation summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          PERF_RESULT: ${{ steps.run_perf.outputs.result }}
+        run: |
+          profile_line="$(
+            grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          memory_line="$(
+            grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          {
+            echo "## JVM Performance Observation"
+            echo "- Check result: ${PERF_RESULT:-not completed}"
+            echo ""
+            if [ -n "$profile_line" ] || [ -n "$memory_line" ]; then
+              echo '```text'
               if [ -n "$profile_line" ]; then
                 echo "$profile_line"
               fi
               if [ -n "$memory_line" ]; then
                 echo "$memory_line"
               fi
-            } >> jvm-perf-attempts.log
-
-            if [ "$result" = "passed" ]; then
-              echo "attempts=$attempt" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            if [ "$attempt" -eq 1 ]; then
-              echo "::warning::Performance check failed once; confirming with a fresh measurement."
-            fi
-          done
-
-          echo "attempts=2" >> "$GITHUB_OUTPUT"
-          exit 1
-
-      - name: Publish JVM performance profile summary
-        if: ${{ always() && matrix.target == 'jvmTest' }}
-        shell: bash
-        run: |
-          {
-            echo "## JVM Performance Profile"
-            echo "- Check result: ${{ steps.run_perf.outcome }}"
-            echo "- Attempts: ${{ steps.run_perf.outputs.attempts || 'not completed' }}"
-            echo ""
-            if [ -s jvm-perf-attempts.log ]; then
-              echo '```text'
-              cat jvm-perf-attempts.log
               echo '```'
             else
               echo "- No performance measurement was completed."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  jvm-performance-confirmation:
+    name: "JVM performance confirmation"
+    needs: jvm-observation
+    if: ${{ needs.jvm-observation.result == 'success' && needs.jvm-observation.outputs.performance_result == 'failed' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: zulu
+          java-version: 21
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Confirm JVM performance on a fresh runner
+        id: run_perf
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ./gradlew :library:jvmTest \
+            -PrunPerformanceTests=true \
+            --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
+            --rerun \
+            --no-configuration-cache
+
+      - name: Publish JVM performance confirmation summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          PERF_RESULT: ${{ steps.run_perf.outcome }}
+        run: |
+          profile_line="$(
+            grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          memory_line="$(
+            grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
+          )"
+          {
+            echo "## JVM Performance Confirmation"
+            echo "- Check result: ${PERF_RESULT:-not completed}"
+            echo ""
+            if [ -n "$profile_line" ] || [ -n "$memory_line" ]; then
+              echo '```text'
+              if [ -n "$profile_line" ]; then
+                echo "$profile_line"
+              fi
+              if [ -n "$memory_line" ]; then
+                echo "$memory_line"
+              fi
+              echo '```'
+            else
+              echo "- No performance measurement was completed."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Keep this name aligned with the required status check in the main branch ruleset.
+  jvm-test:
+    name: "ubuntu-latest / jvmTest"
+    needs:
+      - jvm-observation
+      - jvm-performance-confirmation
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Evaluate JVM test result
+        shell: bash
+        env:
+          OBSERVATION_JOB_RESULT: ${{ needs.jvm-observation.result }}
+          PERFORMANCE_RESULT: ${{ needs.jvm-observation.outputs.performance_result }}
+          CONFIRMATION_JOB_RESULT: ${{ needs.jvm-performance-confirmation.result }}
+        run: |
+          set -euo pipefail
+
+          if [ "$OBSERVATION_JOB_RESULT" != "success" ]; then
+            echo "::error::JVM functional tests or the initial performance observation did not complete."
+            exit 1
+          fi
+
+          case "$PERFORMANCE_RESULT" in
+            passed)
+              echo "The initial JVM performance observation passed."
+              ;;
+            failed)
+              if [ "$CONFIRMATION_JOB_RESULT" != "success" ]; then
+                echo "::error::JVM performance failed on both independent runners."
+                exit 1
+              fi
+              echo "The JVM performance confirmation passed on a fresh runner."
+              ;;
+            *)
+              echo "::error::The initial JVM performance result is missing or invalid."
+              exit 1
+              ;;
+          esac
