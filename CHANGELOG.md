@@ -1,5 +1,37 @@
 # Changelog
 
+## [v2.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.5...v2.1.0) - 2026-07-31
+
+### Bug Fixes
+- fix: reject non-canonical long-major encodings by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/119
+- Fix invalid input error handling by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/124
+### General Changes
+- test: make wall-clock performance checks opt-in locally by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/121
+- feat: add ByteArray interoperability APIs by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/120
+- perf: avoid discarded edge candidates and improve measurements by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/126
+- build: configure Kotlin daemon JVM arguments directly by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/125
+- chore(deps): manage GitHub Actions by SemVer by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/132
+- build: remove unused KSP plugin by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/135
+- fix(ci): isolate wall-clock performance checks by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/136
+- perf: reduce rebalance fallback allocations by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/137
+- perf: avoid duplicate between comparison by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/138
+- fix(ci): confirm performance observation failures by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/139
+- fix(ci): confirm performance failures on a fresh runner by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/142
+### Dependency Updates
+- chore(deps): update gradle to v9.6.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/117
+- chore(deps): update actions/setup-java action to v5.4.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/116
+- fix(deps): update kotest to v6.2.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/123
+- chore(deps): update actions/setup-java action to v5.5.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/122
+- chore(deps): update dependency com.google.devtools.ksp to v2.3.10 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/127
+- chore(deps): update songmu/tagpr action to v1.20.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/129
+- fix(deps): update kotlin monorepo to v2.4.10 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/130
+- chore(deps): update actions/checkout action to v7.0.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/128
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.3.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/131
+- fix(deps): update vulnerable Kotlin/JS dependencies by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/133
+- chore(deps): update actions/setup-java action to v5.6.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/134
+- fix(deps): update kotest to v6.2.3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/140
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.3.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/141
+
 ## [v2.0.5](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.4...v2.0.5) - 2026-06-29
 
 ### General Changes
