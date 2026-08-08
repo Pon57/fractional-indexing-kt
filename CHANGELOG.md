@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.1.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.0...v2.1.1) - 2026-08-08
+
+### Dependency Updates
+- chore(deps): update actions/setup-java action to v5.7.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/143
+
 ## [v2.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.5...v2.1.0) - 2026-07-31
 
 ### Bug Fixes
