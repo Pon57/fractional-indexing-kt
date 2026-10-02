@@ -58,7 +58,14 @@ kotlin {
     iosSimulatorArm64()
     macosArm64()
     js {
-        nodejs()
+        nodejs {
+            testTask {
+                useMocha {
+                    // Growth snapshots run tens of thousands of operations in one functional test.
+                    timeout = "30s"
+                }
+            }
+        }
         browser()
     }
     @OptIn(ExperimentalWasmDsl::class)
