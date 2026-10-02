@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.1.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.0...v2.1.1) - 2026-10-02
+
+### Dependency Updates
+- chore(deps): update actions/setup-java action to v5.7.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/143
+- chore(deps): update gradle/actions action to v6.3.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/145
+- chore(deps): update gradle to v9.7.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/146
+- fix(deps): update kotest to v6.2.4 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/147
+- chore(deps): update gradle to v9.7.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/148
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.3.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/149
+- chore(deps): update songmu/tagpr action to v1.20.3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/151
+- fix(deps): update kotest to v6.2.5 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/154
+- chore(deps): update songmu/tagpr action to v1.20.4 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/155
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.4.1 - autoclosed by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/152
+- chore(deps): update actions/setup-java action to v6 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/150
+- chore(deps): update songmu/tagpr action to v1.21.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/156
+- fix(deps): update kotlin monorepo to v2.4.20 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/153
+
 ## [v2.1.0](https://github.com/Pon57/fractional-indexing-kt/compare/v2.0.5...v2.1.0) - 2026-07-31
 
 ### Bug Fixes
