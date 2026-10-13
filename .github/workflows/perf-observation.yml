@@ -11,169 +11,56 @@ concurrency:
 
 jobs:
   performance-observation:
-    name: "jvm performance observation"
+    name: Initial observation
+    uses: ./.github/workflows/perf-measurement.yml
+    with:
+      measurement: initial
+
+  performance-confirmation:
+    name: Confirmation on a fresh runner
+    needs: performance-observation
+    if: ${{ needs.performance-observation.result == 'success' && needs.performance-observation.outputs.result == 'failed' }}
+    uses: ./.github/workflows/perf-measurement.yml
+    with:
+      measurement: confirmation
+
+  performance-result:
+    name: Performance observation result
+    needs:
+      - performance-observation
+      - performance-confirmation
+    if: ${{ always() }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: zulu
-          java-version: 21
-          cache: gradle
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-
-      - name: Run JVM performance regression test with memory observation
-        id: run_perf
-        continue-on-error: true
-        shell: bash
+      - name: Evaluate performance result
+        env:
+          OBSERVATION_JOB_RESULT: ${{ needs.performance-observation.result }}
+          PERFORMANCE_RESULT: ${{ needs.performance-observation.outputs.result }}
+          CONFIRMATION_JOB_RESULT: ${{ needs.performance-confirmation.result }}
+          CONFIRMATION_RESULT: ${{ needs.performance-confirmation.outputs.result }}
         run: |
           set -euo pipefail
-          : > perf-observation.log
-          : > perf-observation-attempts.log
 
-          for attempt in 1 2; do
-            echo "=== attempt $attempt ===" | tee -a perf-observation.log
-            if ./gradlew :library:jvmTest \
-              -PrunPerformanceTests=true \
-              --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest \
-              --rerun-tasks \
-              --no-configuration-cache 2>&1 | tee -a perf-observation.log
-            then
-              result="passed"
-            else
-              result="failed"
-            fi
+          if [ "$OBSERVATION_JOB_RESULT" != "success" ]; then
+            echo "::error::The initial performance observation did not complete."
+            exit 1
+          fi
 
-            profile_line="$(
-              grep -Rho -m1 'PERF_PROFILE [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-            )"
-            memory_line="$(
-              grep -Rho -m1 'PERF_MEMORY [^<]*' library/build/test-results/jvmTest 2>/dev/null | head -n1 || true
-            )"
-            {
-              echo "attempt=$attempt result=$result"
-              if [ -n "$profile_line" ]; then
-                echo "$profile_line"
+          case "$PERFORMANCE_RESULT" in
+            passed)
+              echo "The initial performance observation passed."
+              ;;
+            failed)
+              if [ "$CONFIRMATION_JOB_RESULT" != "success" ] || [ "$CONFIRMATION_RESULT" != "passed" ]; then
+                echo "::error::Performance confirmation failed or did not complete on a fresh runner."
+                exit 1
               fi
-              if [ -n "$memory_line" ]; then
-                echo "$memory_line"
-              fi
-            } >> perf-observation-attempts.log
-
-            if [ "$result" = "passed" ]; then
-              echo "attempts=$attempt" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            if [ "$attempt" -eq 1 ]; then
-              echo "::warning::Performance observation failed once; confirming with a fresh measurement."
-            fi
-          done
-
-          echo "attempts=2" >> "$GITHUB_OUTPUT"
-          exit 1
-
-      - name: Publish perf summary
-        if: always()
-        run: |
-          status="${{ steps.run_perf.outcome }}"
-          attempts="${{ steps.run_perf.outputs.attempts || 'not completed' }}"
-          profile_line="$(
-            grep '^PERF_PROFILE ' perf-observation-attempts.log 2>/dev/null | tail -n1 || true
-          )"
-          memory_line="$(
-            grep '^PERF_MEMORY ' perf-observation-attempts.log 2>/dev/null | tail -n1 || true
-          )"
-          
-          {
-            echo "## JVM Performance Observation"
-            if [ "$status" = "success" ]; then
-              echo "- Result: ✅ Passed"
-            else
-              echo "- Result: ❌ Failed"
-            fi
-            echo "- Attempts: $attempts"
-            echo ""
-            if [ -n "$profile_line" ]; then
-              echo "### Profile"
-              echo '```text'
-              echo "$profile_line"
-              echo '```'
-              append="$(echo "$profile_line" | sed -E 's/.*append_ns_per_op=([0-9.]+).*/\1/')"
-              adjacent="$(echo "$profile_line" | sed -E 's/.*adjacent_ns_per_op=([0-9.]+).*/\1/')"
-              random_insert="$(echo "$profile_line" | sed -E 's/.*random_insert_ns_per_op=([0-9.]+).*/\1/')"
-              edge_move="$(echo "$profile_line" | sed -E 's/.*edge_move_ns_per_op=([0-9.]+).*/\1/')"
-              bounded_rebalance="$(echo "$profile_line" | sed -E 's/.*bounded_rebalance_ns_per_key=([0-9.]+).*/\1/')"
-              echo ""
-              echo "### Absolute Metrics"
-              echo "| Metric | Measured | Budget |"
-              echo "|---|---:|---:|"
-              echo "| append (ns/op) | $append | 160.0 |"
-              echo "| adjacent-between (ns/op) | $adjacent | 1850.0 |"
-              echo "| random-insert (ns/op) | $random_insert | 220.0 |"
-              echo "| edge-to-inner-move (ns/op) | $edge_move | 325.0 |"
-              echo "| bounded rebalance (ns/key) | $bounded_rebalance | 2300.0 |"
-            else
-              echo "- PERF_PROFILE line not found in log."
-            fi
-            echo ""
-            if [ -n "$memory_line" ]; then
-              echo "### Memory Observation (non-gating)"
-              echo '```text'
-              echo "$memory_line"
-              echo '```'
-              baseline="$(echo "$memory_line" | sed -E 's/.*baseline_used_bytes=([0-9]+).*/\1/')"
-              ri_peak="$(echo "$memory_line" | sed -E 's/.*random_insert_peak_bytes=([0-9]+).*/\1/')"
-              ri_retained="$(echo "$memory_line" | sed -E 's/.*random_insert_retained_bytes=([0-9]+).*/\1/')"
-              move_peak="$(echo "$memory_line" | sed -E 's/.*edge_move_peak_bytes=([0-9]+).*/\1/')"
-              move_retained="$(echo "$memory_line" | sed -E 's/.*edge_move_retained_bytes=([0-9]+).*/\1/')"
-              echo ""
-              echo "| Metric | Used bytes | Delta from baseline |"
-              echo "|---|---:|---:|"
-              echo "| baseline | $baseline | 0 |"
-              echo "| random-insert peak | $ri_peak | $((ri_peak - baseline)) |"
-              echo "| random-insert retained | $ri_retained | $((ri_retained - baseline)) |"
-              echo "| edge-move peak | $move_peak | $((move_peak - baseline)) |"
-              echo "| edge-move retained | $move_retained | $((move_retained - baseline)) |"
-            else
-              echo "### Memory Observation (non-gating)"
-              echo "- PERF_MEMORY line not found in log."
-            fi
-            echo ""
-            echo "<details><summary>Measurement attempts</summary>"
-            echo ""
-            echo '```text'
-            cat perf-observation-attempts.log || true
-            echo '```'
-            echo "</details>"
-            echo ""
-            echo "<details><summary>Log tail</summary>"
-            echo ""
-            echo '```text'
-            tail -n 80 perf-observation.log || true
-            echo '```'
-            echo "</details>"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload perf artifacts
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: perf-observation-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            perf-observation.log
-            perf-observation-attempts.log
-            library/build/test-results/jvmTest/*.xml
-            library/build/reports/tests/jvmTest/**
-          if-no-files-found: warn
-
-      - name: Fail on performance regression
-        if: steps.run_perf.outcome != 'success'
-        run: exit 1
+              echo "Performance confirmation passed on a fresh runner."
+              ;;
+            *)
+              echo "::error::The initial performance result is missing or invalid."
+              exit 1
+              ;;
+          esac

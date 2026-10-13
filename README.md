@@ -140,9 +140,10 @@ This library follows [Semantic Versioning](https://semver.org/).
 - Deterministic key-size checks (`FractionalIndexGeneratorBenchmarkRegressionTest`) run in regular JVM tests.
 - Wall-clock checks (`FractionalIndexGeneratorPerformanceRegressionTest`) are opt-in locally and remain merge-gating in CI.
 - CI runs functional JVM tests separately, then runs the wall-clock check. An initial wall-clock failure is confirmed
-  with one fresh measurement; the required job fails only when both measurements fail.
+  with one fresh measurement on a separate runner; the required job fails only when both measurements fail.
 - The scheduled/manual performance observation workflow (`.github/workflows/perf-observation.yml`) runs the strict
-  wall-clock budgets and archives the measured profile, memory observation, and test report.
+  wall-clock budgets, confirms an initial failure on a separate runner, and archives each measurement's profile,
+  memory observation, and test report. Setup failures or missing measurements fail the workflow.
 - Run the JVM perf regression test locally with:
   - `./gradlew :library:jvmTest -PrunPerformanceTests=true --tests dev.pon.fractionalindexing.FractionalIndexGeneratorPerformanceRegressionTest --rerun-tasks --no-configuration-cache`
 - Compare absolute timings on equivalent hardware; local results from different machines are observational.
