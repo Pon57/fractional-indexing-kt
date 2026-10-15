@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.1.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.1...v2.1.2) - 2026-10-15
+
+### Bug Fixes
+- fix(ci): confirm scheduled performance failures on a fresh runner by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/160
+### Dependency Updates
+- chore(deps): update songmu/tagpr action to v1.21.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/162
+- chore(deps): update actions/upload-artifact action to v7.0.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/163
+- chore(deps): update gradle to v9.8.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/164
+- chore(deps): update dependency org.jetbrains.kotlin.multiplatform to v2.4.21 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/165
+- fix(deps): update dependency org.jetbrains.kotlin:kotlin-test to v2.4.21 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/166
+
 ## [v2.1.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.0...v2.1.1) - 2026-10-07
 
 ### Dependency Updates
