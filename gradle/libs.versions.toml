@@ -9,7 +9,7 @@ jvmToolchain = "17"
 jvmTarget = "11"
 
 agp = "9.4.1"
-kotest = "6.2.5"
+kotest = "6.2.6"
 kotlin = "2.4.21"
 kotlinxCoroutinesTest = "1.11.0"
 vanniktechMavenPublish = "0.37.0"
