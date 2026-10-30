@@ -1,5 +1,23 @@
 # Changelog
 
+## [v2.1.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.1...v2.1.2) - 2026-10-30
+
+### Bug Fixes
+- fix(ci): confirm scheduled performance failures on a fresh runner by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/160
+### Dependency Updates
+- chore(deps): update songmu/tagpr action to v1.21.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/162
+- chore(deps): update actions/upload-artifact action to v7.0.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/163
+- chore(deps): update gradle to v9.8.1 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/164
+- chore(deps): update dependency org.jetbrains.kotlin.multiplatform to v2.4.21 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/165
+- fix(deps): update dependency org.jetbrains.kotlin:kotlin-test to v2.4.21 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/166
+- fix(deps): update kotest to v6.2.6 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/169
+- chore(deps): update songmu/tagpr action to v1.21.3 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/171
+- chore(deps): update gradle to v9.8.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/172
+- chore(deps): update actions/create-github-app-token action to v3.3.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/167
+- chore(deps): update actions/setup-java action to v6.1.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/170
+- chore(deps): update dependency ubuntu to v26 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/168
+- chore(deps): update songmu/tagpr action to v1.21.4 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/173
+
 ## [v2.1.1](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.0...v2.1.1) - 2026-10-07
 
 ### Dependency Updates
