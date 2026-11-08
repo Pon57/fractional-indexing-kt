@@ -14,7 +14,10 @@ plugins.withType<NodeJsRootPlugin> {
     }
 
     extensions.configure<NpmExtension>("kotlinNpm") {
+        // Mocha 11 requires vulnerable versions; Mocha 12 is incompatible with Kotlin's reporter.
         override("diff", "8.0.3")
-        override("serialize-javascript", "7.0.5")
+        override("serialize-javascript", "7.1.4")
+        // Mocha and karma-webpack still request vulnerable minimatch versions.
+        override("minimatch@>=7 <11", "11.0.5")
     }
 }
