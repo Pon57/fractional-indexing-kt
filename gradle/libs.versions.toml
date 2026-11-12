@@ -8,7 +8,7 @@ jvmToolchain = "17"
 #noinspection UnusedVersionCatalogEntry
 jvmTarget = "11"
 
-agp = "9.5.0"
+agp = "9.5.1"
 kotest = "6.2.6"
 kotlin = "2.4.21"
 kotlinxCoroutinesTest = "1.11.0"
