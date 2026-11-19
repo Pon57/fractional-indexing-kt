@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.1.3](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.2...v2.1.3) - 2026-11-19
+
+### Dependency Updates
+- fix(deps): update kotest to v6.2.7 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/182
+
 ## [v2.1.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.1...v2.1.2) - 2026-11-18
 
 ### Bug Fixes
