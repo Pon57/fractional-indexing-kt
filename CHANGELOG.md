@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.1.3](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.2...v2.1.3) - 2026-11-28
+
+### General Changes
+- ci: let setup-gradle manage the Gradle cache by @Pon57 in https://github.com/Pon57/fractional-indexing-kt/pull/185
+### Dependency Updates
+- fix(deps): update kotest to v6.2.7 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/182
+- chore(deps): update actions/setup-java action to v6.3.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/184
+- chore(deps): update actions/create-github-app-token action to v3.4.0 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/186
+- chore(deps): update gradle to v9.9.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/187
+- chore(deps): update dependency com.android.kotlin.multiplatform.library to v9.5.2 by @renovate[bot] in https://github.com/Pon57/fractional-indexing-kt/pull/188
+
 ## [v2.1.2](https://github.com/Pon57/fractional-indexing-kt/compare/v2.1.1...v2.1.2) - 2026-11-18
 
 ### Bug Fixes
